@@ -6,7 +6,7 @@
 > \$ python -m venv venv_bot
 > \$ nano venv_bot/bin/activate
 
-at the end of the file place (except _token_ place actual token):
+at the end of the file place (instead of _token_ place actual token):
 > \> export NESCAFEBOT_TOKEN="_token_"
 
 then activate it:
