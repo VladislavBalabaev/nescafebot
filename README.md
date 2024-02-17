@@ -1,0 +1,1 @@
+To use bot follow **instructions.md**.
