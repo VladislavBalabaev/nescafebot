@@ -13,7 +13,7 @@ then activate it:
 > \$ source venv_bot/bin/activate
 
 then build an image:
-> \$ docker build --tag nescafebot --build-arg name=$NESCAFEBOT_TOKEN .
+> \$ docker build --tag nescafebot --build-arg NESCAFEBOT_TOKEN=$NESCAFEBOT_TOKEN .
 
 to run the image within a container
 > \> docker run -it nescafebot
