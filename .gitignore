@@ -1,3 +1,5 @@
 .vscode
 venv
 additional
+*__pycache__
+
