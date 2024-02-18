@@ -9,12 +9,12 @@ client.register_handlers_client(dp)
 
 
 async def on_startup():
-    print('Bot started working!\n')
+    print('### Bot started working! ###\n')
     # db.sql_start()
 
 
 async def on_shutdown():
-    print('\nBot has finished working!')
+    print('\n### Bot has finished working! ###')
 
 
 dp.startup.register(on_startup)

@@ -10,12 +10,12 @@ from create_bot import dp
 # logging_file = logging.FileHandler("client.log")
 
 
-@dp.message(Command("/start"))
+@dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     try:
         await message.answer("Привет! Введи свое ФИО")
     except:
-        await message.answer("Извини, что-то пошло не так, мы получили ошибку, разберемся!")        # TODO: check wether to use .answer of .reply
+        await message.answer("Извини, что-то пошло не так, мы получили ошибку, разберемся!")
 
 
 @dp.message(Command(""))
