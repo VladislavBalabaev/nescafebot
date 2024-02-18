@@ -1,36 +1,29 @@
-import os
-from aiogram import Bot
-from aiogram.utils import executor
-from aiogram.dispatcher import Dispatcher
+import asyncio
 
-# from database import db
-from handlers import client, admin
-
-
-token = os.environ['NESCAFEBOT_TOKEN']
-
-bot = Bot(token)
-dp = Dispatcher(bot)
-
-
-async def on_startup(_):
-    print('Bot started working')
-    # db.sql_start()
-
-async def on_shutdown(_):
-    print('Bot has finished working')
-
+from handlers import client
+from create_bot import dp, bot
 
 
 client.register_handlers_client(dp)
-admin.register_handlers_admin(dp)
-# other.register_handler_other(dp)
+# admin.register_handlers_admin(dp)
 
 
-executor.start_polling(
-    dp,
-    skip_updates=True,               # skip_updates=True for skipping updates when Bot is offline
-    on_startup=on_startup,
-    on_shutdown=on_shutdown
-    )
+async def on_startup():
+    print('Bot started working!\n')
+    # db.sql_start()
 
+
+async def on_shutdown():
+    print('\nBot has finished working!')
+
+
+dp.startup.register(on_startup)
+dp.shutdown.register(on_shutdown)
+
+
+async def main():
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

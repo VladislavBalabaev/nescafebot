@@ -1,13 +1,17 @@
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher, types
+from aiogram import Dispatcher, types
 from aiogram.filters.command import Command
 
-from start_bot import dp, bot
+from create_bot import dp
+
+
+# logging.basicConfig(filename="client.log", filemode="w", format="%(levelname)s - %(message)s")
+# logging_file = logging.FileHandler("client.log")
 
 
 @dp.message(Command("/start"))
-async def cmd_answer(message: types.Message):
+async def cmd_start(message: types.Message):
     try:
         await message.answer("Привет! Введи свое ФИО")
     except:
@@ -17,3 +21,7 @@ async def cmd_answer(message: types.Message):
 @dp.message(Command(""))
 async def cmd_reply(message: types.Message):
     await message.reply('Это ответ с "ответом"')
+
+
+def register_handlers_client(dp: Dispatcher):
+    dp.message.register(cmd_start)
