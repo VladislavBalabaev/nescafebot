@@ -1,13 +1,8 @@
 import asyncio
-import logging
 from aiogram import Dispatcher, types
 from aiogram.filters.command import Command
 
 from create_bot import dp
-
-
-# logging.basicConfig(filename="client.log", filemode="w", format="%(levelname)s - %(message)s")
-# logging_file = logging.FileHandler("client.log")
 
 
 @dp.message(Command("start"))
