@@ -3,3 +3,4 @@ venv
 additional
 *__pycache__
 
+logs
