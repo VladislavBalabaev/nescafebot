@@ -14,7 +14,6 @@ path.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
     filename=path / "coffee.log",
     encoding="utf-8",
-    # level=logging.INFO,
     # format="",
     datefmt="%Y-%m-%d %H:%M:%S",
 )

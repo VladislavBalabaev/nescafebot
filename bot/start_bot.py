@@ -14,13 +14,13 @@ async def on_startup():
     _ = asyncio.create_task(logs.init_logger())
     await asyncio.sleep(0)
 
-    logging.info("### Bot has started working! ###\n")
+    logging.info("### Bot has started working! ###")
     
     # db.sql_start()
 
 
 async def on_shutdown():
-    logging.info("\n### Bot has finished working! ###")
+    logging.info("### Bot has finished working! ###")
 
 
 dp.startup.register(on_startup)
