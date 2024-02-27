@@ -1,7 +1,7 @@
-from pathlib import Path
 import asyncio
 import logging
 from queue import Queue
+from pathlib import Path
 from logging import StreamHandler
 from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 
@@ -23,11 +23,11 @@ async def init_logger():
 
     console_handler = StreamHandler()
     console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(fmt=logging_format)
+    console_handler.setFormatter(logging_format)
 
     file_handler = RotatingFileHandler(logs_path)
     file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(fmt=logging_format)
+    file_handler.setFormatter(logging_format)
 
     listener = QueueListener(que, console_handler, file_handler)          # StreamHandler - to console
 
