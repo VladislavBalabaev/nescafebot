@@ -9,6 +9,7 @@
 At the end of the file place (instead of _token_ place actual token):
 > \> export NESCAFEBOT_TOKEN="_token_"
 
+(If you've done previous steps, you don't need to redo them later)  
 then activate it:
 > \$ source venv_bot/bin/activate
 
@@ -20,7 +21,7 @@ First, start docker:
 Build an image:
 > \$ docker build --tag nescafebot --build-arg NESCAFEBOT_TOKEN=$NESCAFEBOT_TOKEN .
 
-Run the image within a container:
+Run the image in interactive mode within a container:
 > \$ docker run -it nescafebot
 
 Check that your token has been passed:
