@@ -25,7 +25,10 @@ Run the image in interactive mode within a container:
 > \$ docker run -it nescafebot
 
 Check that your token has been passed:
-> \> echo $NESCAFEBOT_TOKEN
+> \$ echo $NESCAFEBOT_TOKEN
 
-to exit the container:
+Start the bot:
+> \$ python bot/start_bot.py
+
+To exit the container:
 > \> exit

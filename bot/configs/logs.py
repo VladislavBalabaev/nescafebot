@@ -1,7 +1,7 @@
-from pathlib import Path
 import asyncio
 import logging
 from queue import Queue
+from pathlib import Path
 from logging import StreamHandler
 from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 
@@ -9,8 +9,9 @@ from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 path = Path('logs')
 logs_path = path / "coffee.log"
 
-logging_format = logging.Formatter("%(levelname)-8s :: %(asctime)s :: %(message)s :: (%(filename)s:%(lineno)d)")
-
+console_format = logging.Formatter("%(levelname)-8s :: %(asctime)s.%(msecs)03d :: %(message)s", "%H:%M:%S")
+file_format = logging.Formatter("%(levelname)-8s :: %(name)-20s :: %(asctime)s :: %(message)s :: (%(filename)s:%(lineno)d)")
+# TODO: логгировать traceback ошибки в except
 
 async def init_logger():
     path.mkdir(parents=True, exist_ok=True)
@@ -23,18 +24,18 @@ async def init_logger():
 
     console_handler = StreamHandler()
     console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(fmt=logging_format)
+    console_handler.setFormatter(console_format)
 
     file_handler = RotatingFileHandler(logs_path)
     file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(fmt=logging_format)
+    file_handler.setFormatter(file_format)
 
-    listener = QueueListener(que, console_handler, file_handler)          # StreamHandler - to console
+    listener = QueueListener(que, console_handler, file_handler)
 
     try:
         logging.debug(f'Logger is being started.')
         listener.start()
-        logging.debug(f'Logger has been started started.')
+        logging.debug(f'Logger has been started.')
 
         while True:
             await asyncio.sleep(60)
