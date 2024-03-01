@@ -9,7 +9,7 @@ from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 path = Path('logs')
 logs_path = path / "coffee.log"
 
-console_format = logging.Formatter("%(asctime)s :: %(message)s")
+console_format = logging.Formatter("%(asctime)s.%(msecs)03d :: %(message)s", "%H:%M:%S")
 file_format = logging.Formatter("%(levelname)-8s :: %(name)-20s :: %(asctime)s :: %(message)s :: (%(filename)s:%(lineno)d)")
 
 
