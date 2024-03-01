@@ -12,13 +12,25 @@ async def cmd_start(message: types.Message):
 
         await message.answer("Привет! Введи свое ФИО")
     except:
-        await message.answer("Извини, что-то пошло не так, мы получили ошибку, разберемся!")
+        logging.error(f"An error occured while starting dialog with user @{message.from_user.username}.")
+
+        await message.answer("Извини, что-то пошло не так, мы получили ошибку, разберемся! Можешь написать ")
 
 
-@dp.message(Command(""))
-async def cmd_reply(message: types.Message):
-    await message.reply('Это ответ с "ответом"')
+@dp.message(Command("cancel"))
+async def cmd_cancel(message: types.Message):
+    pass
+
+
+@dp.message()   # catching all messages with "zero" condition (needs to be the last function)
+async def zero_message(message: types.Message):
+    try:
+        await message.answer(message.text)
+    except:
+        pass
 
 
 def register_handlers_client(dp: Dispatcher):
     dp.message.register(cmd_start)
+    dp.message.register(cmd_cancel)
+    dp.message.register(zero_message)
