@@ -19,7 +19,7 @@ First, start docker:
 
 (At this stage you should be in directory with the Dockerfile [use 'cd'])   
 Build an image:
-> \$ docker build --tag nescafebot --build-arg NESCAFEBOT_TOKEN=$NESCAFEBOT_TOKEN .
+> \$ docker build --tag nescafebot --build-arg NESCAFEBOT_TOKEN=$NESCAFEBOT_TOKEN -f Dockerfile.py .
 
 Run the image in interactive mode within a container:
 > \$ docker run -it nescafebot
