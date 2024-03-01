@@ -2,12 +2,12 @@ import asyncio
 import logging
 
 from configs import logs
-from handlers import client
+from handlers import admin, client
 from create_bot import dp, bot
 
 
 client.register_handlers_client(dp)
-# admin.register_handlers_admin(dp)
+admin.register_handlers_admin(dp)
 
 
 async def on_startup():
@@ -29,6 +29,7 @@ dp.shutdown.register(on_shutdown)
 
 async def main():
     try:
+        # await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot)
     finally:
         pass
