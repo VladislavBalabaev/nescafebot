@@ -22,6 +22,7 @@ async def on_startup():
 async def on_shutdown():
     logging.info("### Bot has finished working! ###")
 
+    await admin.send_logs()
 
 dp.startup.register(on_startup)
 dp.shutdown.register(on_shutdown)
