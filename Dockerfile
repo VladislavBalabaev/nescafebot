@@ -6,7 +6,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY bot ./
+COPY bot ./bot/
 
 ARG NESCAFEBOT_TOKEN
 ENV NESCAFEBOT_TOKEN $NESCAFEBOT_TOKEN
