@@ -10,7 +10,6 @@ from handlers import other
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     try:
-        asid
         logging.info(f"User @{message.from_user.username} started dialog.")
 
         await message.answer("Привет! Введи свое ФИО")
