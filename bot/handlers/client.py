@@ -14,9 +14,7 @@ async def cmd_start(message: types.Message):
 
         await message.answer("Привет! Введи свое ФИО")
     except:
-        logging.error(f"An error occured while starting dialog with user @{message.from_user.username}.")
-
-        await other.send_error_message(message)
+        await other.error_occured(message)
 
 
 @dp.message(Command("cancel"))
