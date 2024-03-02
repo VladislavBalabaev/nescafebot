@@ -6,7 +6,6 @@ from create_bot import dp
 from handlers import other
 
 
-
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     try:

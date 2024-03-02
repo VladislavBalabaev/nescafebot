@@ -2,8 +2,8 @@ import asyncio
 import logging
 
 from configs import logs
-from handlers import admin, client, other
 from create_bot import dp, bot
+from handlers import admin, client, other
 
 
 client.register_handlers_client(dp)

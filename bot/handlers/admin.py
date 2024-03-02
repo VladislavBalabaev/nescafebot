@@ -2,9 +2,9 @@ import logging
 from aiogram import Dispatcher, types
 from aiogram.filters.command import Command
 
-from create_bot import dp, logs_path
 from handlers import other
 from configs.smth import ADMINS
+from create_bot import dp, logs_path
 
 
 @dp.message(Command("logs"))

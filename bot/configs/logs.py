@@ -1,7 +1,6 @@
 import asyncio
 import logging
 from queue import Queue
-from pathlib import Path
 from logging import StreamHandler
 from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 
