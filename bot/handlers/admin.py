@@ -14,8 +14,8 @@ async def cmd_send_logs(message: types.Message):
             logging.info(f"Admin @{message.from_user.username} asked for logs.")
 
             await message.answer_document(types.FSInputFile(logs_path))
-        except:
-            await other.error_occured(message)
+        except Exception as e:
+            await other.error_occured(message, e)
 
 
 def register_handlers_admin(dp: Dispatcher):
