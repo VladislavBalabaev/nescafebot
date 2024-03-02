@@ -5,13 +5,13 @@ from create_bot import bot, logs_path
 from configs.smth import ADMINS
 
 
-async def error_occured(message: types.Message):
+async def error_occured(message: types.Message, e: Exception):
     logging.exception("The traceback of the ERROR:")
 
     await message.answer("Извини, что-то пошло не так(\nМы уже получили ошибку, разберемся!\nЕсли долго не чиним, можешь написать @Madfyre и/или @vbalab по поводу бота.")
 
     for admin in ADMINS:
-        await bot.send_message(admin, f"Error, check the logs. User: @{message.from_user.username}. Message: \"{message.text}\"")
+        await bot.send_message(admin, f"Error, check the logs.\nUser: @{message.from_user.username}. Message: \"{message.text}\".\n\n{e}")
 
 
 async def send_logs():
