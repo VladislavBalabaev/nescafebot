@@ -27,7 +27,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     await message.answer("Привет!\nМы - там-то там-то, хотим то-то то-то.\nСейчас ты то-то то-то, давай начнем.")
     await asyncio.sleep(1)
-    await message.answer("Введи свою фамилию и имя")
+    await message.answer("Напиши свою фамилию и имя")
 
 
 @dp.message(StateFilter(states_create_user.name))
@@ -45,13 +45,26 @@ async def cu_process_name(message: types.Message, state: FSMContext):           
 @dp.message(StateFilter(states_create_user.age))
 @error_sender
 async def cu_process_age(message: types.Message, state: FSMContext):
-    raise NotImplementedError
+    logging.info(f"User @{message.from_user.username} wrote his age: {message.text}.")
+
+    # await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
+
+    await state.set_state(states_create_user.faculty)
+
+    await message.answer("Напиши свою программу в формате\n\"программа год_окончания\" (e.g. MAE 2025)")
 
 
 @dp.message(StateFilter(states_create_user.faculty))
 @error_sender
 async def cu_process_faculty(message: types.Message, state: FSMContext):
-    raise NotImplementedError
+    logging.info(f"User @{message.from_user.username} wrote his faculty: {message.text}.")
+
+    # await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
+
+    await state.set_state(states_create_user.about)
+
+    await message.answer("Напиши о себе, своих интересах")
+
 
 
 @dp.message(StateFilter(states_create_user.about))
@@ -94,6 +107,9 @@ def register_handlers_client(dp: Dispatcher):
     dp.message.register(cu_process_faculty)
     dp.message.register(cu_process_about)
     dp.message.register(cu_process_city)
+
     dp.message.register(cmd_help)
+
     dp.message.register(cmd_cancel)
+
     dp.message.register(zero_message)
