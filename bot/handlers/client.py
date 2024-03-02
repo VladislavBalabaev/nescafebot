@@ -7,7 +7,7 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
 from create_bot import dp
-from handlers import other
+from handlers.utils import error_sender
 
 
 class states_create_user(StatesGroup):
@@ -19,91 +19,72 @@ class states_create_user(StatesGroup):
 
 
 @dp.message(StateFilter(None), Command("start"))
+@error_sender
 async def cmd_start(message: types.Message, state: FSMContext):
-    try:
-        logging.info(f"User @{message.from_user.username} has started dialog.")
+    logging.info(f"User @{message.from_user.username} has started dialog.")
 
-        await state.set_state(states_create_user.name)
+    await state.set_state(states_create_user.name)
 
-        await message.answer("Привет!\nМы - там-то там-то, хотим то-то то-то.\nСейчас ты то-то то-то, давай начнем.")
-        await asyncio.sleep(1)
-        await message.answer("Введи свою фамилию и имя")
-    except Exception as e:
-        await other.error_occured(message, e)
+    await message.answer("Привет!\nМы - там-то там-то, хотим то-то то-то.\nСейчас ты то-то то-то, давай начнем.")
+    await asyncio.sleep(1)
+    await message.answer("Введи свою фамилию и имя")
 
 
 @dp.message(StateFilter(states_create_user.name))
+@error_sender
 async def cu_process_name(message: types.Message, state: FSMContext):           # cu - create user
-    try:
-        logging.info(f"User @{message.from_user.username} wrote his name: {message.text}.")
+    logging.info(f"User @{message.from_user.username} wrote his name: {message.text}.")
 
-        # await state.update_data(name=message.text) # REPLACE WITH REDIS
+    # await state.update_data(name=message.text) # REPLACE WITH REDIS
 
-        await state.set_state(states_create_user.age)
+    await state.set_state(states_create_user.age)
 
-        await message.answer("Сколько тебе лет?")
-    except Exception as e:
-        await other.error_occured(message, e)
+    await message.answer("Сколько тебе лет?")
 
 
 @dp.message(StateFilter(states_create_user.age))
+@error_sender
 async def cu_process_age(message: types.Message, state: FSMContext):
-    try:
-        NotImplementedError
-    except Exception as e:
-        await other.error_occured(message, e)
+    raise NotImplementedError
 
 
 @dp.message(StateFilter(states_create_user.faculty))
+@error_sender
 async def cu_process_faculty(message: types.Message, state: FSMContext):
-    try:
-        NotImplementedError
-    except Exception as e:
-        await other.error_occured(message, e)
+    raise NotImplementedError
 
 
 @dp.message(StateFilter(states_create_user.about))
+@error_sender
 async def cu_process_about(message: types.Message, state: FSMContext):
-    try:
-        NotImplementedError
-    except Exception as e:
-        await other.error_occured(message, e)
+    raise NotImplementedError
 
 
 @dp.message(StateFilter(states_create_user.city))
+@error_sender
 async def cu_process_city(message: types.Message, state: FSMContext):
-    try:
-        NotImplementedError
-    except Exception as e:
-        await other.error_occured(message, e)
+    raise NotImplementedError
 
 
 @dp.message(Command("help"))
+@error_sender
 async def cmd_help(message: types.Message):
-    NotImplementedError
+    raise NotImplementedError
 
 
 @dp.message(Command("cancel"))
+@error_sender
 async def cmd_cancel(message: types.Message, state: FSMContext):
-    try:
-        current_state = await state.get_state()
-        if current_state is None:
-            return
-
-        logging.info(f"User @{message.from_user.username} canceled state {current_state}.")
-        
-        await state.clear()
-        await message.answer("Все отменили!")
-    except Exception as e:
-        await other.error_occured(message, e)
+    logging.info(f"User @{message.from_user.username} canceled state {await state.get_state()}.")
+    
+    await state.clear()
+    await message.answer("Все отменили!")
 
 
 @dp.message(StateFilter(None))   # catching all messages with "zero" condition (needs to be the last function)
+@error_sender
 async def zero_message(message: types.Message):
-    try:
-        await message.answer(message.text)
-    except Exception as e:
-        await other.error_occured(message, e)
+    await message.answer(message.text)
 
 
 def register_handlers_client(dp: Dispatcher):
