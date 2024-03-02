@@ -2,8 +2,9 @@ import asyncio
 import logging
 
 from configs import logs
-from handlers import admin, client
 from create_bot import dp, bot
+from handlers import admin, client
+from handlers.utils import send_logs
 
 
 client.register_handlers_client(dp)
@@ -22,7 +23,7 @@ async def on_startup():
 async def on_shutdown():
     logging.info("### Bot has finished working! ###")
 
-    await admin.send_logs()
+    await send_logs()
 
 dp.startup.register(on_startup)
 dp.shutdown.register(on_shutdown)

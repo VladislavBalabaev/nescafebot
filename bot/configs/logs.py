@@ -1,20 +1,18 @@
 import asyncio
 import logging
 from queue import Queue
-from pathlib import Path
 from logging import StreamHandler
 from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 
+from create_bot import logs_path
 
-path = Path('logs')
-logs_path = path / "coffee.log"
 
 console_format = logging.Formatter("%(levelname)-8s :: %(asctime)s.%(msecs)03d :: %(message)s", "%H:%M:%S")
 file_format = logging.Formatter("%(levelname)-8s :: %(name)-20s :: %(asctime)s :: %(message)s :: (%(filename)s:%(lineno)d)")
-# TODO: логгировать traceback ошибки в except
+
 
 async def init_logger():
-    path.mkdir(parents=True, exist_ok=True)
+    logs_path.parent.mkdir(parents=True, exist_ok=True)
 
     que = Queue()
 
