@@ -1,10 +1,10 @@
 from aiogram import Dispatcher
 
-from handlers.client import additional, start
+from handlers.client import commands, start_cmd
 
 
 def register_handlers_client(dp: Dispatcher):
     dp.include_routers(
-        start.router,
-        additional.router,
+        commands.router,
+        start_cmd.router,
     )
