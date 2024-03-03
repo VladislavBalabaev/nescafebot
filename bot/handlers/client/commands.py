@@ -17,21 +17,14 @@ router = Router()
 
 #     async def __call__(self, message: types.Message) -> bool:
 #         return self.text in message.text
-
-
-# class ContainNoTextFilter(Filter):
-#     def __init__(self, text: str) -> None:
-#         self.text = text
-
-#     async def __call__(self, message: types.Message) -> bool:
-#         return self.text not in message.text
+# THIS is bullshit: use F.text.lower().in_([])
 
 
 @router.message(Command("cancel"))
 @error_sender
 async def cmd_cancel(message: types.Message, state: FSMContext):
     logging.info(f"User @{message.from_user.username} canceled state {await state.get_state()}.")
-    
+
     await state.clear()
     await message.answer("Все отменили!")
 

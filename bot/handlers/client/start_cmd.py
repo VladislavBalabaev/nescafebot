@@ -49,11 +49,14 @@ async def cu_process_name(message: types.Message, state: FSMContext):           
 async def cu_process_age(message: types.Message, state: FSMContext):
     logging.info(f"User @{message.from_user.username} wrote his age: {message.text}.")
 
-    # await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
+    if message.text.isdigit():
+        # await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
 
-    await state.set_state(start_states.faculty)
+        await state.set_state(start_states.faculty)
 
-    await message.answer("Напиши свою программу в формате\n\"программа год_окончания\" (e.g. MAE 2025)")
+        await message.answer("Напиши свою программу в формате\n\"программа год_окончания\" (e.g. MAE 2025)")
+    else:
+        await message.answer("Это было не число)\nДавай заново")        
 
 
 @router.message(StateFilter(start_states.faculty))

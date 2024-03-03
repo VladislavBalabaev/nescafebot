@@ -8,6 +8,9 @@ from handlers.client import client
 from handlers.utils import send_logs
 
 
+# TODO: set commands - https://www.youtube.com/watch?v=HRAzGBdwCkw
+
+
 client.register_handlers_client(dp)
 admin.register_handlers_admin(dp)
 
