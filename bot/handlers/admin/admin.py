@@ -1,13 +1,16 @@
 import logging
-from aiogram import Dispatcher, types
+from aiogram import Dispatcher, types, Router
 from aiogram.filters.command import Command
 
 from configs.smth import ADMINS
-from create_bot import dp, logs_path
+from create_bot import logs_path
 from handlers.utils import error_sender
 
 
-@dp.message(Command("logs"))
+router = Router()
+
+
+@router.message(Command("logs"))
 @error_sender
 async def cmd_send_logs(message: types.Message):
     if message.from_user.id in ADMINS:
@@ -17,4 +20,4 @@ async def cmd_send_logs(message: types.Message):
 
 
 def register_handlers_admin(dp: Dispatcher):
-    dp.message.register(cmd_send_logs)
+    dp.include_routers(router)
