@@ -5,7 +5,7 @@ from configs import logs
 from create_bot import dp, bot
 from handlers.admin import admin
 from handlers.client import client
-from handlers.utils import send_logs, send_start
+from handlers.admin.send import send_startup, send_shutdown
 
 
 # TODO: set commands - https://www.youtube.com/watch?v=HRAzGBdwCkw
@@ -21,7 +21,7 @@ async def on_startup():
 
     logging.info("### Bot has started working! ###")
 
-    await send_start()
+    await send_startup()
     
     # db.sql_start()
 
@@ -29,7 +29,7 @@ async def on_startup():
 async def on_shutdown():
     logging.info("### Bot has finished working! ###")
 
-    await send_logs()
+    await send_shutdown()
 
 
 dp.startup.register(on_startup)
