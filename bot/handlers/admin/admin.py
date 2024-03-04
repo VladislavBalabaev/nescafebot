@@ -6,7 +6,7 @@ from aiogram import Dispatcher, types, Router
 
 from configs.admin_ids import ADMINS
 from create_bot import logs_path
-from handlers.utils.addressing_errors import error_sender
+from handlers.common.addressing_errors import error_sender
 
 
 router = Router()
