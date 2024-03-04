@@ -34,7 +34,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(start_states.name))
 @error_sender
-async def cu_process_name(message: types.Message, state: FSMContext):           # cu - create user
+async def start_name(message: types.Message, state: FSMContext):
     logging.info(f"User @{message.from_user.username} wrote his name: {message.text}.")
 
     # await state.update_data(name=message.text) # REPLACE WITH REDIS
@@ -46,7 +46,7 @@ async def cu_process_name(message: types.Message, state: FSMContext):           
 
 @router.message(StateFilter(start_states.age))
 @error_sender
-async def cu_process_age(message: types.Message, state: FSMContext):
+async def start_age(message: types.Message, state: FSMContext):
     logging.info(f"User @{message.from_user.username} wrote his age: {message.text}.")
 
     if message.text.isdigit():
@@ -61,7 +61,7 @@ async def cu_process_age(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(start_states.faculty))
 @error_sender
-async def cu_process_faculty(message: types.Message, state: FSMContext):
+async def start_faculty(message: types.Message, state: FSMContext):
     logging.info(f"User @{message.from_user.username} wrote his faculty: {message.text}.")
 
     # await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
@@ -74,11 +74,11 @@ async def cu_process_faculty(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(start_states.about))
 @error_sender
-async def cu_process_about(message: types.Message, state: FSMContext):
+async def start_about(message: types.Message, state: FSMContext):
     raise NotImplementedError
 
 
 @router.message(StateFilter(start_states.city))
 @error_sender
-async def cu_process_city(message: types.Message, state: FSMContext):
+async def start_city(message: types.Message, state: FSMContext):
     raise NotImplementedError
