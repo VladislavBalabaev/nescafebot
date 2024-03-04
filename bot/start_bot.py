@@ -3,8 +3,12 @@ import logging
 
 from configs import logs
 from create_bot import dp, bot
-from handlers import admin, client
+from handlers.admin import admin
+from handlers.client import client
 from handlers.utils import send_logs
+
+
+# TODO: set commands - https://www.youtube.com/watch?v=HRAzGBdwCkw
 
 
 client.register_handlers_client(dp)

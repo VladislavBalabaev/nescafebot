@@ -2,8 +2,8 @@ import logging
 from aiogram import types
 from functools import wraps
 
-from create_bot import bot, logs_path
 from configs.smth import ADMINS
+from create_bot import bot, logs_path
 
 
 async def error_occured(message: types.Message, e: Exception):
