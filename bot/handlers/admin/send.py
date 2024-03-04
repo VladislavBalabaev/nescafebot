@@ -1,7 +1,7 @@
 from aiogram import types
 
-from configs.selected_ids import ADMINS
 from create_bot import bot, logs_path
+from configs.selected_ids import ADMINS
 
 
 async def send_startup():

@@ -1,6 +1,6 @@
 from pathlib import Path
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 env_path = Path(".env")
