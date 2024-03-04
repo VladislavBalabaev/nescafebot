@@ -2,7 +2,7 @@ import logging
 from aiogram import types
 from functools import wraps
 
-from configs.admin_ids import ADMINS
+from configs.selected_ids import ADMINS
 from create_bot import bot
 
 
