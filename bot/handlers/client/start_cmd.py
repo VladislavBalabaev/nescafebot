@@ -6,7 +6,7 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
-from handlers.utils import error_sender
+from handlers.utils.addressing_errors import error_sender
 
 
 router = Router()

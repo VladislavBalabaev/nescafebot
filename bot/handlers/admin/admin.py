@@ -4,9 +4,9 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram import Dispatcher, types, Router
 
-from bot.configs.admin_ids import ADMINS
+from configs.admin_ids import ADMINS
 from create_bot import logs_path
-from handlers.utils import error_sender
+from handlers.utils.addressing_errors import error_sender
 
 
 router = Router()
