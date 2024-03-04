@@ -4,16 +4,16 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram import Dispatcher, types, Router
 
-from configs.smth import ADMINS
 from create_bot import logs_path
-from handlers.utils import error_sender
+from configs.selected_ids import ADMINS
+from handlers.common.addressing_errors import error_sender
 
 
 router = Router()
 
 
 class AdminFilter(Filter):
-    def __init__(self, text: str) -> None:
+    def __init__(self) -> None:
         pass
 
     async def __call__(self, message: types.Message) -> bool:

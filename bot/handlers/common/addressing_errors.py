@@ -2,8 +2,8 @@ import logging
 from aiogram import types
 from functools import wraps
 
-from configs.smth import ADMINS
-from create_bot import bot, logs_path
+from create_bot import bot
+from configs.selected_ids import ADMINS
 
 
 async def error_occured(message: types.Message, e: Exception):
@@ -30,9 +30,3 @@ def error_sender(f):
                         await error_occured(arg, e)
                         break
     return wrapper
-
-
-async def send_logs():
-    for admin in ADMINS:
-        await bot.send_message(admin, "Bot has finished working!")
-        await bot.send_document(admin, document=types.FSInputFile(logs_path))
