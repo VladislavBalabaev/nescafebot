@@ -8,8 +8,6 @@ from handlers.client import client
 from handlers.common.menu import set_commands
 from handlers.admin.send import send_startup, send_shutdown
 
-# TODO: set commands - https://www.youtube.com/watch?v=HRAzGBdwCkw
-
 
 client.register_handlers_client(dp)
 admin.register_handlers_admin(dp)
