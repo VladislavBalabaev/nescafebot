@@ -34,13 +34,22 @@ async def notify_capabilities(message: types.Message, state: FSMContext):
 @router.message(StateFilter(None), Command("add_to_blacklist"))
 @error_sender
 async def cmd_blacklist(message: types.Message, state: FSMContext):
-    raise NotImplementedError
-    logging.info(f"User @{message.from_user.username} has started to write to his blacklist.")
+    keyboard = types.InlineKeyboardMarkup()
+    keyboard.add(types.InlineKeyboardButton(text="Нажми меня", callback_data="random_value"))
+    await message.answer("Нажмите на кнопку, чтобы бот отправил число от 1 до 10", reply_markup=keyboard)
 
-    await state.set_state(blacklist_states.blacklist)
+    # raise NotImplementedError
+    # logging.info(f"User @{message.from_user.username} has started to write to his blacklist.")
 
-    await message.answer("Выбери, добавить в черный список faculty'year или конкретного человека?")
-    # TODO: add opportunity to block whole facultie'year
+    # await state.set_state(blacklist_states.blacklist)
+
+    # await message.answer("Выбери, добавить в черный список faculty'year или конкретного человека?")
+
+
+@router.callback_query_handler(text="random_value")
+async def send_random_value(call: types.CallbackQuery):
+    logging.info(f"User @{call.from_user.username} chose ")
+    await call.message.answer("LOL")
 
 
 @router.message(StateFilter(blacklist_states.choose))
