@@ -6,7 +6,7 @@ from create_bot import dp, bot
 from handlers.admin import admin
 from handlers.client import client
 from handlers.admin.send import send_startup, send_shutdown
-
+from handlers.common.menu import set_commands
 
 # TODO: set commands - https://www.youtube.com/watch?v=HRAzGBdwCkw
 
@@ -38,6 +38,8 @@ dp.shutdown.register(on_shutdown)
 
 async def main():
     try:
+        await set_commands(bot)
+
         # await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot)
     finally:
