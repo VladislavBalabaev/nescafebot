@@ -36,3 +36,8 @@ async def send_logs():
     for admin in ADMINS:
         await bot.send_message(admin, "Bot has finished working!")
         await bot.send_document(admin, document=types.FSInputFile(logs_path))
+
+
+async def send_start():
+    for admin in ADMINS:
+        await bot.send_message(admin, "Bot has started working!")
