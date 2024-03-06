@@ -35,7 +35,7 @@ async def cmd_help(message: types.Message):
     raise NotImplementedError
 
 
-@router.message(StateFilter(None), Command("see_blacklist"))
+@router.message(StateFilter(None), Command("blacklist_show"))
 @error_sender
 async def cmd_see_blacklist(message: types.Message):
     raise NotImplementedError
