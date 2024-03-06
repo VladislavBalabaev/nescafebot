@@ -13,7 +13,7 @@ Build an image:
 > \$ docker build --tag nescafebot -f Dockerfile.py .
 
 Run the image in interactive mode within a container:
-> \$ docker run -it nescafebot
+> \$ docker run -it nescafebot bash
 
 #### 1.4 Start the bot:
 > \$ python bot/start_bot.py
