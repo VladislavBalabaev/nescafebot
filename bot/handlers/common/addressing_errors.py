@@ -13,7 +13,7 @@ async def error_occured(message: types.Message, state: FSMContext, error: Except
     await message.answer("Извини, что-то пошло не так(\nМы уже получили ошибку, разберемся!\nЕсли долго не чиним, можешь написать @Madfyre и/или @vbalab по поводу бота.")
 
     for admin in ADMINS:
-        await bot.send_message(admin, f"Error, check the logs.\nUser: @{message.from_user.username}.\nState: {state.get_state()}.\nMessage: \"{message.text}\".\n----------\n\n{error.__class__.__name__ }: {error}")
+        await bot.send_message(admin, f"Error, check the logs.\nUser: @{message.from_user.username}.\nState: {await state.get_state()}.\nMessage: \"{message.text}\".\n----------\n\n{error.__class__.__name__ }: {error}")
 
 
 def error_sender(f):
