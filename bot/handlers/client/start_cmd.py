@@ -15,7 +15,7 @@ router = Router()
 class start_states(StatesGroup):
     name = State()
     age = State()
-    faculty = State()
+    program = State()
     about = State()
     city = State()
 
@@ -52,17 +52,17 @@ async def start_age(message: types.Message, state: FSMContext):
     if message.text.isdigit():
         # await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
 
-        await state.set_state(start_states.faculty)
+        await state.set_state(start_states.program)
 
         await message.answer("Напиши свою программу в формате\n\"программа год_окончания\" (e.g. MAE 2025)")
     else:
         await message.answer("Это было не число)\nДавай заново")        
 
 
-@router.message(StateFilter(start_states.faculty))
+@router.message(StateFilter(start_states.program))
 @error_sender
-async def start_faculty(message: types.Message, state: FSMContext):
-    logging.info(f"User @{message.from_user.username} wrote his faculty: {message.text}.")
+async def start_program(message: types.Message, state: FSMContext):
+    logging.info(f"User @{message.from_user.username} wrote his program: {message.text}.")
 
     # await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
 
