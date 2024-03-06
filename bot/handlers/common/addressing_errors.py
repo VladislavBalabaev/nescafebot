@@ -12,7 +12,7 @@ async def error_occured(message: types.Message, e: Exception):
     await message.answer("Извини, что-то пошло не так(\nМы уже получили ошибку, разберемся!\nЕсли долго не чиним, можешь написать @Madfyre и/или @vbalab по поводу бота.")
 
     for admin in ADMINS:
-        await bot.send_message(admin, f"Error, check the logs.\nUser: @{message.from_user.username}. Message: \"{message.text}\".\n\n{e.__class__.__name__ }: {e}")
+        await bot.send_message(admin, f"Error, check the logs.\nUser: @{message.from_user.username}. \nMessage: \"{message.text}\".\n----------\n\n{e.__class__.__name__ }: {e}")
 
 
 def error_sender(f):

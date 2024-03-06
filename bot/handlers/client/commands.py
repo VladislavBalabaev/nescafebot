@@ -35,6 +35,12 @@ async def cmd_help(message: types.Message):
     raise NotImplementedError
 
 
+@router.message(StateFilter(None), Command("blacklist_show"))
+@error_sender
+async def cmd_see_blacklist(message: types.Message):
+    raise NotImplementedError
+
+
 # @router.message(StateFilter(None))   # catching all messages with "zero" condition (needs to be the last function)
 # @error_sender
 # async def zero_message(message: types.Message):

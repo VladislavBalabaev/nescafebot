@@ -20,7 +20,7 @@ class AdminFilter(Filter):
         return message.from_user.id in ADMINS
 
 
-@router.message(StateFilter(None), Command("logs"), AdminFilter)
+@router.message(StateFilter(None), Command("logs"), AdminFilter())
 @error_sender
 async def cmd_send_logs(message: types.Message):
     logging.info(f"Admin @{message.from_user.username} asked for logs.")

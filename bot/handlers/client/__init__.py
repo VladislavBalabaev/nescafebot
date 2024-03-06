@@ -1,1 +1,1 @@
-from . import client, commands, start_cmd
+from . import client, commands, start_cmd, blacklist_cmd
