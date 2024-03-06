@@ -20,6 +20,14 @@ class AdminFilter(Filter):
         return message.from_user.id in ADMINS
 
 
+@router.message(StateFilter(None), Command("admin_commands"), AdminFilter())
+@error_sender
+async def cmd_send_logs(message: types.Message, state: FSMContext):
+    logging.info(f"Admin @{message.from_user.username} asked for his commands.")
+
+    await message.answer("""/logs\n/see_messages @tg 30\n""")
+
+
 @router.message(StateFilter(None), Command("logs"), AdminFilter())
 @error_sender
 async def cmd_send_logs(message: types.Message, state: FSMContext):
