@@ -31,13 +31,13 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(None), Command("help"))
 @error_sender
-async def cmd_help(message: types.Message):
+async def cmd_help(message: types.Message, state: FSMContext):
     raise NotImplementedError
 
 
 @router.message(StateFilter(None), Command("blacklist_show"))
 @error_sender
-async def cmd_see_blacklist(message: types.Message):
+async def cmd_see_blacklist(message: types.Message, state: FSMContext):
     raise NotImplementedError
 
 

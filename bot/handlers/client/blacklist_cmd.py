@@ -62,7 +62,7 @@ async def blacklist_select_person(message: types.Message, state: FSMContext):
     await state.set_state(blacklist_states.block_person)
 
     await message.answer(
-        "Напиши, кого добавить в чс", 
+        "Напиши, кого добавить в чс (напр., @person_tg)", 
         reply_markup=types.ReplyKeyboardRemove()
         )
 
