@@ -43,7 +43,7 @@ async def cmd_send_chat_history(message: types.Message, state: FSMContext, comma
     # logging.info(f"Admin @{message.from_user.username} ...")
 
     args = command.args.split()
-    person_tg = args[0]
+    person_tg = args[0].replace('@', '')
     n_messages = int(args[1])
 
     await message.answer(f"# @{person_tg}'s last {n_messages} messages: #")
