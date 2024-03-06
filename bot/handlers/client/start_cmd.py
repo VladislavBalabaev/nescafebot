@@ -25,6 +25,8 @@ class start_states(StatesGroup):
 async def cmd_start(message: types.Message, state: FSMContext):
     logging.info(f"User @{message.from_user.username} has started dialog.")
 
+    # TODO: Supply message.from_user.username, message.from_user.id, message.chat.id to REDIS if they are not in there by definition
+    
     await state.set_state(start_states.name)
 
     await message.answer("Привет!\nМы - там-то там-то, хотим то-то то-то.\nСейчас ты то-то то-то, давай начнем.")
@@ -37,7 +39,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 async def start_name(message: types.Message, state: FSMContext):
     logging.info(f"User @{message.from_user.username} wrote his name: {message.text}.")
 
-    # await state.update_data(name=message.text) # REPLACE WITH REDIS
+    # TODO: await state.update_data(name=message.text) # REPLACE WITH REDIS
 
     await state.set_state(start_states.age)
 
@@ -50,7 +52,7 @@ async def start_age(message: types.Message, state: FSMContext):
     logging.info(f"User @{message.from_user.username} wrote his age: {message.text}.")
 
     if message.text.isdigit():
-        # await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
+        # TODO: await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
 
         await state.set_state(start_states.program)
 
@@ -64,7 +66,7 @@ async def start_age(message: types.Message, state: FSMContext):
 async def start_program(message: types.Message, state: FSMContext):
     logging.info(f"User @{message.from_user.username} wrote his program: {message.text}.")
 
-    # await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
+    # TODO: await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
 
     await state.set_state(start_states.about)
 
