@@ -1,6 +1,7 @@
 from aiogram import types
 
-from create_bot import bot, logs_path
+from create_bot import bot
+from configs.logs import logs_path
 from configs.selected_ids import ADMINS
 
 
