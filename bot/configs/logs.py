@@ -4,8 +4,10 @@ from queue import Queue
 from logging import StreamHandler
 from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 
-from create_bot import logs_path
+from .env_reader import bot_path
 
+
+logs_path = bot_path / "logs" / "coffee.log"
 
 console_format = logging.Formatter("%(levelname)-8s :: %(asctime)s.%(msecs)03d :: %(message)s", "%H:%M:%S")
 file_format = logging.Formatter("%(levelname)-8s :: %(name)-20s :: %(asctime)s :: %(message)s :: (%(filename)s:%(lineno)d)")

@@ -5,7 +5,8 @@ from aiogram.filters.state import StateFilter
 from aiogram import Dispatcher, types, Router
 from aiogram.filters.command import Command, CommandObject
 
-from create_bot import logs_path, bot
+from create_bot import bot
+from configs.logs import logs_path
 from configs.selected_ids import ADMINS
 from handlers.common.addressing_errors import error_sender
 
@@ -43,7 +44,7 @@ async def cmd_send_chat_history(message: types.Message, state: FSMContext, comma
     # logging.info(f"Admin @{message.from_user.username} ...")
 
     args = command.args.split()
-    person_tg = args[0]
+    person_tg = args[0].replace('@', '')
     n_messages = int(args[1])
 
     await message.answer(f"# @{person_tg}'s last {n_messages} messages: #")
