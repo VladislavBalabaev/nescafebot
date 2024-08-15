@@ -3,7 +3,7 @@ from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-bot_path = Path(__file__).resolve().parent
+bot_path = Path(__file__).resolve().parent.parent
 
 env_path = bot_path.parent / ".env"
 

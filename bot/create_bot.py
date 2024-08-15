@@ -1,5 +1,3 @@
-import os
-from pathlib import Path
 from aiogram import Bot, Dispatcher
 
 from configs.env_reader import config
