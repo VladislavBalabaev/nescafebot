@@ -3,7 +3,7 @@ import secrets
 import pandas as pd
 from collections import defaultdict
 
-from emojis import distinct_emoji_list
+from .emojis import distinct_emoji_list
 
 
 def uniform_blacklist_matching(blacklists):

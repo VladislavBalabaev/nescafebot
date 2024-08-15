@@ -2,8 +2,8 @@ import pandas as pd
 from aiogram import types
 
 from create_bot import bot
-from bot.handlers.admin.matching.assignment import match
 from configs.logs import logs_path
+from .matching.assignment import match
 from configs.selected_ids import ADMINS
 
 
@@ -23,10 +23,7 @@ async def send_matching():
     matched = matched.set_index("user")
 
     for user in matched:
-        await bot.send_message(
-            user,
-            f"Привет!\nТвой смайл - {matched.loc[user, 'smile']}",
-        )
+        await bot.send_message(user, "Привет!\nТвой смайл - {matched.loc[user, 'smile']}",)
 
         n = len(matched.loc[user, "assignments"])
 

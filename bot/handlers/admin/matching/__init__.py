@@ -1,1 +1,1 @@
-from . import emojis
+from . import emojis, assignment
