@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import aioredis
 
 from configs import logs
 from create_bot import dp, bot
@@ -7,13 +8,14 @@ from handlers.admin import admin
 from handlers.client import client
 from handlers.common.menu import set_commands
 from handlers.admin.send import send_startup, send_shutdown
+from redis_connection import connect_to_redis
 
 
 client.register_handlers_client(dp)
 admin.register_handlers_admin(dp)
 
-
 async def on_startup():
+    await connect_to_redis()
     _ = asyncio.create_task(logs.init_logger())
     await asyncio.sleep(0)
 
