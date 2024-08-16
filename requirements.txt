@@ -1,5 +1,7 @@
+redis==5.0.2
 emoji==2.12.1
 pandas==2.2.2
 aiogram==3.3.0
 asyncio==3.4.3
+aioredis==2.0.1
 pydantic-settings==2.2.1
