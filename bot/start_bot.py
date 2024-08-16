@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import aioredis
 
 from configs import logs
 from create_bot import dp, bot
@@ -11,10 +10,6 @@ from handlers.common.menu import set_commands
 from handlers.admin.send import send_startup, send_shutdown
 
 
-client.register_handlers_client(dp)
-admin.register_handlers_admin(dp)
-
-
 async def on_startup():
     await connect_to_redis()
     _ = asyncio.create_task(logs.init_logger())
@@ -23,7 +18,7 @@ async def on_startup():
     logging.info("### Bot has started working! ###")
 
     await send_startup()
-    
+
     # db.sql_start()
 
 
