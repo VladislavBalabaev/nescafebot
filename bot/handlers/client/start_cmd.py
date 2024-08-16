@@ -28,7 +28,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     await redis_con.hset(f"{message.from_user.id}", mapping={
         "username": message.from_user.username,
-        "text": "hui"
+        "text": ""
     })
 
     # TODO: Supply message.from_user.username, message.from_user.id, message.chat.id to REDIS if they are not in there by definition

@@ -15,12 +15,18 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
 
   tg_bot:
+    build:
+      context: ./
+      dockerfile: Dockerfile.py
     image: nescafebot
     container_name: tg_bot
     networks:
       - redis_network
     ports:
       - "79:8888"
+    command: bash
+    tty: true
+    stdin_open: true
 
 networks:
   redis_network:
