@@ -14,7 +14,7 @@ Build an image:
 > \$ docker compose up --build --detach
 
 Run the image in interactive mode within a container:
-> \$ docker run -it tg_bot bash
+> \$ docker exec -it tg_bot bash
 
 #### 1.3. Start the bot:
 > \$ python bot/start_bot.py
