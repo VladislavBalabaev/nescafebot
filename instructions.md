@@ -5,19 +5,21 @@
 > \> REDIS_PASSWORD = "_token_"
 > \> REDIS_ABSOLUTE_PATH = "_token_"
 
+
 #### 1.2. Run docker compose:
 First, start docker:
 > \$ sudo systemctl start docker
-
-(At this stage you should be in directory with compose.yaml [use 'cd'])   
-Build an image:
+   
+Docker compose images and network between them:
 > \$ docker compose up --build --detach
 
-Run the image in interactive mode within a container:
-> \$ docker exec -it tg_bot bash
 
 #### 1.3. Start the bot:
+Enter running container of bot in interactive mode:
+> \$ docker exec -it tg_bot bash
+
 > \$ python bot/start_bot.py
+
 
 #### 1.4. Finish work:
 To exit the container:
