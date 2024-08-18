@@ -5,13 +5,12 @@ from configs import logs
 from create_bot import dp, bot
 from handlers.admin import admin
 from handlers.client import client
-from redis_connection import connect_to_redis
+from bot.db.connect import redis_con
 from handlers.common.menu import set_commands
 from handlers.admin.send import send_startup, send_shutdown
 
 
 async def on_startup():
-    await connect_to_redis()
     _ = asyncio.create_task(logs.init_logger())
     await asyncio.sleep(0)
 
@@ -19,13 +18,13 @@ async def on_startup():
 
     await send_startup()
 
-    # db.sql_start()
-
 
 async def on_shutdown():
+    await send_shutdown()
     logging.info("### Bot has finished working! ###")
 
-    await send_shutdown()
+    await redis_con.close()
+    logging.info("### Redis has finished working! ###")
 
 
 async def main():
