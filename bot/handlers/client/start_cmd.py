@@ -6,9 +6,10 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
+from bot.db.connect import redis_con
 from handlers.common.addressing_errors import error_sender
 
-
+## check for docker composer
 router = Router()
 
 
@@ -24,6 +25,14 @@ class start_states(StatesGroup):
 @error_sender
 async def cmd_start(message: types.Message, state: FSMContext):
     logging.info(f"User @{message.from_user.username} has started dialog.")
+
+    await redis_con.hset(f"{message.from_user.id}", mapping={
+        "username": message.from_user.username,
+        "text": "hui"
+    })
+
+    result = await redis_con.hgetall(message.from_user.id)
+    print(result)
 
     # TODO: Supply message.from_user.username, message.from_user.id, message.chat.id to REDIS if they are not in there by definition
     
