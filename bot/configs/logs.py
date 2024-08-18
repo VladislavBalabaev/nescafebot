@@ -33,7 +33,6 @@ async def init_logger():
     listener = QueueListener(que, console_handler, file_handler)
 
     try:
-        logging.debug(f'Logger is being started.')
         listener.start()
         logging.debug(f'Logger has been started.')
 
