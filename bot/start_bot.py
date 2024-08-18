@@ -5,7 +5,7 @@ from configs import logs
 from create_bot import dp, bot
 from handlers.admin import admin
 from handlers.client import client
-from bot.db.connect import redis_con
+from db.connect import redis_con
 from handlers.common.menu import set_commands
 from handlers.admin.send import send_startup, send_shutdown
 

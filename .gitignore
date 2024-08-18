@@ -4,4 +4,4 @@ additional
 *__pycache__
 logs
 .env
-hidden_instructions_redis.md
+restart.sh

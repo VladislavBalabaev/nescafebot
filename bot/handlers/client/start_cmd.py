@@ -6,10 +6,10 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
-from bot.db.connect import redis_con
+from db.connect import redis_con
 from handlers.common.addressing_errors import error_sender
 
-## check for docker composer
+
 router = Router()
 
 
