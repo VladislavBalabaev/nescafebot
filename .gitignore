@@ -2,7 +2,6 @@
 venv*
 additional
 *__pycache__
-logs
+data
 .env
 restart.sh
-data/users
