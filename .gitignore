@@ -5,3 +5,4 @@ additional
 logs
 .env
 restart.sh
+data/users

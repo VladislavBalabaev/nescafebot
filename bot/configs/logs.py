@@ -7,10 +7,7 @@ from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 from .env_reader import bot_path
 
 
-logs_path = bot_path / "logs" / "coffee.log"
-
-console_format = logging.Formatter("%(levelname)-8s :: %(asctime)s.%(msecs)03d :: %(message)s", "%H:%M:%S")
-file_format = logging.Formatter("%(levelname)-8s :: %(name)-20s :: %(asctime)s :: %(message)s :: (%(filename)s:%(lineno)d)")
+logs_path = bot_path / "data" / "logs" / "coffee.log"
 
 
 async def init_logger():
@@ -22,10 +19,14 @@ async def init_logger():
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(QueueHandler(que))
 
+
+    console_format = logging.Formatter("%(levelname)-8s :: %(asctime)s.%(msecs)03d :: %(message)s", "%H:%M:%S")
     console_handler = StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(console_format)
 
+
+    file_format = logging.Formatter("%(levelname)-8s :: %(name)-20s :: %(asctime)s :: %(message)s :: (%(filename)s:%(lineno)d)")
     file_handler = RotatingFileHandler(logs_path)
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(file_format)
