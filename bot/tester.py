@@ -13,7 +13,9 @@ async def connect_to_redis():
 
 async def main():
     await connect_to_redis()
-    await redis_con.hset("hash", mapping={"key1": "value1", "key2": "value2", "key3": 123})
+    print("Print arg1 arg2 arg3")
+    args = input().split(" ")
+    await redis_con.hset("hash", mapping={"key1": args[0], "key2": args[1], "key3": args[2]})
     result = await redis_con.hgetall("hash")
     print(result)
 
