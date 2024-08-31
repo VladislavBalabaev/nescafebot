@@ -5,3 +5,4 @@ aiogram==3.3.0
 asyncio==3.4.3
 aioredis==2.0.1
 pydantic-settings==2.2.1
+motor==3.5.1

@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     REDIS_PASSWORD: SecretStr
     NESCAFEBOT_TOKEN: SecretStr
     REDIS_ABSOLUTE_PATH: SecretStr
+    MONGODB_USERNAME: SecretStr
+    MONGODB_PASSWORD: SecretStr
 
     model_config: SettingsConfigDict = SettingsConfigDict(
         env_file=env_path,
