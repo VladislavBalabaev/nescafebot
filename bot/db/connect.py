@@ -1,4 +1,5 @@
 import aioredis
+import asyncio
 
 from configs.env_reader import config
 

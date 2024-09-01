@@ -6,6 +6,5 @@ docker compose stop
 docker compose down
 
 docker compose up --build -d
-# docker exec tg_bot bash -c "python bot/tester.py"
-docker exec tg_bot bash -c "python bot/tester_for_mongoDB.py"
+docker exec -it tg_bot bash
 # docker exec -it tg_bot bash

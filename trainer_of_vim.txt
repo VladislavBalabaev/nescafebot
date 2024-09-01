@@ -1,0 +1,21 @@
+import asyncio
+
+async def main():
+	return "Hello World!"
+
+async def text():
+	print("Displaying line numbers under vi / vim can be very useful for debugging
+	program errors and to improve overall readability of a program or scripts. Vim
+	is very popular among software developers, system administrators and Linux/Unix/macOS
+	users but lines are not displayed by default. In this tutorial, you will learn
+	how to display or hide line numbers in Vim / Vi text editor running on Linux/Unix
+	based systems.")
+
+	print("How do I display vi / vim text editor line numbers while writing a shell
+	script or c program? How can I turn on or off this feature on a Linux, Apple OS
+	X/macOS, or Unix-like operating systems? How cah I make the vi text editor display
+	or hide line numbers? How can I enable line numbers on vim startup by editing the
+	~/.vimrc config file?")
+
+if __name__ == "__main__":
+	asyncio.run(main())

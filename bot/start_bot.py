@@ -23,8 +23,8 @@ async def on_shutdown():
     await send_shutdown()
     logging.info("### Bot has finished working! ###")
 
-    await connect_to_redis_users.close()
-    await connect_to_redis_messages.close()
+    await connect_to_redis_users().close()
+    await connect_to_redis_messages().close()
     logging.info("### Redis has finished working! ###")
 
 
