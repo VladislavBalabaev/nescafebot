@@ -5,9 +5,9 @@ from configs import logs
 from create_bot import dp, bot
 from handlers.admin import admin
 from handlers.client import client
-from db.connect import redis_con
 from handlers.common.menu import set_commands
 from handlers.admin.send import send_startup, send_shutdown
+from db.connect import connect_to_redis_users, connect_to_redis_messages
 
 
 async def on_startup():
@@ -23,7 +23,8 @@ async def on_shutdown():
     await send_shutdown()
     logging.info("### Bot has finished working! ###")
 
-    await redis_con.close()
+    await connect_to_redis_users.close()
+    await connect_to_redis_messages.close()
     logging.info("### Redis has finished working! ###")
 
 

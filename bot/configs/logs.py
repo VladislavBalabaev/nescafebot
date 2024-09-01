@@ -9,10 +9,10 @@ from .env_reader import bot_path
 
 logs_path = bot_path / "data" / "logs" / "coffee.log"
 
+logs_path.parent.mkdir(parents=True, exist_ok=True)
+
 
 async def init_logger():
-    logs_path.parent.mkdir(parents=True, exist_ok=True)
-
     que = Queue()
 
     root_logger = logging.getLogger()
