@@ -2,6 +2,6 @@
 venv*
 additional
 *__pycache__
-logs
+data
 .env
-hidden_instructions_redis.md
+restart.sh

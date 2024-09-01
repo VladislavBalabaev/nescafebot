@@ -20,6 +20,15 @@ Enter running container of bot in interactive mode:
 
 > \$ python bot/start_bot.py
 
+If the bot takes forever to launch:
+
+1) check if your proxies are correct
+> \$ env | grep -i proxy
+
+2) check if you have access to telegram's API:
+> \$ curl -I https://api.telegram.org
+> \$ ping api.telegram.org
+
 
 #### 1.4. Finish work:
 To exit the container:
@@ -27,3 +36,7 @@ To exit the container:
 
 > \$ docker compose stop
 > \$ docker compose down
+
+
+#### If you use VPN:
+In compose.yaml comment out network settings and bring back **network_mode: 'host'**.
