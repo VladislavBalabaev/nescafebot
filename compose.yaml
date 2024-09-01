@@ -1,9 +1,8 @@
-version: '3.8'
-
 services:
   redis_DB:
     image: redis
     container_name: redis_DB
+    # network_mode: host
     networks:
       - redis_network
     ports:
@@ -18,8 +17,10 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.py
+      # network: host
     image: nescafebot
     container_name: tg_bot
+    # network_mode: host
     networks:
       - redis_network
     ports:
