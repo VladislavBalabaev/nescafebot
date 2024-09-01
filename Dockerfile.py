@@ -3,7 +3,7 @@ FROM python:3.10.13-bullseye
 WORKDIR /usr/src/app
 
 RUN apt-get update
-RUN apt-get install nano
+RUN apt-get install -y nano iputils-ping
 
 COPY requirements.txt ./
 RUN python -m pip cache purge

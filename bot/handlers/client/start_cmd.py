@@ -6,10 +6,10 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
-from bot.db.connect import redis_con
 from handlers.common.addressing_errors import error_sender
+from db.structure import user_get, user_set, user_recieve_msg, user_sent_msg
 
-## check for docker composer
+
 router = Router()
 
 
@@ -26,21 +26,24 @@ class start_states(StatesGroup):
 async def cmd_start(message: types.Message, state: FSMContext):
     logging.info(f"User @{message.from_user.username} has started dialog.")
 
-    await redis_con.hset(f"{message.from_user.id}", mapping={
-        "username": message.from_user.username,
-        "text": "hui"
-    })
+    await user_set(message.from_user.id)
+    await user_set(message.from_user.id, ["user_id"], message.from_user.id)
+    await user_set(message.from_user.id, ["chat_id"], message.chat.id)
+    await user_set(message.from_user.id, ["info", "full_name"], message.from_user.full_name)
+    await user_set(message.from_user.id, ["info", "username"], message.from_user.username)
 
-    result = await redis_con.hgetall(message.from_user.id)
-    print(result)
+    user_sent_msg(message,
+                   "Привет!\nМы - там-то там-то, хотим то-то то-то.\nСейчас ты то-то то-то, давай начнем.")
 
-    # TODO: Supply message.from_user.username, message.from_user.id, message.chat.id to REDIS if they are not in there by definition
-    
+    await asyncio.sleep(1)
+
+    user_sent_msg(message.from_user.id, "Как тебя зовут?")
+
     await state.set_state(start_states.name)
 
-    await message.answer("Привет!\nМы - там-то там-то, хотим то-то то-то.\nСейчас ты то-то то-то, давай начнем.")
-    await asyncio.sleep(1)
-    await message.answer("Напиши свою фамилию и имя")
+
+    data = await user_get(message.from_user.id)
+    print(data)
 
 
 @router.message(StateFilter(start_states.name))

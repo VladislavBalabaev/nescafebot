@@ -1,1 +1,1 @@
-from . import connect
+from . import connect, structure
