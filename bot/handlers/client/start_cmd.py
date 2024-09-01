@@ -37,7 +37,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     await asyncio.sleep(1)
 
-    user_sent_msg(message.from_user.id, "Как тебя зовут?")
+    await user_sent_msg(message, "Как тебя зовут?")
 
     await state.set_state(start_states.name)
 

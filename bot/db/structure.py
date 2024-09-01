@@ -71,9 +71,10 @@ async def user_set(user_id, path: list = None, value: str = None):
 
 async def user_sent_msg(message, text: str = None):
     messages = await redis_users.get(str(message.from_user.id))
+    print(messages)
     messages = json.loads(messages)
 
-    messages.append({
+    messages[str(message.from_user.id)].append({
         "side": "bot",
         "datetime": datetime.now(),
         "message": text,
