@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     REDIS_PASSWORD: SecretStr
     NESCAFEBOT_TOKEN: SecretStr
     REDIS_ABSOLUTE_PATH: SecretStr
+    ABSOLUTE_PATH_MONGODB: SecretStr
     MONGODB_USERNAME: SecretStr
     MONGODB_PASSWORD: SecretStr
 

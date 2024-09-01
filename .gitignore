@@ -1,7 +1,14 @@
 .vscode
 venv*
+.venv
 additional
 *__pycache__
 data
+mongoDB
 .env
+bot/sample_email_sender.py
+bot/tester.py
+bot/tester_for_mongoDB.py
+dumping.py
 restart.sh
+compose.yaml
