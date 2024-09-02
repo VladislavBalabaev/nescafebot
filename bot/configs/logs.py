@@ -20,6 +20,10 @@ async def init_logger():
     root_logger.addHandler(QueueHandler(que))
 
 
+    pymongo_logger = logging.getLogger('pymongo')
+    pymongo_logger.setLevel(logging.INFO)
+
+
     console_format = logging.Formatter("%(levelname)-8s :: %(asctime)s.%(msecs)03d :: %(message)s", "%H:%M:%S")
     console_handler = StreamHandler()
     console_handler.setLevel(logging.INFO)

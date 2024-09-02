@@ -1,113 +1,117 @@
-# import json
-# import operator
-# from datetime import datetime
-# from functools import reduce
+import logging
+from aiogram import types
+from datetime import datetime
 
-# from db.connect import .
-
-
-# user_structure = {
-#     "user_id": "",
-#     "chat_id": "",
-#     "info": {
-#         "full_name": "",            # his name in tg
-#         "username": "",             # his tg tag
-#         "name": "",                 # how he calls himself in bot
-#         "email": "",
-#         "age": "",
-#         "program": {
-#             "year": "",
-#             "name": "",
-#             },
-#         "about": "",
-#     },
-#     "messages": [],
-#     "blacklist": {
-#         "users": [],                # of user_ids 
-#         "programs": []
-#         },
-# }
+from create_bot import bot
+from .connect import get_mongo_users
 
 
-# def dict_get(data_dict, path):
-#     """Access a nested object in data_dict by item sequence."""
-#     return reduce(operator.getitem, path, data_dict)
+async def create_user(user_id: str, chat_id: str, full_name: str, username: str):
+    mongo_users = get_mongo_users()
+
+    user_structure = {
+        "_id": user_id,
+        "chat_id": chat_id,
+        "info": {
+            "full_name": full_name,             # his name in tg
+            "username": username,               # his tg tag
+            "email": "",
+            "age": "",
+            "program": {
+                "year": "",
+                "name": "",
+                },
+            "about": "",
+        },
+        "blacklist": {
+            "users": [],                        # of user_ids 
+            "programs": []
+            },
+        "messages": [],
+    }
+
+    await mongo_users.insert_one(user_structure)
+
+    logging.info(f"user_id '{user_id}' -:- was added to DB.")
+
+    return
 
 
-# def dict_set(data_dict, path, value):
-#     """Set a value in a nested object in data_dict by item sequence."""
-#     dict_get(data_dict, path[:-1])[path[-1]] = value
+async def update_user(user_id: str, keys_values: dict):
+    mongo_users = get_mongo_users()
+
+    filter = {"_id": user_id}
+    newvalues = { "$set": keys_values}
+
+    await mongo_users.update_one(filter, newvalues)
+
+    logging.info(f"user_id '{user_id}' -:- values for {list(newvalues.keys())} were updated in DB.")
+
+    return
 
 
-# # def dict_del(data_dict, path):
-# #     """Delete a key-value in a nested object in data_dict by item sequence."""
-# #     del dict_get(data_dict, path[:-1])[path[-1]]
+async def find_user(user_id: str, keys: list = []):
+    mongo_users = get_mongo_users()
+
+    keys = {k: 1 for k in keys}
+
+    if keys:
+        user = await mongo_users.find_one({"_id": user_id}, keys)
+    else:
+        user = await mongo_users.find_one({"_id": user_id})
+
+    return user
 
 
-# async def user_get(user_id, path = None):
-#     data = await redis_users.get(str(user_id))
-#     data = json.loads(data)
+async def delete_user(user_id: str):
+    mongo_users = get_mongo_users()
+    
+    await mongo_users.delete_one({"_id": user_id})
 
-#     if path:
-#         return dict_get(data, path)
-#     else:
-#         return data
+    return
 
 
-# async def user_set(user_id, path: list = None, value: str = None):
-#     if path:
-#         data = await redis_users.get(str(user_id))
-#         data = json.loads(data)
+async def delete_all_users():
+    mongo_users = get_mongo_users()
+    
+    await mongo_users.delete_many({})
 
-#         dict_set(data, path, str(value))
-#     else:
-#         data = user_structure
-
-#     data = json.dumps(data)
-#     await redis_users.set(str(user_id), data)
-
-#     return
+    return
 
 
-# async def user_sent_msg(message, text: str = None):
-#     messages = await redis_users.get(str(message.from_user.id))
-#     print(messages)
-#     messages = json.loads(messages)
+async def send_msg_user(user_id: str, text: str = None):
+    messages = await find_user(user_id, ["messages"])
+    messages = messages["messages"]
 
-#     messages[str(message.from_user.id)].append({
-#         "side": "bot",
-#         "datetime": datetime.now(),
-#         "message": text,
-#     })
+    messages.append({
+        "side": "bot",
+        "datetime": str(datetime.now()),
+        "message": text,
+    })
 
+    await update_user(user_id, {"messages": messages})
 
-#     messages = json.dumps(messages)
-#     await user_set(str(message.from_user.id), ["messages"], messages)
+    await bot.send_message(user_id, text,)
 
-#     await message.answer(text)
-
-#     return
+    return
 
 
-# async def user_recieve_msg(message, text: str = None):
-#     messages = await redis_users.get(str(message.from_user.id))
-#     messages = json.loads(messages)
+async def recieve_msg_user(message: types.Message):
+    user_id = message.from_user.id
 
-#     messages.append({
-#         "side": "user",
-#         "datetime": datetime.now(),
-#         "message": text,
-#     })
+    messages = await find_user(user_id, ["messages"])
+    messages = messages["messages"]
 
-#     messages = json.dumps(messages)
-#     await user_set(str(message.from_user.id), ["messages"], messages)
+    messages.append({
+        "side": "user",
+        "datetime": str(datetime.now()),
+        "message": message.text,
+    })
 
-#     return
+    await update_user(user_id, {"messages": messages})
 
-
-# def save_redis_data():
-#     ...
+    return
 
 
-# def program_to_users(program: str = "MAE'25"):
-#     ...
+def program_to_users(program: str = "MAE'25"):
+    ...
