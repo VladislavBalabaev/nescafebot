@@ -1,5 +1,4 @@
 import logging
-import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from configs.env_reader import config

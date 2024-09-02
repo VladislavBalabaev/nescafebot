@@ -1,5 +1,4 @@
 import asyncio
-import logging
 
 from configs import logs
 from create_bot import dp, bot
