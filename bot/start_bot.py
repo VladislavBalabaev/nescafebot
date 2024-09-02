@@ -14,20 +14,14 @@ async def on_startup():
     _ = asyncio.create_task(logs.init_logger())
     await asyncio.sleep(0)
 
-
     await setup_mongo_connection()
-    logging.info("### MongoDB has started working! ###")
-
     await send_startup()
-    logging.info("### Bot has started working! ###")
 
 
 async def on_shutdown():
     await send_shutdown()
-    logging.info("### Bot has finished working! ###")
 
     close_mongo_connection()
-    logging.info("### MongoDB has finished working! ###")
 
 
 async def main():
