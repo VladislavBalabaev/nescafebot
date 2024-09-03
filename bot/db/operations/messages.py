@@ -35,7 +35,7 @@ async def delete_messages(user_id: str):
 
 
 async def send_msg_user(user_id: str, text: str = None):
-    logging.info(f"user_id '{user_id}' received text: '{repr(text)}'")
+    logging.info(f"user_id '{user_id}' received text: {repr(text)}")
 
     messages = await find_messages(user_id)
 
@@ -54,8 +54,7 @@ async def send_msg_user(user_id: str, text: str = None):
 
 async def recieve_msg_user(message: types.Message):
     user_id = message.from_user.id
-
-    logging.info(f"user_id '{user_id}' texted: '{repr(message.text)}'")
+    logging.info(f"user_id '{user_id}'        texted: {repr(message.text)}")
 
     messages = await find_messages(user_id)
 

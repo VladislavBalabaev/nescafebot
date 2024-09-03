@@ -1,5 +1,7 @@
 import logging
+from aiogram import types
 
+from .users import update_user, find_user
 from ..connect import get_mongo_users, get_mongo_messages
 
 
@@ -17,8 +19,8 @@ async def create_user(user_id: str, chat_id: str, full_name: str, username: str)
             "written_name": "",                 # what was written in tg bot by user in /start
             "age": "",
             "program": {
-                "year": "",
                 "name": "",
+                "year": "",
                 },
             "about": "",
         },
@@ -37,6 +39,32 @@ async def create_user(user_id: str, chat_id: str, full_name: str, username: str)
     await mongo_messages.insert_one(messages_structure)
 
     logging.info(f"user_id '{user_id}' -:- was added to DB.")
+
+    return
+
+
+async def create_or_update_on_start(message: types.Message):
+    user_id = message.from_user.id
+
+    data = await find_user(user_id, ["_id"])
+
+    if data:
+        to_update = {
+        "chat_id": str(message.chat.id),
+        "info": {
+            "full_name": str(message.from_user.full_name),
+            "username": str(message.from_user.username),
+            }
+        }
+
+        await update_user(user_id, to_update)
+    else:
+        await create_user(
+            user_id=user_id,
+            chat_id=message.chat.id,
+            full_name=message.from_user.full_name,
+            username=message.from_user.username,
+            )
 
     return
 

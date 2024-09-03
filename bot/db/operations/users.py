@@ -11,7 +11,7 @@ async def update_user(user_id: str, keys_values: dict):
 
     await mongo_users.update_one(filter, newvalues)
 
-    logging.info(f"user_id '{user_id}' -:- values for {list(newvalues.keys())} were updated in DB.")
+    logging.info(f"user_id '{user_id}' {list(newvalues['$set'].keys())} were updated in DB.")
 
     return
 
