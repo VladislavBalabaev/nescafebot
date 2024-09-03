@@ -6,8 +6,10 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
+from db.operations.create import create_user
+from db.operations.users import update_user, find_user
 from handlers.common.addressing_errors import error_sender
-from db.structure import create_user, update_user, find_user, send_msg_user, recieve_msg_user, delete_all_users
+from db.operations.messages import send_msg_user, recieve_msg_user
 
 
 router = Router()
@@ -50,48 +52,60 @@ async def create_or_update_on_start(message: types.Message):
 @router.message(StateFilter(None), Command("start"))
 @error_sender
 async def cmd_start(message: types.Message, state: FSMContext):
-    logging.info(f"user_id '{message.from_user.id}' -:- typed /start.")
-
-    await delete_all_users()
+    # await delete_everithing()
     await create_or_update_on_start(message)
 
-    await send_msg_user(message.from_user.id, "Привет!\nМы - там-то там-то, хотим то-то то-то.\nСейчас ты то-то то-то, давай начнем.")
+    await recieve_msg_user(message)
+
+    await send_msg_user(message.from_user.id, 
+                        "Привет!\nМы - там-то там-то, хотим то-то то-то.\nСейчас ты то-то то-то, давай начнем.")
 
     await asyncio.sleep(1)
-    await send_msg_user(message.from_user.id, "Как тебя зовут?")
+    await send_msg_user(message.from_user.id, 
+                        "Как тебя зовут?")
 
     await state.set_state(start_states.name)
 
 
-    data = await find_user(message.from_user.id)
-    print(data)
+    # data = await find_user(message.from_user.id)
+    # print(data)
 
 
 @router.message(StateFilter(start_states.name))
 @error_sender
 async def start_name(message: types.Message, state: FSMContext):
-    logging.info(f"User @{message.from_user.username} wrote his name: {message.text}.")
+    await recieve_msg_user(message)
 
-    # TODO: await state.update_data(name=message.text) # REPLACE WITH REDIS
+    if len(message.text) < 50:
+        await update_user(message.from_user.id, {"info": {"written_name": message.text}})
 
-    await state.set_state(start_states.age)
+        await send_msg_user(message.from_user.id, 
+                            "Сколько тебе лет?")
 
-    await message.answer("Сколько тебе лет?")
+        await state.set_state(start_states.age)
+    else:
+        await send_msg_user(message.from_user.id, 
+                            "Слишком длинное имя)\nДавай заново")
 
 
 @router.message(StateFilter(start_states.age))
 @error_sender
 async def start_age(message: types.Message, state: FSMContext):
-    logging.info(f"User @{message.from_user.username} wrote his age: {message.text}.")
+    await recieve_msg_user(message)
 
     if message.text.isdigit():
-        # TODO: await state.update_data(name=int(message.text)) # REPLACE WITH REDIS
+        await update_user(message.from_user.id, {"info": {"age": message.text}})
+
+        await send_msg_user(message.from_user.id, 
+                            "Напиши свою программу в формате\n\"программа год_окончания\" (e.g. MAE 2025)")
 
         await state.set_state(start_states.program)
-
-        await message.answer("Напиши свою программу в формате\n\"программа год_окончания\" (e.g. MAE 2025)")
     else:
-        await message.answer("Это было не число)\nДавай заново")        
+        await send_msg_user(message.from_user.id, 
+                            "Это было не число)\nДавай заново")
+
+    data = await find_user(message.from_user.id)
+    print(data)
 
 
 @router.message(StateFilter(start_states.program))
