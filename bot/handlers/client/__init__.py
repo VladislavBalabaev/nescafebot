@@ -1,1 +1,2 @@
-from . import client, commands, start_cmd, blacklist_cmd
+from .commands import blacklist, other, start
+from . import client

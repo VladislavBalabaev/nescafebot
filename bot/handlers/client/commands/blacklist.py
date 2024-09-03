@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
