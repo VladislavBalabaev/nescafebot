@@ -3,9 +3,12 @@ from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-bot_path = Path(__file__).resolve().parent.parent.parent
+BOT_DIR = Path(__file__).resolve().parent.parent.parent
 
-env_path = bot_path / ".env"
+TEMP_DIR = BOT_DIR / "data" / "temporary"
+TEMP_DIR.mkdir(parents=True, exist_ok=True)
+
+env_path = BOT_DIR / ".env"
 
 
 class Settings(BaseSettings):
