@@ -5,6 +5,7 @@
 > \> MONGODB_USERNAME = "..."  
 > \> MONGODB_PASSWORD = "..."  
 > \> MONGODB_ABSOLUTE_PATH = "/../"  
+> \> EMAIL_PASSWORD = "..."  
 
 
 #### 1.2. Run docker compose:
@@ -12,13 +13,9 @@ First, start docker:
 > \$ sudo systemctl start docker
    
 Docker compose images and network between them:
-> \$ docker compose build  
+> \$ docker compose build #--no-cache 
 > \$ docker compose up --detach
 
-(OR:
-> \$ docker compose build --no-cache
-
-)
 
 #### 1.3. Start the bot:
 Enter running container of bot in interactive mode:
