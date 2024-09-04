@@ -8,12 +8,15 @@ from configs.selected_ids import ADMINS
 
 
 async def error_occured(message: types.Message, state: FSMContext, error: Exception):
+    if state is not None:
+        state = await state.get_state()
+
     logging.exception("The traceback of the ERROR:")
 
     await message.answer("Извини, что-то пошло не так(\nМы уже получили ошибку, разберемся!\n\nЕсли долго не чиним, можешь написать @Madfyre и/или @vbalab по поводу бота.")
 
     for admin in ADMINS:
-        await bot.send_message(admin, f"Error, check the logs.\nUser: @{message.from_user.username}.\nState: {await state.get_state()}.\nMessage: \"{message.text}\".\n----------\n\n{error.__class__.__name__ }: {error}")
+        await bot.send_message(admin, f"Error, check the logs.\nUser: @{message.from_user.username}.\nState: {state}.\nMessage: \"{message.text}\".\n----------\n\n{error.__class__.__name__ }: {error}")
 
 
 def error_sender(f):
@@ -30,7 +33,8 @@ def error_sender(f):
                     if type(arg) == types.Message:
                         message = arg
                         break
-            
+
+            state = None
             if "state" in kwargs.keys():
                 state = kwargs["state"]
             else:
