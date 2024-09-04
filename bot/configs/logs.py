@@ -5,10 +5,10 @@ from logging import StreamHandler
 from colorlog import ColoredFormatter
 from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 
-from .env_reader import bot_path
+from .env_reader import BOT_DIR
 
 
-logs_path = bot_path / "data" / "logs" / "coffee.log"
+logs_path = BOT_DIR / "data" / "logs" / "coffee.log"
 
 logs_path.parent.mkdir(parents=True, exist_ok=True)
 

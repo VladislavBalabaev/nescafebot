@@ -1,5 +1,4 @@
 import logging
-# from aiogram.filters import Filter
 from aiogram import types, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.filters.command import Command
@@ -9,15 +8,6 @@ from handlers.common.addressing_errors import error_sender
 
 
 router = Router()
-
-
-# class ContainTextFilter(Filter):
-#     def __init__(self, text: str) -> None:
-#         self.text = text
-
-#     async def __call__(self, message: types.Message) -> bool:
-#         return self.text in message.text
-# THIS is bullshit: use F.text.lower().in_([])
 
 
 @router.message(Command("cancel"))

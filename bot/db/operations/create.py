@@ -1,8 +1,6 @@
 import logging
-from aiogram import types
 from datetime import datetime
 
-from .users import update_user, find_user
 from ..connect import get_mongo_users, get_mongo_messages
 
 
