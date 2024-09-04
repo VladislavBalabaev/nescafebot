@@ -39,7 +39,7 @@ async def create_user(user_id: str, chat_id: str, full_name: str, username: str)
     await mongo_users.insert_one(user_structure)
     await mongo_messages.insert_one(messages_structure)
 
-    logging.info(f"user_id '{user_id}' -:- was added to DB.")
+    logging.info(f"user_id '{user_id}' was added to MongoDB.")
 
     return
 
@@ -51,11 +51,9 @@ async def create_or_update_on_start(message: types.Message):
 
     if data:
         to_update = {
-            "info": {
-                "chat_id": str(message.chat.id),
-                "full_name": str(message.from_user.full_name),
-                "username": str(message.from_user.username),
-            }
+            "info.chat_id": str(message.chat.id),
+            "info.full_name": str(message.from_user.full_name),
+            "info.username": str(message.from_user.username),
         }
 
         await update_user(user_id, to_update)
