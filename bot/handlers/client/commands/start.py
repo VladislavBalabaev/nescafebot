@@ -55,9 +55,9 @@ async def cmd_start(message: types.Message, state: FSMContext):
         code = str(randint(100000, 999999))
 
         await update_user(message.from_user.id,
-                        {"cache": {"email": message.text, "email_code": code}})
+                        {"cache.email": message.text, "cache.email_code": code})
 
-        await send_email(message.text, f"Привет!\nТвой код для NEScafeBot: {code}.\n\nКод был отправлен для аккаунта @{message.from_user.username}")
+        await send_email(message.text, f"Привет!\nТвой код для NEScafeBot: {code}.\nКод был отправлен для аккаунта @{message.from_user.username}")
 
         await send_msg_user(message.from_user.id, 
                             "Мы отправили тебе на почту код из 6 цифр.\nНапиши его, пожалуйста, сюда")
@@ -81,7 +81,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
         email = cache["cache"]["email"]
 
         await update_user(message.from_user.id, 
-                          {"info": {"email": email}})
+                          {"info.email": email, "cache": {}})
 
         await send_msg_user(message.from_user.id, 
                             "Отлично!\nПривязали почту к твоему аккаунту")
@@ -103,7 +103,7 @@ async def start_name(message: types.Message, state: FSMContext):
 
     if len(message.text) < 50:
         await update_user(message.from_user.id, 
-                          {"info": {"written_name": message.text}})
+                          {"info.written_name": message.text})
 
         await send_msg_user(message.from_user.id, 
                             "Сколько тебе лет?")
@@ -122,7 +122,7 @@ async def start_age(message: types.Message, state: FSMContext):
 
     if message.text.isdigit():
         await update_user(message.from_user.id, 
-                          {"info": {"age": message.text}})
+                          {"info.age": message.text})
 
         await send_msg_user(message.from_user.id, 
                             "Напиши свою программу в формате\n\"'программа_год окончания'\" (e.g. MAE_2025)")
@@ -142,7 +142,7 @@ async def start_program(message: types.Message, state: FSMContext):
     if '_' in message.text:
         program = message.text.split('_')
         await update_user(message.from_user.id, 
-                        {"info": {"program": {"name": program[0], "year": program[1]}}})
+                        {"info.program.name": program[0], "info.program.year": program[1]})
 
         await send_msg_user(message.from_user.id, 
                             "Напиши о себе в паре предложений")
@@ -160,7 +160,7 @@ async def start_about(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
     await update_user(message.from_user.id, 
-                    {"info": {"about": message.text}})
+                    {"info.about": message.text})
 
     await send_msg_user(message.from_user.id, 
                         "Пока падажжи, ебана, делаем еще.")
