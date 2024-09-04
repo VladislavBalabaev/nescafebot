@@ -29,7 +29,7 @@ class AdminFilter(Filter):
 async def cmd_admin(message: types.Message):
     logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
 
-    await message.answer("/logs - чтобы посмотреть текущие логи;\n/get_messages @tg 15 - чтобы посмотреть последние N сообщений пользователя;\n/get_user @tg - получить данные пользователя.")
+    await message.answer("/logs - текущие логи;\n/get_messages @tg 15 - последние N сообщений пользователя;\n/get_user @tg - данные пользователя.")
 
     return
 

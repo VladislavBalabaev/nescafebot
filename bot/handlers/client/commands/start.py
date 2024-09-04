@@ -7,8 +7,8 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
 from ..email import send_email
+from db.operations.create import create_user
 from db.operations.users import update_user, find_user
-from db.operations.create import create_or_update_on_start
 from handlers.common.addressing_errors import error_sender
 from db.operations.messages import send_msg_user, recieve_msg_user
 
@@ -29,18 +29,37 @@ class start_states(StatesGroup):
 @error_sender
 async def cmd_start(message: types.Message, state: FSMContext):
     # await delete_everithing()
-    await create_or_update_on_start(message)
 
-    await recieve_msg_user(message)
+    exists = await find_user(message.from_user.id, ["_id"])
 
-    await send_msg_user(message.from_user.id, 
-                        "Привет!\nМы - там-то там-то, хотим то-то то-то.\nСейчас ты то-то то-то, давай начнем.")
+    if exists:
+        await recieve_msg_user(message)
 
-    await asyncio.sleep(1)
-    await send_msg_user(message.from_user.id, 
-                        "Какая у тебя @nes.ru почта?\n\nОна нужна нам, чтобы мы могли подтвердить, что ты студент РЭШ")
+        await send_msg_user(message.from_user.id, 
+                            "Почта у тебя уже привязана, поэтому давай пройдемся по данным")
 
-    await state.set_state(start_states.email_get)
+        await send_msg_user(message.from_user.id, 
+                            "Как тебя зовут?")
+
+        await state.set_state(start_states.name)
+    else:
+        await create_user(
+            user_id=message.from_user.id,
+            chat_id=message.chat.id,
+            full_name=message.from_user.full_name,
+            username=message.from_user.username,
+            )
+
+        await recieve_msg_user(message)
+
+        await send_msg_user(message.from_user.id, 
+                            "Привет!\nЭто бот random coffee для действующих студентов РЭШ созданный студентами MAE'25 @vbalab и @Madfyre.\n\nКонцепция бота очень простая, раз в две недели с учетом твоего черного списка пользователей мы случайным образом подбираем тебе двух пользователей бота, с которыми ты сможешь попить кофе.")
+
+        await asyncio.sleep(1)
+        await send_msg_user(message.from_user.id, 
+                            "Об остальных подробностях поговорим позже, давай сначала тебя зарегистрируем.\n\nКакая у тебя @nes.ru почта?\nОна нужна нам, чтобы мы могли подтвердить, что ты студент РЭШ")
+
+        await state.set_state(start_states.email_get)
 
 
 @router.message(StateFilter(start_states.email_get))
@@ -50,14 +69,14 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     if "@nes.ru" in message.text:
         await send_msg_user(message.from_user.id, 
-                            "Секундочку")
+                            "Секундочку, отправляем письмо")
 
         code = str(randint(100000, 999999))
 
         await update_user(message.from_user.id,
                         {"cache.email": message.text, "cache.email_code": code})
 
-        await send_email(message.text, f"Привет!\nТвой код для NEScafeBot: {code}.\nКод был отправлен для аккаунта @{message.from_user.username}")
+        await send_email(message.text, f"Еще раз ривет!\nТвой код для NEScafeBot: {code}.\nКод был отправлен для аккаунта @{message.from_user.username}")
 
         await send_msg_user(message.from_user.id, 
                             "Мы отправили тебе на почту код из 6 цифр.\nНапиши его, пожалуйста, сюда")
@@ -125,7 +144,7 @@ async def start_age(message: types.Message, state: FSMContext):
                           {"info.age": message.text})
 
         await send_msg_user(message.from_user.id, 
-                            "Напиши свою программу в формате\n\"'программа_год окончания'\" (e.g. MAE_2025)")
+                            "Напиши свою программу в формате:\n\"'программа на англ._год окончания'\" (e.g. MAE_2025)")
 
         await state.set_state(start_states.program)
     else:
@@ -163,6 +182,9 @@ async def start_about(message: types.Message, state: FSMContext):
                     {"info.about": message.text})
 
     await send_msg_user(message.from_user.id, 
-                        "Пока падажжи, ебана, делаем еще.")
+                        "Это все, что нам нужно!\nЕсли захочешь изменить что-либо о себе, просто напиши /start.\nP.S. Почту повторно подтверждать не придется)")
+
+    await send_msg_user(message.from_user.id, 
+                        "Теперь чуть подробнее расскажем о боте")
 
     await state.clear()
