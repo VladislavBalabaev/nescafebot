@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 from aiogram.filters import Filter
@@ -7,6 +8,7 @@ from aiogram.filters.command import Command, CommandObject
 
 from create_bot import bot
 from configs.logs import logs_path
+from configs.env_reader import TEMP_DIR
 from configs.selected_ids import ADMINS
 from db.operations.messages import find_messages
 from handlers.common.addressing_errors import error_sender
@@ -24,12 +26,24 @@ class AdminFilter(Filter):
         return message.from_user.id in ADMINS
 
 
+async def semd_temporary_file(user_id: str, text: str):
+    file_path = TEMP_DIR / f"user_{user_id}.txt"
+    with open(file_path, 'w', encoding='utf-8') as file:
+        file.write(text)
+
+    await bot.send_document(user_id, document=types.FSInputFile(file_path))
+
+    os.remove(file_path)
+
+    return
+
+
 @router.message(StateFilter(None), Command("admin"), AdminFilter())
 @error_sender
 async def cmd_admin(message: types.Message):
     logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
 
-    await message.answer("/logs - текущие логи;\n/get_messages @tg 15 - последние N сообщений пользователя;\n/get_user @tg - данные пользователя.")
+    await message.answer("/logs - текущие логи;\n/messages @tg 15 - последние N сообщений пользователя;\n/user @tg - данные пользователя.")
 
     return
 
@@ -44,15 +58,13 @@ async def cmd_send_logs(message: types.Message,):
     return
 
 
-@router.message(StateFilter(None), Command("get_messages"), AdminFilter())
+@router.message(StateFilter(None), Command("messages"), AdminFilter())
 @error_sender
-async def cmd_get_messages(message: types.Message, command: CommandObject):
-    """Like: /see_messages vbalab 20"""
+async def cmd_messages(message: types.Message, command: CommandObject):
     logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
 
     if not command.args:
-        await message.answer("Введи пользователя и кол-во сообщений:\n/get_messages @vbalab 30")
-
+        await message.answer("Введи пользователя и кол-во сообщений:\n/messages @vbalab 30")
         return
 
     args = command.args.split()
@@ -60,23 +72,28 @@ async def cmd_get_messages(message: types.Message, command: CommandObject):
     n_messages = int(args[1])
 
     user_id = await find_id_by_username(username)
+
     messages = await find_messages(user_id)
     messages = messages[-n_messages:]
+    messages_json = json.dumps(messages, indent=3, ensure_ascii=False)
+    messages_formatted = f"<pre>{messages_json}</pre>"
 
-    messages = json.dumps(messages, indent=3, ensure_ascii=False)
 
-    await message.answer(f"<pre>{messages}</pre>", parse_mode="HTML")
+    if len(messages_formatted) > 4000:
+        await semd_temporary_file(user_id, messages_json)
+    else:
+        await message.answer(messages_formatted, parse_mode="HTML")
 
     return
 
 
-@router.message(StateFilter(None), Command("get_user"), AdminFilter())
+@router.message(StateFilter(None), Command("user"), AdminFilter())
 @error_sender
-async def cmd_get_user(message: types.Message, command: CommandObject):
+async def cmd_user(message: types.Message, command: CommandObject):
     logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
 
     if not command.args:
-        await message.answer("Введи пользователя:\n/get_user @vbalab")
+        await message.answer("Введи пользователя:\n/user @vbalab")
 
         return
 
