@@ -34,8 +34,11 @@ async def delete_messages(user_id: str):
     return
 
 
-async def send_msg_user(user_id: str, text: str = None):
-    logging.info(f"user_id '{user_id}' received text: {repr(text)}")
+async def send_msg_user(user_id: str, text: str = None, fail: bool = False):
+    if fail:
+        logging.info(f"_id='{user_id}' received text \033[91m[FAIL]\033[0m: {repr(text)}")
+    else:
+        logging.info(f"_id='{user_id}' received text: {repr(text)}")
 
     messages = await find_messages(user_id)
 
@@ -52,9 +55,13 @@ async def send_msg_user(user_id: str, text: str = None):
     return
 
 
-async def recieve_msg_user(message: types.Message):
+async def recieve_msg_user(message: types.Message, fail: bool = False):
     user_id = message.from_user.id
-    logging.info(f"user_id '{user_id}'        texted: {repr(message.text)}")
+
+    if fail:
+        logging.info(f"_id='{user_id}'        texted \033[91m[FAIL]\033[0m: {repr(message.text)}")
+    else:
+        logging.info(f"_id='{user_id}'        texted: {repr(message.text)}")
 
     messages = await find_messages(user_id)
 
