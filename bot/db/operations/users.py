@@ -35,3 +35,11 @@ async def delete_user(user_id: str):
     await mongo_users.delete_one({"_id": user_id})
 
     return
+
+
+async def find_id_by_username(username: str):
+    mongo_users = get_mongo_users()
+
+    user = await mongo_users.find_one({"info.username": username}, {"_id": 1, "info.username": 1})
+
+    return user["_id"]

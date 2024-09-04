@@ -1,6 +1,6 @@
+import json
 import logging
 from aiogram.filters import Filter
-from aiogram.fsm.context import FSMContext
 from aiogram.filters.state import StateFilter
 from aiogram import Dispatcher, types, Router
 from aiogram.filters.command import Command, CommandObject
@@ -8,7 +8,10 @@ from aiogram.filters.command import Command, CommandObject
 from create_bot import bot
 from configs.logs import logs_path
 from configs.selected_ids import ADMINS
+from db.operations.messages import find_messages
 from handlers.common.addressing_errors import error_sender
+from db.operations.users import find_user, find_id_by_username
+
 
 router = Router()
 
@@ -21,48 +24,72 @@ class AdminFilter(Filter):
         return message.from_user.id in ADMINS
 
 
-@router.message(StateFilter(None), Command("admin_commands"), AdminFilter())
+@router.message(StateFilter(None), Command("admin"), AdminFilter())
 @error_sender
-async def cmd_send_logs(message: types.Message, state: FSMContext):
-    logging.info(f"Admin @{message.from_user.username} asked for his commands.")
+async def cmd_admin(message: types.Message):
+    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
 
-    await message.answer("""/logs\n/see_messages @tg 30\n""")
+    await message.answer("/logs\n/get_messages @tg 30\n/get_user @tg")
+
+    return
 
 
 @router.message(StateFilter(None), Command("logs"), AdminFilter())
 @error_sender
-async def cmd_send_logs(message: types.Message, state: FSMContext):
-    logging.info(f"Admin @{message.from_user.username} asked for logs.")
+async def cmd_send_logs(message: types.Message,):
+    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
 
     await message.answer_document(types.FSInputFile(logs_path))
 
+    return
 
-@router.message(StateFilter(None), Command("see_messages"), AdminFilter())
+
+@router.message(StateFilter(None), Command("get_messages"), AdminFilter())
 @error_sender
-async def cmd_send_chat_history(message: types.Message, state: FSMContext, command: CommandObject):
+async def cmd_get_messages(message: types.Message, command: CommandObject):
     """Like: /see_messages vbalab 20"""
-    # logging.info(f"Admin @{message.from_user.username} ...")
+    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+
+    if not command.args:
+        await message.answer("Введи пользователя и кол-во сообщений:\n/get_messages @vbalab 30")
+
+        return
 
     args = command.args.split()
-    person_tg = args[0].replace('@', '')
+    username = args[0].replace('@', '').replace(' ', '')
     n_messages = int(args[1])
 
-    await message.answer(f"# @{person_tg}'s last {n_messages} messages: #")
+    user_id = await find_id_by_username(username)
+    messages = await find_messages(user_id)
+    messages = messages[-n_messages:]
 
-    # USING REDIS: get chat_id and last_message_id from @person_tg that is supplied in this function
+    messages = json.dumps(messages, indent=3, ensure_ascii=False)
 
-    from_chat_id = 565279321
-    last_message_id = 2344
+    await message.answer(f"<pre>{messages}</pre>", parse_mode="HTML")
 
-    message_ids = reversed([last_message_id-i for i in range(n_messages)])
-
-    await bot.copy_messages(chat_id=message.chat.id, from_chat_id=from_chat_id, message_ids=message_ids)
+    return
 
 
-@router.message(StateFilter(None), Command("get_ids_CURRENT"))
+@router.message(StateFilter(None), Command("get_user"), AdminFilter())
 @error_sender
-async def cmd_send_chat_history(message: types.Message, state: FSMContext):
-    await message.answer(f"ChatId: {str(message.chat.id)}, MessageId: {str(message.message_id)}")
+async def cmd_get_user(message: types.Message, command: CommandObject):
+    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+
+    if not command.args:
+        await message.answer("Введи пользователя:\n/get_user @vbalab")
+
+        return
+
+    username = command.args.split()[0].replace('@', '').replace(" ", '')
+
+    user_id = await find_id_by_username(username)
+    user_info = await find_user(user_id)
+
+    user_info = json.dumps(user_info, indent=3, ensure_ascii=False)
+
+    await message.answer(f"<pre>{user_info}</pre>", parse_mode="HTML")
+
+    return
 
 
 def register_handlers_admin(dp: Dispatcher):
