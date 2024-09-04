@@ -21,7 +21,8 @@ class start_states(StatesGroup):
     email_set = State()
     name = State()
     age = State()
-    program = State()
+    program_name = State()
+    program_year = State()
     about = State()
 
 
@@ -60,6 +61,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
                             "Об остальных подробностях поговорим позже, давай сначала тебя зарегистрируем.\n\nКакая у тебя @nes.ru почта?\nОна нужна нам, чтобы мы могли подтвердить, что ты студент РЭШ")
 
         await state.set_state(start_states.email_get)
+    
+    return
 
 
 @router.message(StateFilter(start_states.email_get))
@@ -86,6 +89,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
         await send_msg_user(message.from_user.id, 
                             "Это не почта РЭШ\nДавай заново",
                             fail=True)
+    
+    return
 
 
 @router.message(StateFilter(start_states.email_set))
@@ -113,6 +118,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
         await send_msg_user(message.from_user.id, 
                             "Код неверный)\nДавай заново",
                             fail=True)
+    
+    return
 
 
 @router.message(StateFilter(start_states.name))
@@ -132,6 +139,8 @@ async def start_name(message: types.Message, state: FSMContext):
         await send_msg_user(message.from_user.id, 
                             "Слишком длинное имя)\nДавай заново",
                             fail=True)
+    
+    return
 
 
 @router.message(StateFilter(start_states.age))
@@ -143,25 +152,57 @@ async def start_age(message: types.Message, state: FSMContext):
         await update_user(message.from_user.id, 
                           {"info.age": message.text})
 
-        await send_msg_user(message.from_user.id, 
-                            "Напиши свою программу в формате:\n\"'программа на англ._год окончания'\" (e.g. MAE_2025)")
+        buttons = [[
+            types.KeyboardButton(text="BAE"),
+            types.KeyboardButton(text="MAE"),
+            types.KeyboardButton(text="MAF/MIF"),
+            ]]
+        keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
 
-        await state.set_state(start_states.program)
+        await send_msg_user(message.from_user.id,
+                            "Выбери свою программу",
+                            reply_markup=keyboard)
+
+        await state.set_state(start_states.program_name)
     else:
         await send_msg_user(message.from_user.id, 
                             "Это было не число)\nДавай заново",
                             fail=True)
+    
+    return
 
 
-@router.message(StateFilter(start_states.program))
+@router.message(StateFilter(start_states.program_name))
 @error_sender
-async def start_program(message: types.Message, state: FSMContext):
+async def select_program_name(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
-    if '_' in message.text:
-        program = message.text.split('_')
+    if message.text in ["BAE", "MAE", "MAF/MIF"]:
         await update_user(message.from_user.id, 
-                        {"info.program.name": program[0], "info.program.year": program[1]})
+                        {"info.program.name": message.text})
+
+        await send_msg_user(message.from_user.id,
+                            "Теперь, выбери год программы (напр., 2023)",
+                            reply_markup=types.ReplyKeyboardRemove())
+
+        await state.set_state(start_states.program_year)
+    else:
+        await send_msg_user(message.from_user.id,
+                            "Выбери из предложенных")
+
+    return
+
+
+@router.message(StateFilter(start_states.program_year))
+@error_sender
+async def select_program_year(message: types.Message, state: FSMContext):
+    await recieve_msg_user(message)
+
+    year = message.text
+
+    if year.isdigit() and int(year) >= 1990 and int(year) < 9999:
+        await update_user(message.from_user.id, 
+                        {"info.program.year": year})
 
         await send_msg_user(message.from_user.id, 
                             "Напиши о себе в паре предложений")
@@ -169,8 +210,10 @@ async def start_program(message: types.Message, state: FSMContext):
         await state.set_state(start_states.about)
     else:
         await send_msg_user(message.from_user.id, 
-                            "Напиши именно в нужном формате)\nКак, например, MAE_2025",
+                            "Это не год.\nВыбери год программы, которую хочешь добавить в черный список в формате yyyy (напр., 2009)",
                             fail=True)
+
+    return
 
 
 @router.message(StateFilter(start_states.about))
@@ -188,3 +231,5 @@ async def start_about(message: types.Message, state: FSMContext):
                         "Теперь чуть подробнее расскажем о боте")
 
     await state.clear()
+
+    return

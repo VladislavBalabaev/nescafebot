@@ -34,7 +34,7 @@ async def delete_messages(user_id: str):
     return
 
 
-async def send_msg_user(user_id: str, text: str = None, fail: bool = False):
+async def send_msg_user(user_id: str, text: str = None, fail: bool = False, reply_markup: types.ReplyKeyboardMarkup = None):
     if fail:
         logging.info(f"_id='{user_id}' received text \033[91m[FAIL]\033[0m: {repr(text)}")
     else:
@@ -50,7 +50,7 @@ async def send_msg_user(user_id: str, text: str = None, fail: bool = False):
 
     await update_messages(user_id, messages)
 
-    await bot.send_message(user_id, text)
+    await bot.send_message(user_id, text, reply_markup=reply_markup)
 
     return
 
