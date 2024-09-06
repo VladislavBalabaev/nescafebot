@@ -7,18 +7,18 @@ from .users import update_user
 from ..connect import get_mongo_users, get_mongo_messages
 
 
-async def create_user(user_id: str, chat_id: str, full_name: str, username: str):
+async def create_user(message: types.Message):
     mongo_users = get_mongo_users()
     mongo_messages = get_mongo_messages()
 
     user_structure = {
-        "_id": user_id,
+        "_id": message.from_user.id,
         "info": {
             "time_registred": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "chat_id": chat_id,
+            "chat_id": message.chat.id,
             "email": "",
-            "full_name": full_name,             # his name in tg
-            "username": username,               # his tg tag
+            "full_name": message.from_user.full_name,             # his name in tg
+            "username": message.from_user.username,               # his tg tag
             "written_name": "",                 # what was written in tg bot by user in /start
             "age": "",
             "program": {
@@ -36,14 +36,14 @@ async def create_user(user_id: str, chat_id: str, full_name: str, username: str)
     }
 
     messages_structure = {
-        "_id": user_id,
+        "_id": message.from_user.id,
         "messages": [],
     }
 
     await mongo_users.insert_one(user_structure)
     await mongo_messages.insert_one(messages_structure)
 
-    logging.info(f"user_id '{user_id}' was added to MongoDB.")
+    logging.info(f"user_id '{message.from_user.id}' was added to MongoDB.")
 
     return
 

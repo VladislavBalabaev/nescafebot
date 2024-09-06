@@ -7,7 +7,7 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
 from ..email import send_email
-from db.operations.create import create_user
+from db.operations.profile import create_user
 from db.operations.users import update_user, find_user
 from handlers.common.addressing_errors import error_sender
 from db.operations.messages import send_msg_user, recieve_msg_user
@@ -44,12 +44,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
         await state.set_state(start_states.name)
     else:
-        await create_user(
-            user_id=message.from_user.id,
-            chat_id=message.chat.id,
-            full_name=message.from_user.full_name,
-            username=message.from_user.username,
-            )
+        await create_user(message)
 
         await recieve_msg_user(message)
 
