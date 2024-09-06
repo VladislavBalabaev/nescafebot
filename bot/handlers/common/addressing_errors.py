@@ -1,4 +1,5 @@
 import logging
+import traceback
 from aiogram import types
 from functools import wraps
 from aiogram.fsm.context import FSMContext
@@ -11,13 +12,22 @@ async def error_occured(message: types.Message, state: FSMContext, error: Except
     if state is not None:
         state = await state.get_state()
 
-    logging.exception("The traceback of the ERROR:")
+    logging.exception(f"\nERROR: {error}\nTRACEBACK:")
 
     await message.answer("Извини, что-то пошло не так(\nМы уже получили ошибку, разберемся!\n\nЕсли долго не чиним, можешь написать @Madfyre и/или @vbalab по поводу бота.")
 
-    for admin in ADMINS:
-        await bot.send_message(admin, f"Error, check the logs.\nUser: @{message.from_user.username}.\nState: {state}.\nMessage: \"{message.text}\".\n----------\n\n{error.__class__.__name__ }: {error}")
+    tb_message = ''.join(traceback.format_exception(type(error), error, error.__traceback__))
 
+    for admin in ADMINS:
+        await bot.send_message(admin, 
+            f"Error, check the logs.\n"
+            f"User: @{message.from_user.username}.\n"
+            f"State: {state}.\n"
+            f"Message: \"{message.text}\".\n"
+            "----------\n\n"
+            f"{error.__class__.__name__}: {error}\n\n"
+            f"{tb_message}"
+        )
 
 def error_sender(f):
     @wraps(f)
