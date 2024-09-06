@@ -17,9 +17,9 @@ async def create_user(message: types.Message):
             "time_registred": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "chat_id": message.chat.id,
             "email": "",
-            "full_name": message.from_user.full_name,             # his name in tg
-            "username": message.from_user.username,               # his tg tag
-            "written_name": "",                 # what was written in tg bot by user in /start
+            "full_name": message.from_user.full_name,           # his name in tg
+            "username": message.from_user.username,             # his tg tag
+            "written_name": "",                                 # what was written in tg bot by user in /start
             "age": "",
             "program": {
                 "name": "",
@@ -28,7 +28,7 @@ async def create_user(message: types.Message):
             "about": "",
         },
         "blacklist": {
-            "user_ids": [],                        # of user_ids
+            "user_ids": [],                                     # of user_ids
         },
         "blocked_bot": "no",
         "active_matching": "yes",
@@ -60,26 +60,30 @@ async def delete_everithing():
 
 async def actualize_user(user_id: str):
     forbidden = await check_if_user_blocked(user_id)
+
     if forbidden:
         await update_user(user_id, {"blocked_bot": "yes"})
     else:
         user: types.User = await bot.get_chat(user_id)
-        await update_user(user_id, 
-                          {"info.username": user.username,
-                           "info": user.full_name,}
-                          )
-    
+        await update_user(user_id, {
+            "info.username": user.username,
+            "info": user.full_name,
+            }
+        )
+
     return
         
 
 async def check_if_user_blocked(user_id: int) -> bool:
     try:
         await bot.get_chat(user_id)
+
         return False
 
     except Exception as e:
         if "Forbidden" in str(e):
-            return True  # User has likely blocked the bot
+            return True
         else:
             logging.exception(f"\nERROR: [Error retrieving chat for user {user_id}]\nTRACEBACK:")
-            return False  # Other error, unrelated to blocking
+
+            return False
