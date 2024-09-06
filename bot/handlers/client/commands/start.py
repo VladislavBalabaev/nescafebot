@@ -16,14 +16,14 @@ from db.operations.messages import send_msg_user, recieve_msg_user
 router = Router()
 
 
-class start_states(StatesGroup):
-    email_get = State()
-    email_set = State()
-    name = State()
-    age = State()
-    program_name = State()
-    program_year = State()
-    about = State()
+class StartStates(StatesGroup):
+    EMAIL_GET = State()
+    EMAIL_SET = State()
+    NAME = State()
+    AGE = State()
+    PROGRAM_NAME = State()
+    PROGRAM_YEAR = State()
+    ABOUT = State()
 
 
 @router.message(StateFilter(None), Command("start"))
@@ -42,7 +42,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
         await send_msg_user(message.from_user.id, 
                             "Как тебя зовут?")
 
-        await state.set_state(start_states.name)
+        await state.set_state(StartStates.NAME)
     else:
         await create_user(message)
 
@@ -55,12 +55,12 @@ async def cmd_start(message: types.Message, state: FSMContext):
         await send_msg_user(message.from_user.id, 
                             "Какая у тебя @nes.ru почта?\n\nОна нужна нам, чтобы мы могли подтвердить, что ты студент РЭШ")
 
-        await state.set_state(start_states.email_get)
+        await state.set_state(StartStates.EMAIL_GET)
     
     return
 
 
-@router.message(StateFilter(start_states.email_get))
+@router.message(StateFilter(StartStates.EMAIL_GET))
 @error_sender
 async def cmd_start(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
@@ -79,7 +79,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
         await send_msg_user(message.from_user.id, 
                             "Мы отправили тебе на почту код из 6 цифр.\nНапиши его, пожалуйста, сюда")
 
-        await state.set_state(start_states.email_set)
+        await state.set_state(StartStates.EMAIL_SET)
     else:
         await send_msg_user(message.from_user.id, 
                             "Это не почта РЭШ\nДавай заново",
@@ -88,7 +88,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
     return
 
 
-@router.message(StateFilter(start_states.email_set))
+@router.message(StateFilter(StartStates.EMAIL_SET))
 @error_sender
 async def cmd_start(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
@@ -108,7 +108,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
         await send_msg_user(message.from_user.id, 
                             "Как тебя зовут?")
 
-        await state.set_state(start_states.name)
+        await state.set_state(StartStates.NAME)
     else:
         await send_msg_user(message.from_user.id, 
                             "Код неверный)\nДавай заново",
@@ -117,7 +117,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
     return
 
 
-@router.message(StateFilter(start_states.name))
+@router.message(StateFilter(StartStates.NAME))
 @error_sender
 async def start_name(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
@@ -129,7 +129,7 @@ async def start_name(message: types.Message, state: FSMContext):
         await send_msg_user(message.from_user.id, 
                             "Сколько тебе лет?")
 
-        await state.set_state(start_states.age)
+        await state.set_state(StartStates.AGE)
     else:
         await send_msg_user(message.from_user.id, 
                             "Слишком длинное имя)\nДавай заново",
@@ -138,7 +138,7 @@ async def start_name(message: types.Message, state: FSMContext):
     return
 
 
-@router.message(StateFilter(start_states.age))
+@router.message(StateFilter(StartStates.AGE))
 @error_sender
 async def start_age(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
@@ -158,7 +158,7 @@ async def start_age(message: types.Message, state: FSMContext):
                             "Выбери свою программу",
                             reply_markup=keyboard)
 
-        await state.set_state(start_states.program_name)
+        await state.set_state(StartStates.PROGRAM_NAME)
     else:
         await send_msg_user(message.from_user.id, 
                             "Это было не число)\nДавай заново",
@@ -167,7 +167,7 @@ async def start_age(message: types.Message, state: FSMContext):
     return
 
 
-@router.message(StateFilter(start_states.program_name))
+@router.message(StateFilter(StartStates.PROGRAM_NAME))
 @error_sender
 async def select_program_name(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
@@ -180,7 +180,7 @@ async def select_program_name(message: types.Message, state: FSMContext):
                             "Теперь, выбери год программы (напр., 2023)",
                             reply_markup=types.ReplyKeyboardRemove())
 
-        await state.set_state(start_states.program_year)
+        await state.set_state(StartStates.PROGRAM_YEAR)
     else:
         await send_msg_user(message.from_user.id,
                             "Выбери из предложенных")
@@ -188,7 +188,7 @@ async def select_program_name(message: types.Message, state: FSMContext):
     return
 
 
-@router.message(StateFilter(start_states.program_year))
+@router.message(StateFilter(StartStates.PROGRAM_YEAR))
 @error_sender
 async def select_program_year(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
@@ -202,7 +202,7 @@ async def select_program_year(message: types.Message, state: FSMContext):
         await send_msg_user(message.from_user.id, 
                             "Напиши о себе в паре предложений")
 
-        await state.set_state(start_states.about)
+        await state.set_state(StartStates.ABOUT)
     else:
         await send_msg_user(message.from_user.id, 
                             "Это не год.\nВыбери год программы, которую хочешь добавить в черный список в формате yyyy (напр., 2009)",
@@ -211,7 +211,7 @@ async def select_program_year(message: types.Message, state: FSMContext):
     return
 
 
-@router.message(StateFilter(start_states.about))
+@router.message(StateFilter(StartStates.ABOUT))
 @error_sender
 async def start_about(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
