@@ -1,11 +1,11 @@
 from aiogram import Dispatcher
 
-from handlers import client
+from handlers.client import commands
 
 
 def register_handlers_client(dp: Dispatcher):
     dp.include_routers(
-        client.other.router,                    # because /cancel is there
-        client.start.router,
-        client.blacklist.router,
+        commands.other.router,                    # because /cancel is there
+        commands.start.router,
+        commands.blacklist.router,
     )
