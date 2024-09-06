@@ -7,7 +7,7 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
 from ..email import send_email
-from db.operations.profile import create_user
+from db.operations.user_profile import create_user
 from db.operations.users import update_user, find_user
 from handlers.common.addressing_errors import error_sender
 from db.operations.messages import send_msg_user, recieve_msg_user

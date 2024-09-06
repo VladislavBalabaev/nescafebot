@@ -1,1 +1,1 @@
-from . import profile, users, messages
+from . import user_profile, users, messages
