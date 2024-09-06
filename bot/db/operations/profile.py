@@ -1,6 +1,9 @@
 import logging
+from aiogram import types
 from datetime import datetime
 
+from create_bot import bot
+from .users import update_user
 from ..connect import get_mongo_users, get_mongo_messages
 
 
@@ -25,9 +28,10 @@ async def create_user(user_id: str, chat_id: str, full_name: str, username: str)
             "about": "",
         },
         "blacklist": {
-            "users": [],                        # of user_ids 
-            "programs": []
+            "user_ids": [],                        # of user_ids
         },
+        "blocked_bot": "no",
+        "active_matching": "yes",
         "cache": {},
     }
 
@@ -52,3 +56,30 @@ async def delete_everithing():
     await mongo_messages.delete_many({})
 
     return
+
+
+async def actualize_user(user_id: str):
+    forbidden = await check_if_user_blocked(user_id)
+    if forbidden:
+        await update_user(user_id, {"blocked_bot": "yes"})
+    else:
+        user: types.User = await bot.get_chat(user_id)
+        await update_user(user_id, 
+                          {"info.username": user.username,
+                           "info": user.full_name,}
+                          )
+    
+    return
+        
+
+async def check_if_user_blocked(user_id: int) -> bool:
+    try:
+        await bot.get_chat(user_id)
+        return False
+
+    except Exception as e:
+        if "Forbidden" in str(e):
+            return True  # User has likely blocked the bot
+        else:
+            logging.exception(f"\nERROR: [Error retrieving chat for user {user_id}]\nTRACEBACK:")
+            return False  # Other error, unrelated to blocking
