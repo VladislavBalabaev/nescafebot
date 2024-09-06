@@ -27,9 +27,7 @@ async def create_user(message: types.Message):
             },
             "about": "",
         },
-        "blacklist": {
-            "user_ids": [],                                     # of user_ids
-        },
+        "blacklist": [],                                        # of user_ids
         "blocked_bot": "no",
         "active_matching": "yes",
         "cache": {},
@@ -59,31 +57,22 @@ async def delete_everithing():
 
 
 async def actualize_user(user_id: str):
-    forbidden = await check_if_user_blocked(user_id)
-
-    if forbidden:
-        await update_user(user_id, {"blocked_bot": "yes"})
-    else:
-        user: types.User = await bot.get_chat(user_id)
-        await update_user(user_id, {
-            "info.username": user.username,
-            "info": user.full_name,
-            }
-        )
-
-    return
-        
-
-async def check_if_user_blocked(user_id: int) -> bool:
     try:
-        await bot.get_chat(user_id)
-
-        return False
-
+        user: types.User = await bot.get_chat(user_id)
     except Exception as e:
         if "Forbidden" in str(e):
-            return True
+            await update_user(user_id, {"blocked_bot": "yes"})
+
         else:
             logging.exception(f"\nERROR: [Error retrieving chat for user {user_id}]\nTRACEBACK:")
+        
+        return
 
-            return False
+
+    await update_user(user_id, {
+        "info.username": user.username,
+        "info": user.full_name,
+        }
+    )
+
+    return

@@ -40,6 +40,35 @@ async def delete_user(user_id: str):
 async def find_id_by_username(username: str):
     mongo_users = get_mongo_users()
 
-    user = await mongo_users.find_one({"info.username": username}, {"_id": 1, "info.username": 1})
+    user = await mongo_users.find_one({"info.username": username}, 
+                                      {"_id": 1, "info.username": 1})
 
     return user["_id"]
+
+
+async def blacklist_add(user_id: str, username):
+    blacklist = await find_user(user_id, ["blacklist"])
+    blacklist = blacklist["blacklist"]
+
+    if username in blacklist:
+        return False
+
+    blacklist.append(username)
+
+    await update_user(user_id, {"blacklist": blacklist})
+
+    return True
+
+
+async def blacklist_remove(user_id: str, username):
+    blacklist = await find_user(user_id, ["blacklist"])
+    blacklist = blacklist["blacklist"]
+
+    try:
+        blacklist.remove(username)        
+    except Exception:
+        return False
+
+    await update_user(user_id, {"blacklist": blacklist})
+
+    return True

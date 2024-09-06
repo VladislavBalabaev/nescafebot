@@ -1,4 +1,4 @@
-import logging
+from enum import Enum
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.filters.command import Command
@@ -6,166 +6,155 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
 from handlers.common.addressing_errors import error_sender
-
+from db.operations.users import blacklist_add, blacklist_remove, find_user
+from db.operations.messages import send_msg_user, recieve_msg_user
 
 router = Router()
 
 
-class blacklist_states(StatesGroup):
-    after_start_cmd = State()
+class BlacklistStates(StatesGroup):
+    BLACKLIST = State()
 
-    blacklist = State()
+    BLOCK_PERSON = State()
+    AFTER_BLOCK_PERSON = State()
 
-    block_person = State()
-    after_block_person = State()
-
-    select_programs_year = State()
-    block_program = State()
-    after_block_program = State()
+    UNBLOCK_PERSON = State()
+    AFTER_UNBLOCK_PERSON = State()
 
 
-@router.message(StateFilter(blacklist_states.after_start_cmd))
-@error_sender
-async def notify_capabilities(message: types.Message, state: FSMContext):
-    raise NotImplementedError
+class BlacklistChoice(Enum):
+    ADD = "Добавлять в ЧС"
+    REMOVE = "Удалять из ЧС"
+    CANCEL = "Отмена"
 
 
-@router.message(StateFilter(None), Command("blacklist_add"))
+class BlacklistYesNo(Enum):
+    YES = "Да"
+    NO = "Нет"
+
+
+def create_keyboard(choices):
+    buttons = [[types.KeyboardButton(text=choice.value) for choice in choices]]
+    return types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
+
+
+@router.message(StateFilter(None), Command("blacklist"))
 @error_sender
 async def cmd_blacklist(message: types.Message, state: FSMContext):
-    logging.info(f"User @{message.from_user.username} has started to write to his blacklist.")
+    await recieve_msg_user(message)
 
-    await state.set_state(blacklist_states.blacklist)
+    await send_msg_user(message.from_user.id, 
+                        "Люди из черного списка не будут предлагаться тебе и ты не будешь предложен(а) им на последующих кофе.\n\nСейчас ты можешь добавить какого-либо конкретного человека через его @tg, а также удалить человека из черного списка, если он там находится.")
 
-    buttons = [[
-            types.KeyboardButton(text="Человека"),
-            types.KeyboardButton(text="Программа'год")
-            ]]
-    keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
+    blacklist = await find_user(message.from_user.id, ["blacklist"])
+    blacklist = blacklist["blacklist"]
+    if blacklist:
+        blacklist = '\n'.join([f"@{user}" for user in blacklist])
+        await send_msg_user(message.from_user.id,
+                            f"У тебя есть пользователи в чс:\n{blacklist}")
+    else:
+        await send_msg_user(message.from_user.id,
+                            "Пока что твой черный список пуст")
 
+    keyboard = create_keyboard(BlacklistChoice)
+    await send_msg_user(message.from_user.id, 
+                        "Выбери, что будем делать:", 
+                        reply_markup=keyboard)
 
-    await message.answer("Сейчас ты можешь добавить какого-либо конкретного человека через его @tg или всех людей с какой-либо программы'года в черный спискок.\n\nТаким образом, люди из черного списка не будут предлагаться тебе и ты не будешь предложен им на следующем кофе.")
-
-    await message.answer(
-        "Выбери, добавляем в черный список:", 
-        reply_markup=keyboard
-        )
-
-
-@router.message(StateFilter(blacklist_states.blacklist), F.text == "Человека")
-@router.message(StateFilter(blacklist_states.after_block_person), F.text == "Да")
-@error_sender
-async def blacklist_select_person(message: types.Message, state: FSMContext):
-    logging.info(f"User @{message.from_user.username} chose to block person.")
-
-    await state.set_state(blacklist_states.block_person)
-
-    await message.answer(
-        "Напиши, кого добавить в чс (напр., @person_tg)", 
-        reply_markup=types.ReplyKeyboardRemove()
-        )
+    await state.set_state(BlacklistStates.BLACKLIST)
 
 
-@router.message(StateFilter(blacklist_states.block_person))
+@router.message(StateFilter(BlacklistStates.BLACKLIST), F.text == BlacklistChoice.ADD.value)
+@router.message(StateFilter(BlacklistStates.AFTER_BLOCK_PERSON), F.text == BlacklistYesNo.YES.value)
 @error_sender
 async def blacklist_block_person(message: types.Message, state: FSMContext):
-    person = message.text.strip().replace(' ', '').replace('@', '') # TODO: add different variants
+    await recieve_msg_user(message)
 
-    logging.info(f"User @{message.from_user.username} added @{person} to his blacklist.")
+    await send_msg_user(message.from_user.id, 
+                        "Напиши, кого добавить в чс (напр., @person_tg)", 
+                        reply_markup=types.ReplyKeyboardRemove())
 
-    await state.set_state(blacklist_states.after_block_person)
-
-    # TODO: add written @tg to his REDIS blacklist
-
-    await message.answer(f"Добавили в твой черный список.\nНа следующем кофе @{person} тебе не попадется!")
+    await state.set_state(BlacklistStates.BLOCK_PERSON)
 
 
-    buttons = [[
-        types.KeyboardButton(text="Да"),
-        types.KeyboardButton(text="Нет")
-        ]]
-    keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
+@router.message(StateFilter(BlacklistStates.BLOCK_PERSON))
+@error_sender
+async def blacklist_after_block_person(message: types.Message, state: FSMContext):
+    await recieve_msg_user(message)
 
+    username = message.text.strip().replace(' ', '').replace('@', '')
+
+    if await blacklist_add(message.from_user.id, username):
+        await send_msg_user(message.from_user.id,
+                            f"Добавили в твой черный список.\nНа последующих кофе @{username} тебе не попадется!")
+    else:
+        await send_msg_user(message.from_user.id,
+                            f"Этот пользователь уже есть в твоем черном списке")
+
+    keyboard = create_keyboard(BlacklistYesNo)
     await message.answer(
         f"Хочешь добавить @tg ещё кого-нибудь?", 
         reply_markup=keyboard
         )
 
+    await state.set_state(BlacklistStates.AFTER_BLOCK_PERSON)
 
-@router.message(StateFilter(blacklist_states.blacklist), F.text == "Программа'год")
-@router.message(StateFilter(blacklist_states.after_block_program), F.text == "Да")
+
+@router.message(StateFilter(BlacklistStates.BLACKLIST), F.text == BlacklistChoice.REMOVE.value)
+@router.message(StateFilter(BlacklistStates.AFTER_UNBLOCK_PERSON), F.text == BlacklistYesNo.YES.value)
 @error_sender
-async def blacklist_select_program(message: types.Message, state: FSMContext):
-    logging.info(f"User @{message.from_user.username} chose to block program'year.")
+async def blacklist_unblock_person(message: types.Message, state: FSMContext):
+    await recieve_msg_user(message)
 
-    await state.set_state(blacklist_states.select_programs_year)
+    await send_msg_user(message.from_user.id, 
+                        "Напиши, кого исключить из чс (напр., @person_tg)", 
+                        reply_markup=types.ReplyKeyboardRemove())
 
-    buttons = [[
-        types.KeyboardButton(text="MAE"),
-        types.KeyboardButton(text="MAF/MIF"),
-        types.KeyboardButton(text="BAE")
-        ]]
-    keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
-
-    await message.answer(
-        "Для начала, выбери, какую программу добавляем?", 
-        reply_markup=keyboard
-        )
+    await state.set_state(BlacklistStates.UNBLOCK_PERSON)
 
 
-@router.message(StateFilter(blacklist_states.select_programs_year))
+@router.message(StateFilter(BlacklistStates.UNBLOCK_PERSON))
 @error_sender
-async def blacklist_select_year(message: types.Message, state: FSMContext):
-    logging.info(f"User @{message.from_user.username} selected {message.text} to block.")
-    
-    await state.set_state(blacklist_states.block_program)
-    await state.set_data({"program": message.text})
-    
-    await message.answer(
-        "Теперь, выбери год программы (напр., 2023)",
-        reply_markup=types.ReplyKeyboardRemove()
-        )
+async def blacklist_after_unblock_person(message: types.Message, state: FSMContext):
+    await recieve_msg_user(message)
+
+    username = message.text.strip().replace(' ', '').replace('@', '')
+
+    if await blacklist_remove(message.from_user.id, username):
+        await send_msg_user(message.from_user.id,
+                            f"Исключили из твоего черного списка!")
+    else:
+        await send_msg_user(message.from_user.id,
+                            f"Этого пользователя не было в твоем черном списке")
+
+    keyboard = create_keyboard(BlacklistYesNo)
+    await send_msg_user(message.from_user.id,
+                        f"Хочешь исключить из ЧС ещё чей-нибудь @tg?", 
+                        reply_markup=keyboard)
+
+    await state.set_state(BlacklistStates.AFTER_UNBLOCK_PERSON)
 
 
-@router.message(StateFilter(blacklist_states.block_program))
-@error_sender
-async def blacklist_block_program(message: types.Message, state: FSMContext): 
-    year = message.text.strip().replace(' ', '')
-
-    if not year.isdigit() or int(year) < 1990:
-        await message.answer("Это не год.\nВыбери год программы, которую хочешь добавить в черный список в формате yyyy (напр., 2023)")
-        return
-
-    data = await state.get_data()
-    program_year = f"{data['program']}'{year}"
-
-    logging.info(f"User @{message.from_user.username} added {program_year} to blacklist.")
-
-    await state.set_state(blacklist_states.after_block_program)
-
-    # TODO: add written program'year to his REDIS blacklist
-
-    await message.answer(f"Добавили в твой черный список.\nНа следующем кофе люди с {program_year} тебе не попадутся!")
-
-
-    buttons = [[
-        types.KeyboardButton(text="Да"),
-        types.KeyboardButton(text="Нет")
-        ]]
-    keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
-
-    await message.answer(
-        f"Хочешь добавить еще одну программу'год?", 
-        reply_markup=keyboard
-        )
-
-
-@router.message(StateFilter(blacklist_states.after_block_person), F.text == "Нет")
-@router.message(StateFilter(blacklist_states.after_block_program), F.text == "Нет")
+@router.message(StateFilter(BlacklistStates.BLACKLIST), F.text == BlacklistChoice.CANCEL.value)
+@router.message(StateFilter(BlacklistStates.AFTER_BLOCK_PERSON), F.text == BlacklistYesNo.NO.value)
+@router.message(StateFilter(BlacklistStates.AFTER_UNBLOCK_PERSON), F.text == BlacklistYesNo.NO.value)
 @error_sender
 async def blacklist_end(message: types.Message, state: FSMContext):
-    logging.info(f"User @{message.from_user.username} chose not to continue blocking.")
+    await recieve_msg_user(message)
+
+    await send_msg_user(message.from_user.id,
+                        "Хорошо",
+                        reply_markup=types.ReplyKeyboardRemove())
+
+    blacklist = await find_user(message.from_user.id, ["blacklist"])
+    blacklist = blacklist["blacklist"]
+
+    if blacklist:
+        blacklist = '\n'.join([f"@{user}" for user in blacklist])
+        await send_msg_user(message.from_user.id,
+                            f"Твои люди в чс:\n{blacklist}")
+    else:
+        await send_msg_user(message.from_user.id,
+                            "Твой черный список пуст")
 
     await state.clear()
-
-    await message.answer("Хорошо", reply_markup=types.ReplyKeyboardRemove())
