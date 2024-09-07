@@ -62,7 +62,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.EMAIL_GET))
 @error_sender
-async def cmd_start(message: types.Message, state: FSMContext):
+async def start_email_get(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
     if "@nes.ru" in message.text:
@@ -90,7 +90,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.EMAIL_SET))
 @error_sender
-async def cmd_start(message: types.Message, state: FSMContext):
+async def start_email_set(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
     cache = await find_user(message.from_user.id, ["cache"])
@@ -169,7 +169,7 @@ async def start_age(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.PROGRAM_NAME))
 @error_sender
-async def select_program_name(message: types.Message, state: FSMContext):
+async def start_program_name(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
     if message.text in ["BAE", "MAE", "MAF/MIF"]:
@@ -190,7 +190,7 @@ async def select_program_name(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.PROGRAM_YEAR))
 @error_sender
-async def select_program_year(message: types.Message, state: FSMContext):
+async def start_program_name(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
     year = message.text
