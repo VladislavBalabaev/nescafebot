@@ -50,7 +50,7 @@ async def cmd_admin(message: types.Message):
 
 @router.message(StateFilter(None), Command("logs"), AdminFilter())
 @error_sender
-async def cmd_send_logs(message: types.Message,):
+async def cmd_logs(message: types.Message,):
     logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
 
     await message.answer_document(types.FSInputFile(logs_path))

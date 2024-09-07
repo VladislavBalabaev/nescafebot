@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from aiogram import types, Router
 from aiogram.filters import Filter
-from aiogram.filters.command import Command
+from aiogram.filters.command import Command, CommandObject
 from aiogram.filters.state import StateFilter
 
 from create_bot import bot
@@ -31,7 +31,7 @@ class AdminFilter(Filter):
 
 @router.message(StateFilter(None), Command("match"), AdminFilter())
 @error_sender
-async def cmd_user(message: types.Message):
+async def cmd_match(message: types.Message):
     logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
 
     await actualize_all_users()
@@ -50,4 +50,22 @@ async def cmd_user(message: types.Message):
     await send_matching(matched_df)
     logging.info(f"MATCHING: Users were notified.")
 
+    return
+
+
+@router.message(StateFilter(None), Command("send_message"), AdminFilter())
+@error_sender
+async def cmd_send_message(message: types.Message, command: CommandObject):
+    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+
+    raise NotImplementedError
+    return
+
+
+@router.message(StateFilter(None), Command("send_message_to_all"), AdminFilter())
+@error_sender
+async def cmd_send_message_to_all(message: types.Message):
+    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+
+    raise NotImplementedError
     return
