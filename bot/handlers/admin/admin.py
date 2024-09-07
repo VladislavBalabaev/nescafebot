@@ -1,7 +1,8 @@
 from aiogram import Dispatcher
 
-from handlers.admin.commands.all import router
+from handlers.admin import commands
 
 
 def register_handlers_admin(dp: Dispatcher):
-    dp.include_routers(router)
+    dp.include_routers(commands.interactive.router)
+    dp.include_routers(commands.non_interactive.router)
