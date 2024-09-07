@@ -3,7 +3,7 @@ from aiogram import types
 from datetime import datetime
 
 from create_bot import bot
-from .users import update_user
+from .users import update_user, find_all_users
 from ..connect import get_mongo_users, get_mongo_messages
 
 
@@ -71,8 +71,18 @@ async def actualize_user(user_id: str):
 
     await update_user(user_id, {
         "info.username": user.username,
-        "info": user.full_name,
+        "info.full_name": user.full_name,
         }
     )
+
+    return
+
+
+async def actualize_all_users():
+    users = await find_all_users(["_id", "blocked_bot", "active_matching"])
+
+    for user in users:
+        if user["blocked_bot"] == "no" and user["active_matching"] == "yes":
+            await actualize_user(user["_id"])
 
     return

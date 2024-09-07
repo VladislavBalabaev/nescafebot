@@ -29,6 +29,21 @@ async def find_user(user_id: str, keys: list = []):
     return user
 
 
+async def find_all_users(keys: list = []):
+    mongo_users = get_mongo_users()
+
+    keys = {k: 1 for k in keys}
+
+    if keys:
+        users_cursor = mongo_users.find({}, keys)
+    else:
+        users_cursor = mongo_users.find()
+
+    users = await users_cursor.to_list(length=None)
+
+    return users
+
+
 async def delete_user(user_id: str):
     mongo_users = get_mongo_users()
     

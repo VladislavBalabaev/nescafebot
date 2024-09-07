@@ -4,6 +4,7 @@ import pandas as pd
 from collections import defaultdict
 
 from .emojis import distinct_emoji_list
+from db.operations.users import find_all_users
 
 
 def uniform_blacklist_matching(blacklists):
@@ -33,20 +34,26 @@ def uniform_blacklist_matching(blacklists):
     return matched
 
 
-def match():
-    # USERS RELATED - before matching:
-    # df.loc[df["active"], "users"]
-        # check if user didn't block bot, if did -> user active=False, if not:
+async def match():
+    users = await find_all_users(["_id", "info.username", "blacklist", "blocked_bot", "active_matching"])
 
-    blacklists = ...
-    
+    blacklists = {user["info"]["username"]: user["blacklist"]
+                  for user in users
+                  if user["blocked_bot"] == "no" and user["active_matching"] == "yes"}
 
 
     matched = uniform_blacklist_matching(blacklists)
-
-    matched = pd.DataFrame(matched.items(), columns=["user", "assignments"])
+    matched = pd.DataFrame(matched.items(), columns=["username", "assignments"])
 
     emojis = distinct_emoji_list()
-    matched["smile"] = [secrets.choice(emojis) for _ in range(matched.shape[0])]
+    matched["emoji"] = [secrets.choice(emojis) for _ in range(matched.shape[0])]
+
+
+    username_to_id = {user["info"]["username"]: user["_id"]
+                      for user in users
+                      if user["blocked_bot"] == "no" and user["active_matching"] == "yes"}
+    matched["_id"] = matched["username"].apply(lambda x: username_to_id[x])
+
+    matched = matched.set_index("_id").loc[:, ["username", "emoji", "assignments"]]
 
     return matched
