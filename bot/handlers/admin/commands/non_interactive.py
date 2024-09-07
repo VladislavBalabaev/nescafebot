@@ -43,7 +43,7 @@ async def semd_temporary_file(user_id: str, text: str):
 async def cmd_admin(message: types.Message):
     logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
 
-    await message.answer("/logs - текущие логи;\n/messages @tg 15 - последние N сообщений пользователя;\n/user @tg - данные пользователя;\n/match - сделать мэтчинг.")
+    await message.answer("/logs - текущие логи;\n/messages @tg 15 - последние N сообщений пользователя;\n/user @tg - данные пользователя;\n/match - сделать мэтчинг;\n/send_message @tg - отправить сообщение пользователю;\n/send_message_to_all - отправить сообщение всем пользователям.")
 
     return
 
