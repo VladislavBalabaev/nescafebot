@@ -6,8 +6,9 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
 from handlers.common.addressing_errors import error_sender
-from db.operations.users import blacklist_add, blacklist_remove, find_user
+from handlers.client.shared.keyboard import create_keyboard
 from db.operations.messages import send_msg_user, recieve_msg_user
+from db.operations.users import blacklist_add, blacklist_remove, find_user
 
 
 router = Router()
@@ -32,11 +33,6 @@ class BlacklistChoice(Enum):
 class BlacklistYesNo(Enum):
     YES = "Да"
     NO = "Нет"
-
-
-def create_keyboard(choices):
-    buttons = [[types.KeyboardButton(text=choice.value) for choice in choices]]
-    return types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
 
 
 @router.message(StateFilter(None), Command("blacklist"))

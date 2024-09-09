@@ -29,7 +29,8 @@ async def create_user(message: types.Message):
         },
         "blacklist": [],                                        # of user_ids
         "blocked_bot": "no",
-        "active_matching": "yes",
+        "active_matching": "no",
+        "finished_profile": "no",
         "cache": {},
     }
 

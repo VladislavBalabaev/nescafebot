@@ -1,4 +1,5 @@
 import asyncio
+from enum import Enum
 from random import randint
 from aiogram import types, Router
 from aiogram.fsm.context import FSMContext
@@ -6,10 +7,11 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
-from ..email import send_email
+from handlers.client.email import send_email
 from db.operations.user_profile import create_user
 from db.operations.users import update_user, find_user
 from handlers.common.addressing_errors import error_sender
+from handlers.client.shared.keyboard import create_keyboard
 from db.operations.messages import send_msg_user, recieve_msg_user
 
 
@@ -24,6 +26,16 @@ class StartStates(StatesGroup):
     PROGRAM_NAME = State()
     PROGRAM_YEAR = State()
     ABOUT = State()
+
+
+class StartProgramNames(Enum):
+    BAE = "BAE"
+    MAE = "MAE"
+    MAF = "MAF/MIF"
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_
 
 
 @router.message(StateFilter(None), Command("start"))
@@ -72,7 +84,7 @@ async def start_email_get(message: types.Message, state: FSMContext):
         code = str(randint(100000, 999999))
 
         await update_user(message.from_user.id,
-                        {"cache.email": message.text, "cache.email_code": code})
+                          {"cache.email": message.text, "cache.email_code": code})
 
         await send_email(message.text, f"Еще раз ривет!\nТвой код для NEScafeBot: {code}.\nКод был отправлен для аккаунта @{message.from_user.username}")
 
@@ -122,7 +134,7 @@ async def start_email_set(message: types.Message, state: FSMContext):
 async def start_name(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
-    if len(message.text) < 50:
+    if len(message.text) < 50 and len(message.text.split(" ")) <= 3:
         await update_user(message.from_user.id, 
                           {"info.written_name": message.text})
 
@@ -147,12 +159,7 @@ async def start_age(message: types.Message, state: FSMContext):
         await update_user(message.from_user.id, 
                           {"info.age": message.text})
 
-        buttons = [[
-            types.KeyboardButton(text="BAE"),
-            types.KeyboardButton(text="MAE"),
-            types.KeyboardButton(text="MAF/MIF"),
-            ]]
-        keyboard = types.ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
+        keyboard = create_keyboard(StartProgramNames)
 
         await send_msg_user(message.from_user.id,
                             "Выбери свою программу",
@@ -172,9 +179,9 @@ async def start_age(message: types.Message, state: FSMContext):
 async def start_program_name(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
-    if message.text in ["BAE", "MAE", "MAF/MIF"]:
+    if StartProgramNames.has_value(message.text):
         await update_user(message.from_user.id, 
-                        {"info.program.name": message.text})
+                          {"info.program.name": message.text})
 
         await send_msg_user(message.from_user.id,
                             "Теперь, выбери год программы (напр., 2023)",
@@ -197,7 +204,7 @@ async def start_program_name(message: types.Message, state: FSMContext):
 
     if year.isdigit() and int(year) >= 1990 and int(year) < 9999:
         await update_user(message.from_user.id, 
-                        {"info.program.year": year})
+                          {"info.program.year": year})
 
         await send_msg_user(message.from_user.id, 
                             "Напиши о себе в паре предложений")
@@ -217,7 +224,9 @@ async def start_about(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
     await update_user(message.from_user.id, 
-                    {"info.about": message.text})
+                      {"info.about": message.text, 
+                       "active_matching": "yes",
+                       "finished_profile": "yes",})
 
     await send_msg_user(message.from_user.id, 
                         "Это все, что нам нужно!\nЕсли захочешь изменить что-либо о себе, просто напиши /start.\n\nP.S. Почту повторно подтверждать не придется)")
