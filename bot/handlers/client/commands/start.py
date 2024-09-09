@@ -43,9 +43,18 @@ class StartProgramNames(Enum):
 async def cmd_start(message: types.Message, state: FSMContext):
     # await delete_everithing()
 
-    exists = await find_user(message.from_user.id, ["_id"])
+    exist = await find_user(message.from_user.id, ["_id"])
+    if not exist:
+        await create_user(message)
 
-    if exists:
+        await send_msg_user(message.from_user.id, 
+                            "Привет!\nЭто бот random coffee для действующих студентов РЭШ созданный студентами MAE'25 @vbalab и @Madfyre.\n\nКонцепция бота очень простая, раз в две недели с учетом твоего черного списка пользователей мы случайным образом подбираем тебе двух пользователей бота, с которыми ты сможешь попить кофе.\n\nОб остальных подробностях поговорим позже, давай сначала тебя зарегистрируем")
+
+
+    has_email = await find_user(message.from_user.id, ["info.email"])
+    has_email = has_email["info"]["email"]
+
+    if has_email:
         await recieve_msg_user(message)
 
         await send_msg_user(message.from_user.id, 
@@ -56,12 +65,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
         await state.set_state(StartStates.NAME)
     else:
-        await create_user(message)
-
         await recieve_msg_user(message)
 
-        await send_msg_user(message.from_user.id, 
-                            "Привет!\nЭто бот random coffee для действующих студентов РЭШ созданный студентами MAE'25 @vbalab и @Madfyre.\n\nКонцепция бота очень простая, раз в две недели с учетом твоего черного списка пользователей мы случайным образом подбираем тебе двух пользователей бота, с которыми ты сможешь попить кофе.\n\nОб остальных подробностях поговорим позже, давай сначала тебя зарегистрируем")
 
         await asyncio.sleep(1)
         await send_msg_user(message.from_user.id, 
@@ -226,6 +231,7 @@ async def start_about(message: types.Message, state: FSMContext):
 
     if len(message.text) < 300:
         existed = await find_user(message.from_user.id, ["finished_profile"])
+        existed = existed["finished_profile"]
 
         await update_user(message.from_user.id, 
                         {"info.about": message.text, 
