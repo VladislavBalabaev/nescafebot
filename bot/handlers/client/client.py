@@ -5,8 +5,10 @@ from handlers.client import commands
 
 def register_handlers_client(dp: Dispatcher):
     dp.include_routers(
-        commands.other.router,                    # because /cancel is there
+        commands.cancel.router,                    # because /cancel is there
         commands.start.router,
-        commands.active.router,
         commands.blacklist.router,
+        commands.active.router,
+        commands.help_.router,
+        commands.zero_message.router,
     )

@@ -25,8 +25,8 @@ async def on_shutdown():
 
 async def main():
     try:
-        client.register_handlers_client(dp)
         admin.register_handlers_admin(dp)
+        client.register_handlers_client(dp)
 
         dp.startup.register(on_startup)
         dp.shutdown.register(on_shutdown)
