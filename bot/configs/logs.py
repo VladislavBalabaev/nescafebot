@@ -66,10 +66,10 @@ async def init_logger():
 
     try:
         listener.start()
-        logging.info(f'### Logger has been started! ###')
+        logging.info(f'### Logger has started working! ###')
 
         while True:
             await asyncio.sleep(60)
     finally:
-        logging.info(f'### Logger is being shutdown! ###')
+        logging.info(f'### Logger has finished working! ###')
         listener.stop()
