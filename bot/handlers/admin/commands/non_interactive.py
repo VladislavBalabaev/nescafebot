@@ -26,7 +26,7 @@ class AdminFilter(Filter):
         return message.from_user.id in ADMINS
 
 
-async def semd_temporary_file(user_id: str, text: str):
+async def semd_temporary_file(user_id: int, text: str):
     file_path = TEMP_DIR / f"user_{user_id}.txt"
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(text)

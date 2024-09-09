@@ -3,7 +3,7 @@ import logging
 from ..connect import get_mongo_users
 
 
-async def update_user(user_id: str, keys_values: dict):
+async def update_user(user_id: int, keys_values: dict):
     mongo_users = get_mongo_users()
 
     filter = {"_id": user_id}
@@ -16,7 +16,7 @@ async def update_user(user_id: str, keys_values: dict):
     return
 
 
-async def find_user(user_id: str, keys: list = []):
+async def find_user(user_id: int, keys: list = []):
     mongo_users = get_mongo_users()
 
     keys = {k: 1 for k in keys}
@@ -44,7 +44,7 @@ async def find_all_users(keys: list = []):
     return users
 
 
-async def delete_user(user_id: str):
+async def delete_user(user_id: int):
     mongo_users = get_mongo_users()
     
     await mongo_users.delete_one({"_id": user_id})
@@ -61,7 +61,7 @@ async def find_id_by_username(username: str):
     return user["_id"]
 
 
-async def blacklist_add(user_id: str, username):
+async def blacklist_add(user_id: int, username):
     blacklist = await find_user(user_id, ["blacklist"])
     blacklist = blacklist["blacklist"]
 
@@ -75,7 +75,7 @@ async def blacklist_add(user_id: str, username):
     return True
 
 
-async def blacklist_remove(user_id: str, username):
+async def blacklist_remove(user_id: int, username):
     blacklist = await find_user(user_id, ["blacklist"])
     blacklist = blacklist["blacklist"]
 

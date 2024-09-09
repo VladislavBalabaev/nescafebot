@@ -57,7 +57,7 @@ async def delete_everithing():
     return
 
 
-async def actualize_user(user_id: str):
+async def actualize_user(user_id: int):
     try:
         user: types.User = await bot.get_chat(user_id)
     except Exception as e:
