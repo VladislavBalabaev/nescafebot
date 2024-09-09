@@ -5,6 +5,7 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
+from handlers.client.shared.check import check_profile
 from handlers.common.addressing_errors import error_sender
 from handlers.client.shared.keyboard import create_keyboard
 from db.operations.messages import send_msg_user, recieve_msg_user
@@ -37,6 +38,7 @@ class BlacklistYesNo(Enum):
 
 @router.message(StateFilter(None), Command("blacklist"))
 @error_sender
+@check_profile
 async def cmd_blacklist(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
