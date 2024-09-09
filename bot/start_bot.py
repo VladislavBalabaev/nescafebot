@@ -6,8 +6,8 @@ from handlers.admin import admin
 from handlers.client import client
 from handlers.client.menu import set_commands
 from handlers.admin.send_on import send_startup, send_shutdown
+from handlers.client.pending import notify_users_with_pending_updates
 from db.connect import setup_mongo_connection, close_mongo_connection
-
 
 async def on_startup():
     _ = asyncio.create_task(logs.init_logger())
@@ -15,6 +15,7 @@ async def on_startup():
 
     await setup_mongo_connection()
     await send_startup()
+    await notify_users_with_pending_updates()
 
 
 async def on_shutdown():
@@ -33,7 +34,7 @@ async def main():
 
         await set_commands(bot)
 
-        await dp.start_polling(bot)
+        await dp.start_polling(bot, drop_pending_updates=True)
     finally:
         pass
 
