@@ -4,7 +4,7 @@ from configs import logs
 from create_bot import dp, bot
 from handlers.admin import admin
 from handlers.client import client
-from handlers.common.menu import set_commands
+from handlers.client.menu import set_commands
 from handlers.admin.send_on import send_startup, send_shutdown
 from db.connect import setup_mongo_connection, close_mongo_connection
 

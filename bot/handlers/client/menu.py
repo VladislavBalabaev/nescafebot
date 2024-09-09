@@ -6,19 +6,23 @@ async def set_commands(bot: Bot):
     commands = [
         BotCommand(
             command="/start",
-            description="Создать свой профиль."
+            description="Создать свой профиль"
         ),
         BotCommand(
             command="/cancel",
-            description="Отменить текущий диалог."
+            description="Отменить текущий диалог"
+        ),
+        BotCommand(
+            command="/active",
+            description="Активен ли аккаунт"
         ),
         BotCommand(
             command="/blacklist",
-            description="Добавить человека или программу'год в черный список."
+            description="Черный список"
         ),
         BotCommand(
             command="/help",
-            description="О чем этот бот."
+            description="О чем этот бот"
         ),
     ]
 

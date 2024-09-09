@@ -86,7 +86,7 @@ async def start_email_get(message: types.Message, state: FSMContext):
         await update_user(message.from_user.id,
                           {"cache.email": message.text, "cache.email_code": code})
 
-        await send_email(message.text, f"Еще раз ривет!\nТвой код для NEScafeBot: {code}.\nКод был отправлен для аккаунта @{message.from_user.username}")
+        await send_email(message.text, f"Еще раз привет!\nТвой код для NEScafeBot: {code}.\nКод был отправлен для аккаунта @{message.from_user.username}")
 
         await send_msg_user(message.from_user.id, 
                             "Мы отправили тебе на почту код из 6 цифр.\nНапиши его, пожалуйста, сюда")
@@ -155,7 +155,7 @@ async def start_name(message: types.Message, state: FSMContext):
 async def start_age(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
-    if message.text.isdigit():
+    if message.text.isdigit() and int(message.text) >= 16 and int(message.text) <= 55:
         await update_user(message.from_user.id, 
                           {"info.age": message.text})
 
@@ -168,7 +168,7 @@ async def start_age(message: types.Message, state: FSMContext):
         await state.set_state(StartStates.PROGRAM_NAME)
     else:
         await send_msg_user(message.from_user.id, 
-                            "Это было не число)\nДавай заново",
+                            "Это точно не возраст)\nДавай заново",
                             fail=True)
     
     return
@@ -223,17 +223,33 @@ async def start_program_name(message: types.Message, state: FSMContext):
 async def start_about(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
-    await update_user(message.from_user.id, 
-                      {"info.about": message.text, 
-                       "active_matching": "yes",
-                       "finished_profile": "yes",})
 
-    await send_msg_user(message.from_user.id, 
-                        "Это все, что нам нужно!\nЕсли захочешь изменить что-либо о себе, просто напиши /start.\n\nP.S. Почту повторно подтверждать не придется)")
+    if len(message.text) < 300:
+        existed = await find_user(message.from_user.id, ["finished_profile"])
 
-    await send_msg_user(message.from_user.id, 
-                        "Теперь чуть подробнее расскажем о боте")
+        await update_user(message.from_user.id, 
+                        {"info.about": message.text, 
+                        "active_matching": "yes",
+                        "finished_profile": "yes",})
 
-    await state.clear()
+        if existed:
+            await send_msg_user(message.from_user.id,
+                                "Данные профиля изменены!")
+        else:
+            await send_msg_user(message.from_user.id,
+                                "Это все, что нам нужно!\nЕсли захочешь изменить что-либо о себе, просто напиши /start.\n\nP.S. Почту повторно подтверждать не придется)")
+            await send_msg_user(message.from_user.id, 
+                                "Теперь чуть подробнее расскажем о боте)\n\nКак уже говорилось, суть бота в том, чтобы раз в две недели подбирать случайным образом компаньона на кофе, для того, чтобы познакомиться или просто приятно провести время.\n\nВо время распределения тебе придет твой смайл, например, :gorilla:. А также от нуля до двух пользователей с их смайлами.\nТы можешь написать человеку только лишь его смайл и он сразу поймет, по какому поводу ты пишешь)")
+
+        await send_msg_user(message.from_user.id, 
+                            "Также ты можешь добавить людей в свой черный список командой /blacklist, так пользователь никогда не попадется тебе, а ты пользователю.\n\nОт рандом кофе можно и отдохнуть, для этого есть /active, которое позволяет исключить твой аккаунт из последующих рандом кофе")
+        await send_msg_user(message.from_user.id, 
+                            "Enjoy!!")
+
+        await state.clear()
+    else:
+        await send_msg_user(message.from_user.id, 
+                            "Слишком много написанного)\nДавай заново",
+                            fail=True)
 
     return
