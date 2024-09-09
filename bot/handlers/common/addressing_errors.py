@@ -4,6 +4,7 @@ from aiogram import types
 from functools import wraps
 from aiogram.fsm.context import FSMContext
 
+
 from create_bot import bot
 from configs.selected_ids import ADMINS
 
@@ -36,22 +37,17 @@ def error_sender(f):
             await f(*args, **kwargs)
 
         except Exception as e:
-            if "message" in kwargs.keys():
-                message = kwargs["message"]
-            else:
-                for arg in args:
-                    if type(arg) == types.Message:
-                        message = arg
-                        break
-
+            message = None
             state = None
-            if "state" in kwargs.keys():
-                state = kwargs["state"]
-            else:
-                for arg in args:
-                    if type(arg) == FSMContext:
-                        state = arg
-                        break
+
+            for arg in args:
+                if isinstance(arg, types.Message):
+                    message = arg
+                elif isinstance(arg, FSMContext):
+                    state = arg
+            
+            message = kwargs.get("message", message)
+            state = kwargs.get("state", state)
 
             await error_occured(message=message, state=state, error=e)
     return wrapper
