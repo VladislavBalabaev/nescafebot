@@ -41,7 +41,7 @@ async def semd_temporary_file(user_id: str, text: str):
 @router.message(StateFilter(None), Command("admin"), AdminFilter())
 @error_sender
 async def cmd_admin(message: types.Message):
-    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
     await message.answer("/logs - текущие логи;\n/messages @tg 15 - последние N сообщений пользователя;\n/user @tg - данные пользователя;\n/match - сделать мэтчинг;\n/send_message @tg - отправить сообщение пользователю;\n/send_message_to_all - отправить сообщение всем пользователям.")
 
@@ -51,7 +51,7 @@ async def cmd_admin(message: types.Message):
 @router.message(StateFilter(None), Command("logs"), AdminFilter())
 @error_sender
 async def cmd_logs(message: types.Message,):
-    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
     await message.answer_document(types.FSInputFile(logs_path))
 
@@ -61,7 +61,7 @@ async def cmd_logs(message: types.Message,):
 @router.message(StateFilter(None), Command("messages"), AdminFilter())
 @error_sender
 async def cmd_messages(message: types.Message, command: CommandObject):
-    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
     if not command.args:
         await message.answer("Введи пользователя и кол-во сообщений:\n/messages @vbalab 30")
@@ -90,7 +90,7 @@ async def cmd_messages(message: types.Message, command: CommandObject):
 @router.message(StateFilter(None), Command("user"), AdminFilter())
 @error_sender
 async def cmd_user(message: types.Message, command: CommandObject):
-    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
     if not command.args:
         await message.answer("Введи пользователя:\n/user @vbalab")

@@ -45,7 +45,7 @@ class AdminFilter(Filter):
 @router.message(StateFilter(None), Command("match"), AdminFilter())
 @error_sender
 async def cmd_match(message: types.Message):
-    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
     await actualize_all_users()
     logging.info(f"MATCHING: Data of all users was actualized.")
@@ -69,7 +69,7 @@ async def cmd_match(message: types.Message):
 @router.message(StateFilter(None), Command("send_message"), AdminFilter())
 @error_sender
 async def cmd_send_message(message: types.Message, command: CommandObject, state: FSMContext):
-    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
     if not command.args:
         await message.answer("Введи пользователя:\n/send_message @vbalab")
@@ -91,7 +91,7 @@ async def cmd_send_message(message: types.Message, command: CommandObject, state
 @router.message(StateFilter(SendMessageStates.MESSAGE), AdminFilter())
 @error_sender
 async def send_message_message(message: types.Message, state: FSMContext):
-    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
     user_data = await state.get_data()
     user_id = user_data['user_id']
@@ -106,7 +106,7 @@ async def send_message_message(message: types.Message, state: FSMContext):
 @router.message(StateFilter(None), Command("send_message_to_all"), AdminFilter())
 @error_sender
 async def cmd_send_message_to_all(message: types.Message, state: FSMContext):
-    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
     await message.answer("Введи сообщение")
 
@@ -118,7 +118,7 @@ async def cmd_send_message_to_all(message: types.Message, state: FSMContext):
 @router.message(StateFilter(SendMessageToAllStates.MESSAGE), AdminFilter())
 @error_sender
 async def send_message_to_all_message(message: types.Message, state: FSMContext):
-    logging.info(f"admin=@{message.from_user.username:<12} texted: {repr(message.text)}")
+    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
     users = await find_all_users(["_id", "info.username", "blocked_bot", "active_matching"])
 
