@@ -63,7 +63,7 @@ async def cmd_logs(message: types.Message,):
 async def cmd_messages(message: types.Message, command: CommandObject):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
-    if not command.args:
+    if not command.args or len(command.args.split()) != 2:
         await message.answer("Введи пользователя и кол-во сообщений:\n/messages @vbalab 30")
         return
 
@@ -92,7 +92,7 @@ async def cmd_messages(message: types.Message, command: CommandObject):
 async def cmd_user(message: types.Message, command: CommandObject):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
-    if not command.args:
+    if not command.args or len(command.args.split()) != 1:
         await message.answer("Введи пользователя:\n/user @vbalab")
 
         return

@@ -71,7 +71,7 @@ async def cmd_match(message: types.Message):
 async def cmd_send_message(message: types.Message, command: CommandObject, state: FSMContext):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
-    if not command.args:
+    if not command.args or len(command.args.split()) != 1:
         await message.answer("Введи пользователя:\n/send_message @vbalab")
         return
 
