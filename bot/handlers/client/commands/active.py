@@ -42,14 +42,14 @@ async def cmd_active(message: types.Message, state: FSMContext):
                             "Твой аккаунт неактивен, а значит, ты не участвуешь в рандом кофе(\n\nХочешь сделать его обратно активным?", 
                             reply_markup=keyboard)
 
-        await state.set_state(ActiveStates.ACTIVATED)
+        await state.set_state(ActiveStates.DEACTIVATED)
     else:
         keyboard = create_keyboard(ActiveYesNo)
         await send_msg_user(message.from_user.id, 
                             "Твой аккаунт активен, а значит, ты будешь участвовать в рандом кофе\n\n Хочешь отдохнуть от кофе и сделать его неактивным?", 
                             reply_markup=keyboard)
 
-        await state.set_state(ActiveStates.DEACTIVATED)
+        await state.set_state(ActiveStates.ACTIVATED)
 
 
 @router.message(StateFilter(ActiveStates.ACTIVATED), F.text == ActiveYesNo.NO.value)
