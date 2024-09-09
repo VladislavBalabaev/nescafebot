@@ -10,10 +10,10 @@ from aiogram.filters.command import Command, CommandObject
 from create_bot import bot
 from configs.env_reader import BOT_DIR
 from configs.selected_ids import ADMINS
+from handlers.common.combined import checker
 from db.operations.messages import send_msg_user
 from handlers.admin.matching.assignment import match
 from handlers.admin.matching.sending import send_matching
-from handlers.common.addressing_errors import error_sender
 from db.operations.user_profile import actualize_all_users
 from db.operations.users import find_id_by_username, find_all_users
 
@@ -43,7 +43,7 @@ class AdminFilter(Filter):
 
 
 @router.message(StateFilter(None), Command("match"), AdminFilter())
-@error_sender
+@checker
 async def cmd_match(message: types.Message):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
@@ -67,7 +67,7 @@ async def cmd_match(message: types.Message):
 
 
 @router.message(StateFilter(None), Command("send_message"), AdminFilter())
-@error_sender
+@checker
 async def cmd_send_message(message: types.Message, command: CommandObject, state: FSMContext):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
@@ -89,7 +89,7 @@ async def cmd_send_message(message: types.Message, command: CommandObject, state
 
 
 @router.message(StateFilter(SendMessageStates.MESSAGE), AdminFilter())
-@error_sender
+@checker
 async def send_message_message(message: types.Message, state: FSMContext):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
@@ -104,7 +104,7 @@ async def send_message_message(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(None), Command("send_message_to_all"), AdminFilter())
-@error_sender
+@checker
 async def cmd_send_message_to_all(message: types.Message, state: FSMContext):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
@@ -116,7 +116,7 @@ async def cmd_send_message_to_all(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(SendMessageToAllStates.MESSAGE), AdminFilter())
-@error_sender
+@checker
 async def send_message_to_all_message(message: types.Message, state: FSMContext):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 

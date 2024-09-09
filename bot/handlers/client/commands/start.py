@@ -7,10 +7,10 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
+from handlers.common.combined import checker
 from handlers.client.email import send_email
 from db.operations.user_profile import create_user
 from db.operations.users import update_user, find_user
-from handlers.common.addressing_errors import error_sender
 from handlers.client.shared.keyboard import create_keyboard
 from db.operations.messages import send_msg_user, recieve_msg_user
 
@@ -39,7 +39,7 @@ class StartProgramNames(Enum):
 
 
 @router.message(StateFilter(None), Command("start"))
-@error_sender
+@checker
 async def cmd_start(message: types.Message, state: FSMContext):
     # await delete_everithing()
 
@@ -78,7 +78,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(StartStates.EMAIL_GET))
-@error_sender
+@checker
 async def start_email_get(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -106,7 +106,7 @@ async def start_email_get(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(StartStates.EMAIL_SET))
-@error_sender
+@checker
 async def start_email_set(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -135,7 +135,7 @@ async def start_email_set(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(StartStates.NAME))
-@error_sender
+@checker
 async def start_name(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -156,7 +156,7 @@ async def start_name(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(StartStates.AGE))
-@error_sender
+@checker
 async def start_age(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -180,7 +180,7 @@ async def start_age(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(StartStates.PROGRAM_NAME))
-@error_sender
+@checker
 async def start_program_name(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -201,7 +201,7 @@ async def start_program_name(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(StartStates.PROGRAM_YEAR))
-@error_sender
+@checker
 async def start_program_name(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -224,7 +224,7 @@ async def start_program_name(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(StartStates.ABOUT))
-@error_sender
+@checker
 async def start_about(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 

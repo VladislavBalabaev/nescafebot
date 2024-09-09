@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 
-from handlers.common.addressing_errors import error_sender
+from handlers.common.combined import checker
 from db.operations.messages import send_msg_user, recieve_msg_user
 
 
@@ -11,7 +11,7 @@ router = Router()
 
 
 @router.message(StateFilter(None), Command("help"))
-@error_sender
+@checker
 async def cmd_help(message: types.Message):
     await recieve_msg_user(message)
 

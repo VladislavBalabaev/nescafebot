@@ -10,8 +10,8 @@ from create_bot import bot
 from configs.logs import logs_path
 from configs.env_reader import TEMP_DIR
 from configs.selected_ids import ADMINS
+from handlers.common.combined import checker
 from db.operations.messages import find_messages
-from handlers.common.addressing_errors import error_sender
 from db.operations.users import find_user, find_id_by_username
 
 
@@ -39,7 +39,7 @@ async def semd_temporary_file(user_id: int, text: str):
 
 
 @router.message(StateFilter(None), Command("admin"), AdminFilter())
-@error_sender
+@checker
 async def cmd_admin(message: types.Message):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
@@ -49,7 +49,7 @@ async def cmd_admin(message: types.Message):
 
 
 @router.message(StateFilter(None), Command("logs"), AdminFilter())
-@error_sender
+@checker
 async def cmd_logs(message: types.Message,):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
@@ -59,7 +59,7 @@ async def cmd_logs(message: types.Message,):
 
 
 @router.message(StateFilter(None), Command("messages"), AdminFilter())
-@error_sender
+@checker
 async def cmd_messages(message: types.Message, command: CommandObject):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 
@@ -88,7 +88,7 @@ async def cmd_messages(message: types.Message, command: CommandObject):
 
 
 @router.message(StateFilter(None), Command("user"), AdminFilter())
-@error_sender
+@checker
 async def cmd_user(message: types.Message, command: CommandObject):
     logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
 

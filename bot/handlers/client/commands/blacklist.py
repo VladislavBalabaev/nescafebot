@@ -5,8 +5,8 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
+from handlers.common.combined import checker
 from handlers.client.shared.check import check_profile
-from handlers.common.addressing_errors import error_sender
 from handlers.client.shared.keyboard import create_keyboard
 from db.operations.messages import send_msg_user, recieve_msg_user
 from db.operations.users import blacklist_add, blacklist_remove, find_user
@@ -37,7 +37,7 @@ class BlacklistYesNo(Enum):
 
 
 @router.message(StateFilter(None), Command("blacklist"))
-@error_sender
+@checker
 @check_profile
 async def cmd_blacklist(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
@@ -65,7 +65,7 @@ async def cmd_blacklist(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(BlacklistStates.BLACKLIST), F.text == BlacklistChoice.ADD.value)
 @router.message(StateFilter(BlacklistStates.AFTER_BLOCK_PERSON), F.text == BlacklistYesNo.YES.value)
-@error_sender
+@checker
 async def blacklist_block_person(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -77,7 +77,7 @@ async def blacklist_block_person(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(BlacklistStates.BLOCK_PERSON))
-@error_sender
+@checker
 async def blacklist_after_block_person(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -101,7 +101,7 @@ async def blacklist_after_block_person(message: types.Message, state: FSMContext
 
 @router.message(StateFilter(BlacklistStates.BLACKLIST), F.text == BlacklistChoice.REMOVE.value)
 @router.message(StateFilter(BlacklistStates.AFTER_UNBLOCK_PERSON), F.text == BlacklistYesNo.YES.value)
-@error_sender
+@checker
 async def blacklist_unblock_person(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -113,7 +113,7 @@ async def blacklist_unblock_person(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(BlacklistStates.UNBLOCK_PERSON))
-@error_sender
+@checker
 async def blacklist_after_unblock_person(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -137,7 +137,7 @@ async def blacklist_after_unblock_person(message: types.Message, state: FSMConte
 @router.message(StateFilter(BlacklistStates.BLACKLIST), F.text == BlacklistChoice.CANCEL.value)
 @router.message(StateFilter(BlacklistStates.AFTER_BLOCK_PERSON), F.text == BlacklistYesNo.NO.value)
 @router.message(StateFilter(BlacklistStates.AFTER_UNBLOCK_PERSON), F.text == BlacklistYesNo.NO.value)
-@error_sender
+@checker
 async def blacklist_end(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 

@@ -5,9 +5,9 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
+from handlers.common.combined import checker
 from db.operations.users import find_user, update_user
 from handlers.client.shared.check import check_profile
-from handlers.common.addressing_errors import error_sender
 from handlers.client.shared.keyboard import create_keyboard
 from db.operations.messages import send_msg_user, recieve_msg_user
 
@@ -28,7 +28,7 @@ class ActiveYesNo(Enum):
 
 
 @router.message(StateFilter(None), Command("active"))
-@error_sender
+@checker
 @check_profile
 async def cmd_active(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
@@ -54,7 +54,7 @@ async def cmd_active(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(ActiveStates.ACTIVATED), F.text == ActiveYesNo.NO.value)
 @router.message(StateFilter(ActiveStates.DEACTIVATED), F.text == ActiveYesNo.NO.value)
-@error_sender
+@checker
 async def active_cancel(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -66,7 +66,7 @@ async def active_cancel(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(ActiveStates.ACTIVATED), F.text == ActiveYesNo.YES.value)
-@error_sender
+@checker
 async def Active_after_block_person(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
@@ -81,7 +81,7 @@ async def Active_after_block_person(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(ActiveStates.DEACTIVATED), F.text == ActiveYesNo.YES.value)
-@error_sender
+@checker
 async def Active_after_block_person(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 
