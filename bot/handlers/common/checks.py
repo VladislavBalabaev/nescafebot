@@ -18,10 +18,15 @@ def text_checker(f):
         if message.text:
             await f(*args, **kwargs)
         else:
-            await recieve_msg_user(message, fail=True)
+            try:
+                await recieve_msg_user(message, fail=True)
 
-            await send_msg_user(message.from_user.id, 
-                                "Принимаем только текст)\nДавай заново",
-                                fail=True)
+                await send_msg_user(message.from_user.id, 
+                                    "Принимаем только текст)\nДавай заново",
+                                    fail=True)
+            except TypeError:
+                await send_msg_user(message.from_user.id, 
+                                    "Чтобы зарегестрироваться в боте, напиши /start",
+                                    fail=True)
 
     return wrapper
