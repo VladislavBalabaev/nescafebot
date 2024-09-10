@@ -17,13 +17,12 @@ async def has_finished_profile(message: types.Message) -> bool:
 def check_finished_profile(f):
     @wraps(f)
     async def wrapper(*args, **kwargs):
-        if "message" in kwargs.keys():
-            message = kwargs["message"]
-        else:
-            for arg in args:
-                if type(arg) == types.Message:
-                    message = arg
-                    break
+        message = None
+        for arg in args:
+            if isinstance(arg, types.Message):
+                message = arg
+                break
+        message = kwargs.get("message", message)
 
 
         finished_profile = await has_finished_profile(message)
@@ -42,12 +41,12 @@ def text_checker(f):
     @wraps(f)
     async def wrapper(*args, **kwargs):
         message = None
-
         for arg in args:
             if isinstance(arg, types.Message):
                 message = arg
-
+                break
         message = kwargs.get("message", message)
+
 
         if message.text:
             await f(*args, **kwargs)
