@@ -9,14 +9,12 @@ async def send_matching(matched: pd.DataFrame):
 
         row = matched.loc[matched["username"] == username].iloc[0]
 
-        return f"{row['info']['full_name']} (@{row['username']}) с {row['info']['program']['name']}'{row['info']['program']['year']}.\nСмайл пользователя - {row['emoji']}\nО себе: {row['info']['about']}"
+        return f"{row['info']['written_name']} (@{row['username']}) с {row['info']['program']['name']}'{row['info']['program']['year']}.\nСмайл пользователя - {row['emoji']}\nО себе: {row['info']['about']}"
 
 
     for user_id in matched.index:
         await send_msg_user(user_id, 
-                            f"Привет!\nПришли с результатами случайного кофе)")
-        await send_msg_user(user_id, 
-                            f"Твой смайл - {matched.loc[user_id, 'emoji']}")
+                            f"Привет!\nПришли с результатами случайного кофе)\n\nТвой смайл - {matched.loc[user_id, 'emoji']}")
 
         assignments = matched.loc[user_id, 'assignments']
         n = len(assignments)
