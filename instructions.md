@@ -19,11 +19,10 @@ Docker compose images and network between them:
 
 #### 1.3. Start the bot:
 Enter screen:
-$ screen -S bot_session
+> \$  screen -S bot_session  
 
 Enter running container of bot in interactive mode:
-> \$ docker exec -it tg_bot bash
-
+> \$ docker exec -it tg_bot bash  
 > \$ python bot/start_bot.py
 
 If the bot takes forever to launch:
@@ -36,17 +35,21 @@ If the bot takes forever to launch:
 > \$ ping api.telegram.org  
 
 
-#### 1.3.1 Exit/Enter screen:
+#### 1.3.1 Screen commands:
 To detach from the screen session (without stopping the bot), press the following key combination:
-> \> Ctrl+A, then D
+> \> Ctrl+A, then D  
+
+Enter Scrollback Mode:
+> \> Ctrl + A, then [  
 
 Reattach to the running screen session:
-> \$ screen -r bot_session
+> \$ screen -r bot_session  
 
 #### 1.4. Finish work:
 To exit the container:
-> \$ exit
+> \$ exit  
 
+Then:
 > \$ docker compose stop  
 > \$ docker compose down  
 
