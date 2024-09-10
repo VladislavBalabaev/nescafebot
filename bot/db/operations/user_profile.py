@@ -1,5 +1,6 @@
 import logging
 from aiogram import types
+from functools import wraps
 from datetime import datetime
 
 from create_bot import bot
@@ -45,6 +46,32 @@ async def create_user(message: types.Message):
     logging.info(f"user_id '{message.from_user.id}' was added to MongoDB.")
 
     return
+
+
+class MongoDBUserNotFound(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+
+def new_user(f):
+    @wraps(f)
+    async def wrapper(*args, **kwargs):
+        try:
+            await f(*args, **kwargs)
+        except MongoDBUserNotFound:    
+            message = None
+            for arg in args:
+                if isinstance(arg, types.Message):
+                    message = arg
+                    break
+            message = kwargs.get("message", message)
+
+            await create_user(message)
+
+            await f(*args, **kwargs)
+
+    return wrapper
 
 
 async def delete_everithing():

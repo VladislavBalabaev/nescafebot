@@ -4,13 +4,17 @@ from datetime import datetime
 
 from create_bot import bot
 from db.connect import get_mongo_messages
+from db.operations.user_profile import new_user, MongoDBUserNotFound
 
 
 async def find_messages(user_id: int):
     mongo_messages = get_mongo_messages()
 
     messages = await mongo_messages.find_one({"_id": user_id}, {"messages": 1})
-    messages = messages["messages"]
+    try:
+        messages = messages["messages"]
+    except TypeError:
+        raise MongoDBUserNotFound(f"User {user_id} is not found in MongoDB.")
 
     return messages
 
@@ -52,6 +56,7 @@ async def send_msg_user(user_id: int, text: str = None, fail: bool = False, repl
     return
 
 
+@new_user
 async def recieve_msg_user(message: types.Message, pending: bool = False):
     user_id = message.from_user.id
 
