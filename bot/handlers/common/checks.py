@@ -1,4 +1,3 @@
-import logging
 from aiogram import types
 from functools import wraps
 
@@ -30,8 +29,7 @@ def check_finished_profile(f):
         if finished_profile == "yes":
             await f(*args, **kwargs)
         else:
-            logging.info(f"_id='{message.from_user.id}' no profile: \033[91m[{message.text}]\033[0m.")
-            send_msg_user(message.from_user.id,
+            await send_msg_user(message.from_user.id,
                           "У тебя еще нет аккаунта(\n\nПожалуйста, пройди регистрацию через /start")
 
     return wrapper

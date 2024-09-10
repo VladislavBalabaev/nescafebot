@@ -4,6 +4,7 @@ from datetime import datetime
 
 from create_bot import bot
 from db.connect import get_mongo_messages
+from db.operations.utils.conversion import user_conversion
 from db.operations.user_profile import new_user, MongoDBUserNotFound
 
 
@@ -38,9 +39,12 @@ async def delete_messages(user_id: int):
     return
 
 
-async def send_msg_user(user_id: int, text: str = None, fail: bool = False, reply_markup: types.ReplyKeyboardMarkup = None):
-    logging.info(f"_id='{user_id:<10}' \033[36m<<\033[0m\033[91m{' [FAIL]' if fail else ''}\033[0m {repr(text)}")
-
+async def send_msg_user(
+    user_id: int, 
+    text: str = None, 
+    fail: bool = False, 
+    reply_markup: types.ReplyKeyboardMarkup = None
+    ):
     messages = await find_messages(user_id)
 
     messages.append({
@@ -53,11 +57,19 @@ async def send_msg_user(user_id: int, text: str = None, fail: bool = False, repl
 
     await bot.send_message(user_id, text, reply_markup=reply_markup)
 
+    username = await user_conversion.get(user_id)
+    fail = " \033[91m[FAIL]\033[0m" if fail else ''
+    logging.info(f"_id={user_id:<10} ({username:<20}) \033[36m<<\033[0m{fail} {repr(text)}")
+
     return
 
 
 @new_user
-async def recieve_msg_user(message: types.Message, pending: bool = False, zero_message: bool = False):
+async def recieve_msg_user(
+    message: types.Message, 
+    pending: bool = False, 
+    zero_message: bool = False,
+    ):
     user_id = message.from_user.id
 
     messages = await find_messages(user_id)
@@ -70,8 +82,9 @@ async def recieve_msg_user(message: types.Message, pending: bool = False, zero_m
 
     await update_messages(user_id, messages)
 
+    username = await user_conversion.get(user_id)
     pending = " \033[91m[Pending]\033[0m" if pending else ''
     zero_message = " \033[91m[ZeroMessage]\033[0m" if zero_message else ''
-    logging.info(f"_id='{user_id:<10}' \033[35m>>\033[0m{pending}{zero_message} {repr(message.text)}")
+    logging.info(f"_id={user_id:<10} ({username:<20}) \033[35m>>\033[0m{pending}{zero_message} {repr(message.text)}")
 
     return

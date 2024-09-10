@@ -39,7 +39,7 @@ class StartProgramNames(Enum):
 
 # @router.message(StateFilter(None), Command("d"))
 # async def cmd_AAAAAA(message: types.Message, state: FSMContext):
-#     await delete_everithing()
+    # await delete_everithing()
 
 
 @router.message(StateFilter(None), Command("start"))

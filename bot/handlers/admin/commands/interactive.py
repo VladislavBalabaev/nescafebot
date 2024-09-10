@@ -45,8 +45,6 @@ class AdminFilter(Filter):
 @router.message(StateFilter(None), Command("match"), AdminFilter())
 @checker
 async def cmd_match(message: types.Message):
-    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
-
     await actualize_all_users()
     logging.info(f"MATCHING: Data of all users was actualized.")
 
@@ -69,8 +67,6 @@ async def cmd_match(message: types.Message):
 @router.message(StateFilter(None), Command("send_message"), AdminFilter())
 @checker
 async def cmd_send_message(message: types.Message, command: CommandObject, state: FSMContext):
-    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
-
     if not command.args or len(command.args.split()) != 1:
         await message.answer("Введи пользователя:\n/send_message @vbalab")
         return
@@ -91,8 +87,6 @@ async def cmd_send_message(message: types.Message, command: CommandObject, state
 @router.message(StateFilter(SendMessageStates.MESSAGE), AdminFilter())
 @checker
 async def send_message_message(message: types.Message, state: FSMContext):
-    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
-
     user_data = await state.get_data()
     user_id = user_data['user_id']
 
@@ -106,8 +100,6 @@ async def send_message_message(message: types.Message, state: FSMContext):
 @router.message(StateFilter(None), Command("send_message_to_all"), AdminFilter())
 @checker
 async def cmd_send_message_to_all(message: types.Message, state: FSMContext):
-    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
-
     await message.answer("Введи сообщение")
 
     await state.set_state(SendMessageToAllStates.MESSAGE)
@@ -118,8 +110,6 @@ async def cmd_send_message_to_all(message: types.Message, state: FSMContext):
 @router.message(StateFilter(SendMessageToAllStates.MESSAGE), AdminFilter())
 @checker
 async def send_message_to_all_message(message: types.Message, state: FSMContext):
-    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
-
     users = await find_all_users(["_id", "info.username", "blocked_bot", "active_matching"])
 
     for user in users:

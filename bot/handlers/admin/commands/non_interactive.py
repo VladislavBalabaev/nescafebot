@@ -1,6 +1,5 @@
 import os
 import json
-import logging
 from aiogram import types, Router
 from aiogram.filters import Filter
 from aiogram.filters.state import StateFilter
@@ -41,8 +40,6 @@ async def semd_temporary_file(user_id: int, text: str):
 @router.message(StateFilter(None), Command("admin"), AdminFilter())
 @checker
 async def cmd_admin(message: types.Message):
-    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
-
     await message.answer("/logs - текущие логи;\n/messages @tg 15 - последние N сообщений пользователя;\n/user @tg - данные пользователя;\n/match - сделать мэтчинг;\n/send_message @tg - отправить сообщение пользователю;\n/send_message_to_all - отправить сообщение всем пользователям.")
 
     return
@@ -51,8 +48,6 @@ async def cmd_admin(message: types.Message):
 @router.message(StateFilter(None), Command("logs"), AdminFilter())
 @checker
 async def cmd_logs(message: types.Message,):
-    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
-
     await message.answer_document(types.FSInputFile(logs_path))
 
     return
@@ -61,8 +56,6 @@ async def cmd_logs(message: types.Message,):
 @router.message(StateFilter(None), Command("messages"), AdminFilter())
 @checker
 async def cmd_messages(message: types.Message, command: CommandObject):
-    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
-
     if not command.args or len(command.args.split()) != 2:
         await message.answer("Введи пользователя и кол-во сообщений:\n/messages @vbalab 30")
         return
@@ -90,8 +83,6 @@ async def cmd_messages(message: types.Message, command: CommandObject):
 @router.message(StateFilter(None), Command("user"), AdminFilter())
 @checker
 async def cmd_user(message: types.Message, command: CommandObject):
-    logging.info(f"admin=@{message.from_user.username:<15} texted: {repr(message.text)}")
-
     if not command.args or len(command.args.split()) != 1:
         await message.answer("Введи пользователя:\n/user @vbalab")
 
