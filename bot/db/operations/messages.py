@@ -36,9 +36,9 @@ async def delete_messages(user_id: int):
 
 async def send_msg_user(user_id: int, text: str = None, fail: bool = False, reply_markup: types.ReplyKeyboardMarkup = None):
     if fail:
-        logging.info(f"_id={f"'{user_id}'":<12} received \033[91m[FAIL]\033[0m: {repr(text)}")
+        logging.info(f"_id={f'\'{user_id}\'':<12} received \033[91m[FAIL]\033[0m: {repr(text)}")
     else:
-        logging.info(f"_id={f"'{user_id}'":<12}' received: {repr(text)}")
+        logging.info(f"_id={f'\'{user_id}\'':<12}' received: {repr(text)}")
 
     messages = await find_messages(user_id)
 
@@ -59,9 +59,9 @@ async def recieve_msg_user(message: types.Message, fail: bool = False):
     user_id = message.from_user.id
 
     if fail:
-        logging.info(f"_id={f"'{user_id}'":<12}   texted \033[91m[FAIL]\033[0m: {repr(message.text)}")
+        logging.info(f"_id={f'\'{user_id}\'':<12}   texted \033[91m[FAIL]\033[0m: {repr(message.text)}")
     else:
-        logging.info(f"_id={f"'{user_id}'":<12}   texted: {repr(message.text)}")
+        logging.info(f"_id={f'\'{user_id}\'':<12}   texted: {repr(message.text)}")
 
     messages = await find_messages(user_id)
 
