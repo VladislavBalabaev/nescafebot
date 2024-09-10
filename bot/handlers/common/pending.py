@@ -3,10 +3,9 @@ from handlers.common.addressing_errors import error_sender
 from db.operations.messages import send_msg_user, recieve_msg_user
 
 
-# TODO: use new_user_check and receive&send
 @error_sender
 async def notify_users_with_pending_updates():
-    updates = await bot.get_updates(offset=None, timeout=5)
+    updates = await bot.get_updates(offset=None, timeout=1)
 
     notified_users = set()
 

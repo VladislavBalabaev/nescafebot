@@ -1,4 +1,3 @@
-import asyncio
 from enum import Enum
 from random import randint
 from aiogram import types, Router
@@ -7,12 +6,12 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
+# from db.operations.user_profile import delete_everithing
 from handlers.common.checks import checker
 from handlers.client.email import send_email
-from db.operations.user_profile import create_user
+from db.operations.messages import send_msg_user
 from db.operations.users import update_user, find_user
 from handlers.client.shared.keyboard import create_keyboard
-from db.operations.messages import send_msg_user, recieve_msg_user
 
 
 router = Router()
@@ -38,18 +37,20 @@ class StartProgramNames(Enum):
         return value in cls._value2member_map_
 
 
+# @router.message(StateFilter(None), Command("d"))
+# async def cmd_AAAAAA(message: types.Message, state: FSMContext):
+#     await delete_everithing()
+
+
 @router.message(StateFilter(None), Command("start"))
 @checker
 async def cmd_start(message: types.Message, state: FSMContext):
-    # await delete_everithing()
-
-    exist = await find_user(message.from_user.id, ["_id"])
+    exist = await find_user(message.from_user.id, ["info.email"])  # !!!!! check email
+    exist = exist["info"]["email"]
     if not exist:
         if message.from_user.username is None:
             await message.answer("Данным ботом могут пользоваться только зарегестрированные в телеграм пользователи.")
             return
-
-        await create_user(message)
 
         await send_msg_user(message.from_user.id, 
                             "Привет!\nЭто бот random coffee для действующих студентов РЭШ созданный студентами MAE'25 @vbalab и @Madfyre.\n\nКонцепция бота очень простая, раз в две недели с учетом твоего черного списка пользователей мы случайным образом подбираем тебе двух пользователей бота, с которыми ты сможешь попить кофе.\n\nОб остальных подробностях поговорим позже, давай сначала тебя зарегистрируем")
@@ -59,8 +60,6 @@ async def cmd_start(message: types.Message, state: FSMContext):
     has_email = has_email["info"]["email"]
 
     if has_email:
-        await recieve_msg_user(message)
-
         await send_msg_user(message.from_user.id, 
                             "Почта у тебя уже привязана, поэтому давай пройдемся по данным")
 
@@ -69,10 +68,6 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
         await state.set_state(StartStates.NAME)
     else:
-        await recieve_msg_user(message)
-
-
-        await asyncio.sleep(1)
         await send_msg_user(message.from_user.id, 
                             "Какая у тебя @nes.ru почта?\n\nОна нужна нам, чтобы мы могли подтвердить, что ты студент РЭШ")
 
@@ -84,7 +79,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 @router.message(StateFilter(StartStates.EMAIL_GET))
 @checker
 async def start_email_get(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
+    # TODO: "/" not in message.text
 
     if "@nes.ru" in message.text:
         await send_msg_user(message.from_user.id, 
@@ -112,8 +107,6 @@ async def start_email_get(message: types.Message, state: FSMContext):
 @router.message(StateFilter(StartStates.EMAIL_SET))
 @checker
 async def start_email_set(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     cache = await find_user(message.from_user.id, ["cache"])
     email_code = cache["cache"]["email_code"]
 
@@ -141,8 +134,6 @@ async def start_email_set(message: types.Message, state: FSMContext):
 @router.message(StateFilter(StartStates.NAME))
 @checker
 async def start_name(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     if len(message.text) < 50 and len(message.text.split(" ")) <= 3:
         await update_user(message.from_user.id, 
                           {"info.written_name": message.text})
@@ -162,8 +153,6 @@ async def start_name(message: types.Message, state: FSMContext):
 @router.message(StateFilter(StartStates.AGE))
 @checker
 async def start_age(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     if message.text.isdigit() and int(message.text) >= 16 and int(message.text) <= 55:
         await update_user(message.from_user.id, 
                           {"info.age": message.text})
@@ -186,8 +175,6 @@ async def start_age(message: types.Message, state: FSMContext):
 @router.message(StateFilter(StartStates.PROGRAM_NAME))
 @checker
 async def start_program_name(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     if StartProgramNames.has_value(message.text):
         await update_user(message.from_user.id, 
                           {"info.program.name": message.text})
@@ -207,8 +194,6 @@ async def start_program_name(message: types.Message, state: FSMContext):
 @router.message(StateFilter(StartStates.PROGRAM_YEAR))
 @checker
 async def start_program_name(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     year = message.text
 
     if year.isdigit() and int(year) >= 1990 and int(year) < 9999:
@@ -230,9 +215,6 @@ async def start_program_name(message: types.Message, state: FSMContext):
 @router.message(StateFilter(StartStates.ABOUT))
 @checker
 async def start_about(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
-
     if len(message.text) < 300:
         existed = await find_user(message.from_user.id, ["finished_profile"])
         existed = existed["finished_profile"]

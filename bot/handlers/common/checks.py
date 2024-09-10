@@ -30,7 +30,7 @@ def check_finished_profile(f):
         if finished_profile == "yes":
             await f(*args, **kwargs)
         else:
-            logging.info(f"_id='{message.from_user.id}'    no profile: \033[91m[{message.text}]\033[0m.")
+            logging.info(f"_id='{message.from_user.id}' no profile: \033[91m[{message.text}]\033[0m.")
             send_msg_user(message.from_user.id,
                           "У тебя еще нет аккаунта(\n\nПожалуйста, пройди регистрацию через /start")
 
@@ -52,8 +52,6 @@ def text_checker(f):
             await f(*args, **kwargs)
         else:
             try:
-                await recieve_msg_user(message, fail=True)
-
                 await send_msg_user(message.from_user.id, 
                                     "Принимаем только текст)\nДавай заново",
                                     fail=True)
@@ -65,5 +63,21 @@ def text_checker(f):
     return wrapper
 
 
+def receiver_msg(f):
+    @wraps(f)
+    async def wrapper(*args, **kwargs):
+        message = None
+        for arg in args:
+            if isinstance(arg, types.Message):
+                message = arg
+                break
+        message = kwargs.get("message", message)
+
+        await recieve_msg_user(message)
+        await f(*args, **kwargs)
+
+    return wrapper
+
+
 def checker(f):
-    return error_sender(text_checker(f))
+    return error_sender(receiver_msg(text_checker(f)))

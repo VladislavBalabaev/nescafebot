@@ -5,10 +5,10 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
+from db.operations.messages import send_msg_user
 from db.operations.users import find_user, update_user
 from handlers.client.shared.keyboard import create_keyboard
 from handlers.common.checks import checker, check_finished_profile
-from db.operations.messages import send_msg_user, recieve_msg_user
 
 
 router = Router()
@@ -30,8 +30,6 @@ class ActiveYesNo(Enum):
 @checker
 @check_finished_profile
 async def cmd_active(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     active = await find_user(message.from_user.id, ["active_matching"])
     active = active["active_matching"]
 
@@ -55,8 +53,6 @@ async def cmd_active(message: types.Message, state: FSMContext):
 @router.message(StateFilter(ActiveStates.DEACTIVATED), F.text == ActiveYesNo.NO.value)
 @checker
 async def active_cancel(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     await send_msg_user(message.from_user.id, 
                         "Окей)", 
                         reply_markup=types.ReplyKeyboardRemove())
@@ -67,8 +63,6 @@ async def active_cancel(message: types.Message, state: FSMContext):
 @router.message(StateFilter(ActiveStates.ACTIVATED), F.text == ActiveYesNo.YES.value)
 @checker
 async def Active_after_block_person(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     await update_user(message.from_user.id,
                       {"active_matching": "no"})
 
@@ -82,8 +76,6 @@ async def Active_after_block_person(message: types.Message, state: FSMContext):
 @router.message(StateFilter(ActiveStates.DEACTIVATED), F.text == ActiveYesNo.YES.value)
 @checker
 async def Active_after_block_person(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     await update_user(message.from_user.id,
                       {"active_matching": "yes"})
 

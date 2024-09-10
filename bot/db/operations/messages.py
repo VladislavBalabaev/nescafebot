@@ -57,10 +57,8 @@ async def send_msg_user(user_id: int, text: str = None, fail: bool = False, repl
 
 
 @new_user
-async def recieve_msg_user(message: types.Message, pending: bool = False):
+async def recieve_msg_user(message: types.Message, pending: bool = False, zero_message: bool = False):
     user_id = message.from_user.id
-
-    logging.info(f"_id='{user_id:<10}' \033[35m>>\033[0m\033[91m{' [PENDING]' if pending else ''}\033[0m {repr(message.text)}")
 
     messages = await find_messages(user_id)
 
@@ -71,5 +69,9 @@ async def recieve_msg_user(message: types.Message, pending: bool = False):
     })
 
     await update_messages(user_id, messages)
+
+    pending = " \033[91m[Pending]\033[0m" if pending else ''
+    zero_message = " \033[91m[ZeroMessage]\033[0m" if zero_message else ''
+    logging.info(f"_id='{user_id:<10}' \033[35m>>\033[0m{pending}{zero_message} {repr(message.text)}")
 
     return

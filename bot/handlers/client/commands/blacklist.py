@@ -5,9 +5,9 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
+from db.operations.messages import send_msg_user
 from handlers.client.shared.keyboard import create_keyboard
 from handlers.common.checks import checker, check_finished_profile
-from db.operations.messages import send_msg_user, recieve_msg_user
 from db.operations.users import blacklist_add, blacklist_remove, find_user
 
 
@@ -39,8 +39,6 @@ class BlacklistYesNo(Enum):
 @checker
 @check_finished_profile
 async def cmd_blacklist(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     await send_msg_user(message.from_user.id, 
                         "Люди из черного списка не будут предлагаться тебе и ты не будешь предложен(а) им на последующих кофе.\n\nСейчас ты можешь добавить какого-либо конкретного человека через его @tg, а также удалить человека из черного списка, если он там находится.")
 
@@ -66,8 +64,6 @@ async def cmd_blacklist(message: types.Message, state: FSMContext):
 @router.message(StateFilter(BlacklistStates.AFTER_BLOCK_PERSON), F.text == BlacklistYesNo.YES.value)
 @checker
 async def blacklist_block_person(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     await send_msg_user(message.from_user.id, 
                         "Напиши, кого добавить в чс (напр., @person_tg)", 
                         reply_markup=types.ReplyKeyboardRemove())
@@ -78,8 +74,6 @@ async def blacklist_block_person(message: types.Message, state: FSMContext):
 @router.message(StateFilter(BlacklistStates.BLOCK_PERSON))
 @checker
 async def blacklist_after_block_person(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     username = message.text.strip().replace(' ', '').replace('@', '')
 
     if await blacklist_add(message.from_user.id, username):
@@ -102,8 +96,6 @@ async def blacklist_after_block_person(message: types.Message, state: FSMContext
 @router.message(StateFilter(BlacklistStates.AFTER_UNBLOCK_PERSON), F.text == BlacklistYesNo.YES.value)
 @checker
 async def blacklist_unblock_person(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     await send_msg_user(message.from_user.id, 
                         "Напиши, кого исключить из чс (напр., @person_tg)", 
                         reply_markup=types.ReplyKeyboardRemove())
@@ -114,8 +106,6 @@ async def blacklist_unblock_person(message: types.Message, state: FSMContext):
 @router.message(StateFilter(BlacklistStates.UNBLOCK_PERSON))
 @checker
 async def blacklist_after_unblock_person(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     username = message.text.strip().replace(' ', '').replace('@', '')
 
     if await blacklist_remove(message.from_user.id, username):
@@ -138,8 +128,6 @@ async def blacklist_after_unblock_person(message: types.Message, state: FSMConte
 @router.message(StateFilter(BlacklistStates.AFTER_UNBLOCK_PERSON), F.text == BlacklistYesNo.NO.value)
 @checker
 async def blacklist_end(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
     await send_msg_user(message.from_user.id,
                         "Хорошо",
                         reply_markup=types.ReplyKeyboardRemove())
