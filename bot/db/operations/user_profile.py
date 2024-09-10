@@ -73,6 +73,7 @@ async def actualize_user(user_id: int):
     await update_user(user_id, {
         "info.username": user.username,
         "info.full_name": user.full_name,
+        "blocked_bot": "no",
         }
     )
 
@@ -83,7 +84,7 @@ async def actualize_all_users():
     users = await find_all_users(["_id", "blocked_bot", "active_matching"])
 
     for user in users:
-        if user["blocked_bot"] == "no" and user["active_matching"] == "yes":
+        if user["active_matching"] == "yes":
             await actualize_user(user["_id"])
 
     return
