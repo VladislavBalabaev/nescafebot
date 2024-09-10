@@ -242,7 +242,7 @@ async def start_about(message: types.Message, state: FSMContext):
                         "active_matching": "yes",
                         "finished_profile": "yes",})
 
-        if existed:
+        if existed == "yes":
             await send_msg_user(message.from_user.id,
                                 "Данные профиля изменены!")
         else:

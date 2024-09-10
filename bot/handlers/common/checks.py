@@ -28,7 +28,7 @@ def check_profile(f):
 
         finished_profile = await has_finished_profile(message)
 
-        if finished_profile:
+        if finished_profile == "yes":
             await f(*args, **kwargs)
         else:
             logging.info(f"_id='{message.from_user.id}'    no profile: \033[91m[{message.text}]\033[0m.")

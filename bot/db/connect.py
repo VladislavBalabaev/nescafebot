@@ -20,7 +20,7 @@ async def setup_mongo_connection():
 
     databases = await mongo_client.list_database_names()
     if "userDatabase" not in databases:
-        raise Exception("'userDatabase' is NOT in 'mongoDB'")
+        logging.warning("##### CREATING NEW 'userDatabase' DATABASE #####")
 
     mongo_users = mongo_client['userDatabase']['users']
     mongo_messages = mongo_client['userDatabase']['messages']
