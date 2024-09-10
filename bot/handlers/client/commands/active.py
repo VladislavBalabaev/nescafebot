@@ -6,8 +6,8 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
 from db.operations.users import find_user, update_user
-from handlers.common.checks import checker, check_profile
 from handlers.client.shared.keyboard import create_keyboard
+from handlers.common.checks import checker, check_finished_profile
 from db.operations.messages import send_msg_user, recieve_msg_user
 
 
@@ -28,7 +28,7 @@ class ActiveYesNo(Enum):
 
 @router.message(StateFilter(None), Command("active"))
 @checker
-@check_profile
+@check_finished_profile
 async def cmd_active(message: types.Message, state: FSMContext):
     await recieve_msg_user(message)
 

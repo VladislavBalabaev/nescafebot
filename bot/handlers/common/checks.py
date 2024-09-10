@@ -14,7 +14,7 @@ async def has_finished_profile(message: types.Message) -> bool:
     return finished_profile
 
 
-def check_profile(f):
+def check_finished_profile(f):
     @wraps(f)
     async def wrapper(*args, **kwargs):
         if "message" in kwargs.keys():
