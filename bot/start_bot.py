@@ -6,8 +6,9 @@ from handlers.admin import admin
 from handlers.client import client
 from handlers.client.menu import set_commands
 from handlers.admin.send_on import send_startup, send_shutdown
-from handlers.client.pending import notify_users_with_pending_updates
+from handlers.common.pending import notify_users_with_pending_updates
 from db.connect import setup_mongo_connection, close_mongo_connection
+
 
 async def on_startup():
     _ = asyncio.create_task(logs.init_logger())

@@ -1,8 +1,9 @@
-import logging
 from create_bot import bot
 from handlers.common.addressing_errors import error_sender
+from db.operations.messages import send_msg_user, recieve_msg_user
 
 
+# TODO: use new_user_check and receive&send
 @error_sender
 async def notify_users_with_pending_updates():
     updates = await bot.get_updates(offset=None, timeout=5)
@@ -12,11 +13,11 @@ async def notify_users_with_pending_updates():
     for update in updates:
         if update.message:
             user_id = update.message.from_user.id
-            logging.info(f"_id='{user_id}'   was pending \033[91m[FAIL]\033[0m: {repr(update.message.text)}")
+            await recieve_msg_user(update.message, pending=True)
 
             if user_id not in notified_users:
-                await bot.send_message(user_id, 
-                                   "Бот был неактивен, но сейчас еще как!\nПопробуй еще раз, пожалуйста")
+                await send_msg_user(user_id,
+                                    "Бот был неактивен, но сейчас еще как!\nПопробуй еще раз, пожалуйста")
 
                 notified_users.add(user_id)
 
