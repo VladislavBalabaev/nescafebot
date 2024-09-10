@@ -7,7 +7,7 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
-from handlers.common.combined import checker
+from handlers.common.checks import checker
 from handlers.client.email import send_email
 from db.operations.user_profile import create_user
 from db.operations.users import update_user, find_user
@@ -45,6 +45,10 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     exist = await find_user(message.from_user.id, ["_id"])
     if not exist:
+        if message.from_user.username is None:
+            await message.answer("Данным ботом могут пользоваться только зарегестрированные в телеграм пользователи.")
+            return
+
         await create_user(message)
 
         await send_msg_user(message.from_user.id, 

@@ -10,7 +10,7 @@ from aiogram.filters.command import Command, CommandObject
 from create_bot import bot
 from configs.env_reader import BOT_DIR
 from configs.selected_ids import ADMINS
-from handlers.common.combined import checker
+from handlers.common.checks import checker
 from db.operations.messages import send_msg_user
 from handlers.admin.matching.assignment import match
 from handlers.admin.matching.sending import send_matching

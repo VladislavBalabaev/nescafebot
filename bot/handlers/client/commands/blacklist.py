@@ -5,8 +5,7 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
-from handlers.common.combined import checker
-from handlers.client.shared.check import check_profile
+from handlers.common.checks import checker, check_profile
 from handlers.client.shared.keyboard import create_keyboard
 from db.operations.messages import send_msg_user, recieve_msg_user
 from db.operations.users import blacklist_add, blacklist_remove, find_user

@@ -1,9 +1,8 @@
 from aiogram import types, Router
-from aiogram.fsm.context import FSMContext
 from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 
-from handlers.common.combined import checker
+from handlers.common.checks import checker
 from db.operations.messages import send_msg_user, recieve_msg_user
 
 
