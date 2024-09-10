@@ -10,7 +10,7 @@ from create_bot import bot
 from configs.logs import logs_path
 from configs.env_reader import TEMP_DIR
 from configs.selected_ids import ADMINS
-from handlers.common.combined import checker
+from handlers.common.checks import checker
 from db.operations.messages import find_messages
 from db.operations.users import find_user, find_id_by_username
 
@@ -71,16 +71,16 @@ async def cmd_messages(message: types.Message, command: CommandObject):
     username = args[0].replace('@', '').replace(' ', '')
     n_messages = int(args[1])
 
-    user_id = await find_id_by_username(username)
+    requested_user_id = await find_id_by_username(username)
 
-    messages = await find_messages(user_id)
+    messages = await find_messages(requested_user_id)
     messages = messages[-n_messages:]
     messages_json = json.dumps(messages, indent=3, ensure_ascii=False)
     messages_formatted = f"<pre>{messages_json}</pre>"
 
 
     if len(messages_formatted) > 4000:
-        await semd_temporary_file(user_id, messages_json)
+        await semd_temporary_file(message.from_user.id, messages_json)
     else:
         await message.answer(messages_formatted, parse_mode="HTML")
 
