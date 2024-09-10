@@ -3,7 +3,7 @@ from aiogram import types
 from datetime import datetime
 
 from create_bot import bot
-from ..connect import get_mongo_messages
+from db.connect import get_mongo_messages
 
 
 async def find_messages(user_id: int):
@@ -36,9 +36,9 @@ async def delete_messages(user_id: int):
 
 async def send_msg_user(user_id: int, text: str = None, fail: bool = False, reply_markup: types.ReplyKeyboardMarkup = None):
     if fail:
-        logging.info(f"_id='{user_id}' received text \033[91m[FAIL]\033[0m: {repr(text)}")
+        logging.info(f"_id='{user_id}' received \033[91m[FAIL]\033[0m: {repr(text)}")
     else:
-        logging.info(f"_id='{user_id}' received text: {repr(text)}")
+        logging.info(f"_id='{user_id}' received: {repr(text)}")
 
     messages = await find_messages(user_id)
 
@@ -59,9 +59,9 @@ async def recieve_msg_user(message: types.Message, fail: bool = False):
     user_id = message.from_user.id
 
     if fail:
-        logging.info(f"_id='{user_id}'        texted \033[91m[FAIL]\033[0m: {repr(message.text)}")
+        logging.info(f"_id='{user_id}'   texted \033[91m[FAIL]\033[0m: {repr(message.text)}")
     else:
-        logging.info(f"_id='{user_id}'        texted: {repr(message.text)}")
+        logging.info(f"_id='{user_id}'   texted: {repr(message.text)}")
 
     messages = await find_messages(user_id)
 

@@ -4,7 +4,7 @@ from datetime import datetime
 
 from create_bot import bot
 from .users import update_user, find_all_users
-from ..connect import get_mongo_users, get_mongo_messages
+from db.connect import get_mongo_users, get_mongo_messages
 
 
 async def create_user(message: types.Message):
