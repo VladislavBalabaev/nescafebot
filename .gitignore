@@ -1,7 +1,8 @@
+.env
+data
+*venv*
 .vscode
-venv*
+*.sh
 additional
 *__pycache__
-data
-.env
-restart.sh
+mongo_db_data

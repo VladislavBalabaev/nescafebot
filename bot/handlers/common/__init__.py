@@ -1,1 +1,1 @@
-from . import addressing_errors
+from . import addressing_errors, checks

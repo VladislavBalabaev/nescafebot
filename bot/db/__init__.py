@@ -1,1 +1,2 @@
-from . import connect, structure
+from .operations import users, messages
+from . import connect
