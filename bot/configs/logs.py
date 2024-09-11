@@ -28,7 +28,7 @@ colored_console_format = ColoredFormatter(
     reset=True,
     log_colors={
         'DEBUG': 'cyan',
-        'INFO': 'green',
+        # 'INFO': 'green',
         'WARNING': 'yellow',
         'ERROR': 'red',
         'CRITICAL': 'red,bg_white',

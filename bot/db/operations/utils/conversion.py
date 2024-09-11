@@ -1,3 +1,4 @@
+import re
 import asyncio
 
 from configs.selected_ids import ADMINS
@@ -19,6 +20,9 @@ class UserConversion:
 
         if _id in ADMINS:
             username += " \033[92m[admin]\033[0m"
+
+        username_stripped = re.compile(r'\x1B[@-_][0-?]*[ -/]*[@-~]').sub('', username)
+        username = f"({username + ')':<{25 + len(username) - len(username_stripped)}}"
 
         async with self.dict_lock:
             self.users_dict[_id] = username
