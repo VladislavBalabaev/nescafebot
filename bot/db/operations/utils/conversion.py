@@ -1,12 +1,13 @@
 import re
 import asyncio
 
+from db.connect import get_mongo_users
 from configs.selected_ids import ADMINS
-from db.operations.users import find_user
 
 
 username_id = {}
 dict_lock = asyncio.Lock()
+
 
 class UserConversion:
     def __init__(self) -> None:
@@ -15,7 +16,9 @@ class UserConversion:
 
 
     async def add(self, _id):
-        username = await find_user(_id, ["info.username"])
+        mongo_users = get_mongo_users()
+
+        username = await mongo_users.find_one({"_id": _id}, {"info.username": 1})
         username = username["info"]["username"]
 
         if _id in ADMINS:
@@ -38,5 +41,6 @@ class UserConversion:
             username = await self.add(_id)
 
         return username
+
 
 user_conversion = UserConversion()

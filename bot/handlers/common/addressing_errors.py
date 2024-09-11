@@ -15,7 +15,7 @@ async def error_occured(message: types.Message, state: FSMContext, error: Except
 
     logging.exception(f"\nERROR: {error}\nTRACEBACK:")
 
-    await message.answer("Извини, что-то пошло не так(\nМы уже получили ошибку, разберемся!\n\nЕсли долго не чиним, можешь написать @Madfyre и/или @vbalab по поводу бота.")
+    await bot.send_message(message.from_user.id, "Извини, что-то пошло не так(\nМы уже получили ошибку, разберемся!\n\nЕсли долго не чиним, можешь написать @Madfyre и/или @vbalab по поводу бота.")
 
     tb_message = ''.join(traceback.format_exception(type(error), error, error.__traceback__))
 

@@ -1,6 +1,7 @@
 import logging
 
-from ..connect import get_mongo_users
+from db.connect import get_mongo_users
+from db.operations.utils.conversion import user_conversion
 
 
 async def update_user(user_id: int, keys_values: dict):
@@ -10,7 +11,9 @@ async def update_user(user_id: int, keys_values: dict):
     newvalues = { "$set": keys_values}
 
     await mongo_users.update_one(filter, newvalues)
-    logging.info(f"_id='{user_id:<10}' <> {list(newvalues['$set'].keys())} were updated in DB.")
+
+    username = await user_conversion.get(user_id)
+    logging.info(f"_id={user_id:<10} {username} <> {list(newvalues['$set'].keys())} were updated in DB.")
 
     return
 

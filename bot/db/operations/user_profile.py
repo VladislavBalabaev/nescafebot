@@ -4,16 +4,19 @@ from functools import wraps
 from datetime import datetime
 
 from create_bot import bot
-from .users import update_user, find_all_users
 from db.connect import get_mongo_users, get_mongo_messages
+from db.operations.utils.conversion import user_conversion
+from db.operations.users import update_user, find_all_users
 
 
 async def create_user(message: types.Message):
     mongo_users = get_mongo_users()
     mongo_messages = get_mongo_messages()
 
+    user_id = message.from_user.id
+
     user_structure = {
-        "_id": message.from_user.id,
+        "_id": user_id,
         "info": {
             "time_registred": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "chat_id": message.chat.id,
@@ -36,14 +39,15 @@ async def create_user(message: types.Message):
     }
 
     messages_structure = {
-        "_id": message.from_user.id,
+        "_id": user_id,
         "messages": [],
     }
 
     await mongo_users.insert_one(user_structure)
     await mongo_messages.insert_one(messages_structure)
 
-    logging.info(f"user_id '{message.from_user.id}' was added to MongoDB.")
+    username = await user_conversion.get(user_id)
+    logging.info(f"_id={user_id:<10} {username} <> was added to DB")
 
     return
 
