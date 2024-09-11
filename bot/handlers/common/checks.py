@@ -8,7 +8,7 @@ from db.operations.messages import send_msg_user, recieve_msg_user
 
 async def has_finished_profile(message: types.Message) -> bool:
     finished_profile = await find_user(message.from_user.id, ["finished_profile"])
-    finished_profile = bool(finished_profile["finished_profile"])
+    finished_profile = finished_profile["finished_profile"]
 
     return finished_profile
 
