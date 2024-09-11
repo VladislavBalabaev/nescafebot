@@ -3,9 +3,8 @@ import traceback
 from aiogram import types
 from functools import wraps
 from aiogram.fsm.context import FSMContext
+from db.operations.messages import send_msg_user
 
-
-from create_bot import bot
 from configs.selected_ids import ADMINS
 
 
@@ -15,12 +14,14 @@ async def error_occured(message: types.Message, state: FSMContext, error: Except
 
     logging.exception(f"\nERROR: {error}\nTRACEBACK:")
 
-    await bot.send_message(message.from_user.id, "Извини, что-то пошло не так(\nМы уже получили ошибку, разберемся!\n\nЕсли долго не чиним, можешь написать @Madfyre и/или @vbalab по поводу бота.")
+    await send_msg_user(message.from_user.id, 
+                        "Извини, что-то пошло не так(\nМы уже получили ошибку, разберемся!\n\nЕсли долго не чиним, можешь написать @Madfyre и/или @vbalab по поводу бота.",
+                        fail=True)
 
     tb_message = ''.join(traceback.format_exception(type(error), error, error.__traceback__))
 
     for admin in ADMINS:
-        await bot.send_message(admin, 
+        await send_msg_user(admin, 
             f"Error, check the logs.\n"
             f"User: @{message.from_user.username}.\n"
             f"State: {state}.\n"
