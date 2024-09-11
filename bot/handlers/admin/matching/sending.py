@@ -1,9 +1,27 @@
+import json
 import pandas as pd
 
+from create_bot import bot
+from configs.selected_ids import ADMINS
 from db.operations.messages import send_msg_user
+from handlers.admin.commands.non_interactive import send_temporary_file
 
 
-async def send_matching(matched: pd.DataFrame):
+async def send_matching_admin(matched: pd.DataFrame):
+    matched_formatted = matched.drop(["info"], axis=1).T.to_dict('dict')
+    matched_formatted = json.dumps(matched_formatted, indent=3, ensure_ascii=False)
+    matched_formatted = f"<pre>{matched_formatted}</pre>"
+
+    for admin in ADMINS:
+        if len(matched_formatted) > 4000:
+            await send_temporary_file(admin, matched_formatted)
+        else:
+            await bot.send_message(admin, matched_formatted, parse_mode="HTML")
+
+    return
+
+
+async def send_matching_client(matched: pd.DataFrame):
     def info_by_username(username):
         nonlocal matched
 

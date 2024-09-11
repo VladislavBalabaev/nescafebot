@@ -7,20 +7,14 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.filters.command import Command, CommandObject
 
-from create_bot import bot
-from configs.env_reader import BOT_DIR
 from configs.selected_ids import ADMINS
 from handlers.common.checks import checker
+from handlers.admin.matching import sending
 from db.operations.messages import send_msg_user
 from handlers.admin.matching.assignment import match
-from handlers.admin.matching.sending import send_matching
+from handlers.admin.matching.save import save_matching
 from db.operations.user_profile import actualize_all_users
 from db.operations.users import find_id_by_username, find_all_users
-
-
-
-MATCHING_DIR = BOT_DIR / "data" / "temporary"
-MATCHING_DIR.mkdir(parents=True, exist_ok=True)
 
 
 router = Router()
@@ -45,20 +39,21 @@ class AdminFilter(Filter):
 @router.message(StateFilter(None), Command("match"), AdminFilter())
 @checker
 async def cmd_match(message: types.Message):
+    time_started = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+
     await actualize_all_users()
-    logging.info(f"MATCHING: Data of all users was actualized.")
+    logging.info(f"MATCHING: Data of active users was actualized.")
 
     matched_df = await match()
     logging.info(f"MATCHING: Users were matched; Emojis were attached.")
 
-    file_path = MATCHING_DIR / f"matched_data_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.xlsx"
-    matched_df.to_excel(file_path, index=True)
+    await save_matching(matched_df, time_started)
     logging.info(f"MATCHING: Results of matching were saved.")
 
-    await bot.send_document(message.from_user.id, document=types.FSInputFile(file_path))
-    logging.info(f"MATCHING: Admin was notified.")
+    await sending.send_matching_admin(matched_df)
+    logging.info(f"MATCHING: Admins were notified.")
 
-    await send_matching(matched_df)
+    await sending.send_matching_client(matched_df)
     logging.info(f"MATCHING: Users were notified.")
 
     return

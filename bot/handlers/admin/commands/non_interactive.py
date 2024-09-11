@@ -25,7 +25,7 @@ class AdminFilter(Filter):
         return message.from_user.id in ADMINS
 
 
-async def semd_temporary_file(user_id: int, text: str):
+async def send_temporary_file(user_id: int, text: str):
     file_path = TEMP_DIR / f"user_{user_id}.txt"
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(text)
@@ -73,7 +73,7 @@ async def cmd_messages(message: types.Message, command: CommandObject):
 
 
     if len(messages_formatted) > 4000:
-        await semd_temporary_file(message.from_user.id, messages_json)
+        await send_temporary_file(message.from_user.id, messages_json)
     else:
         await message.answer(messages_formatted, parse_mode="HTML")
 
