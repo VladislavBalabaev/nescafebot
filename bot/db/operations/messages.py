@@ -60,7 +60,7 @@ async def send_msg_user(
     username = await user_conversion.get(user_id)
     username = f"({username})"
     fail = " \033[91m[FAIL]\033[0m" if fail else ''
-    logging.info(f"_id={user_id:<10} {username:<20} \033[36m<<\033[0m{fail} {repr(text)}")
+    logging.info(f"_id={user_id:<10} {username:<25} \033[36m<<\033[0m{fail} {repr(text)}")
 
     return
 
@@ -87,6 +87,6 @@ async def recieve_msg_user(
     username = f"({username})"
     pending = " \033[91m[Pending]\033[0m" if pending else ''
     zero_message = " \033[91m[ZeroMessage]\033[0m" if zero_message else ''
-    logging.info(f"_id={user_id:<10} {username:<20} \033[35m>>\033[0m{pending}{zero_message} {repr(message.text)}")
+    logging.info(f"_id={user_id:<10} {username:<25} \033[35m>>\033[0m{pending}{zero_message} {repr(message.text)}")
 
     return

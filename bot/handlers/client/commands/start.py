@@ -47,19 +47,20 @@ class StartProgramNames(Enum):
 async def cmd_start(message: types.Message, state: FSMContext):
     exist = await find_user(message.from_user.id, ["info.email"])  # !!!!! check email
     exist = exist["info"]["email"]
+
     if not exist:
         if message.from_user.username is None:
-            await message.answer("Данным ботом могут пользоваться только зарегестрированные в телеграм пользователи.")
+            await message.answer("Данным ботом могут пользоваться только зарегестрированные в телеграм пользователи.\nЗарегестрируйся в телеграм, чтобы у тебя появился свой @tg и приходи, будем ждать)")
             return
 
         await send_msg_user(message.from_user.id, 
                             "Привет!\nЭто бот random coffee для действующих студентов РЭШ созданный студентами MAE'25 @vbalab и @Madfyre.\n\nКонцепция бота очень простая, раз в две недели с учетом твоего черного списка пользователей мы случайным образом подбираем тебе двух пользователей бота, с которыми ты сможешь попить кофе.\n\nОб остальных подробностях поговорим позже, давай сначала тебя зарегистрируем")
 
+        await send_msg_user(message.from_user.id, 
+                            "Какая у тебя @nes.ru почта?\n\nОна нужна нам, чтобы мы могли подтвердить, что ты студент РЭШ")
 
-    has_email = await find_user(message.from_user.id, ["info.email"])
-    has_email = has_email["info"]["email"]
-
-    if has_email:
+        await state.set_state(StartStates.EMAIL_GET)
+    else:
         await send_msg_user(message.from_user.id, 
                             "Почта у тебя уже привязана, поэтому давай пройдемся по данным")
 
@@ -67,12 +68,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
                             "Как тебя зовут?")
 
         await state.set_state(StartStates.NAME)
-    else:
-        await send_msg_user(message.from_user.id, 
-                            "Какая у тебя @nes.ru почта?\n\nОна нужна нам, чтобы мы могли подтвердить, что ты студент РЭШ")
 
-        await state.set_state(StartStates.EMAIL_GET)
-    
     return
 
 
