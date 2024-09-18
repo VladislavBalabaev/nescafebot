@@ -1,3 +1,4 @@
+import re
 import asyncio
 import logging
 from queue import Queue
@@ -19,6 +20,17 @@ class AiogramFilter(logging.Filter):
         if record.levelname == 'INFO' and record.name.startswith('aiogram'):
             return False
         return True
+
+
+class RemoveColorCodesFilter(logging.Filter):
+    """Filter that removes color codes from log records."""
+    def filter(self, record):
+        record.msg = self.remove_color_codes(record.msg)
+        return True
+
+    @staticmethod
+    def remove_color_codes(text):
+        return re.sub(r'\x1b\[[0-9;]*m', '', text)
 
 
 # console_format = logging.Formatter("%(levelname)-8s :: %(asctime)s.%(msecs)03d :: %(message)s", "%H:%M:%S")
@@ -60,6 +72,7 @@ async def init_logger():
     file_handler = RotatingFileHandler(logs_path)
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(file_format)
+    file_handler.addFilter(RemoveColorCodesFilter())
 
     listener = QueueListener(que, console_handler, file_handler, respect_handler_level=True)
 
