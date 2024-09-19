@@ -1,23 +1,24 @@
-# 1. How to launch bot:
+# 1. How to launch bot
 
-#### 1.1. You should create .env file in main directory and supply it with:
+## 1.1. You should create .env file in main directory and supply it with
+
 > \> NESCAFEBOT_TOKEN = "_token_"  
 > \> MONGODB_USERNAME = "..."  
 > \> MONGODB_PASSWORD = "..."  
 > \> MONGODB_ABSOLUTE_PATH = "/../"  
 > \> EMAIL_PASSWORD = "..."  
 
+## 1.2. Run docker compose
 
-#### 1.2. Run docker compose:
 First, start docker:
 > \$ sudo systemctl start docker
 
 Docker compose images and network between them:
-> \$ docker compose build #--no-cache 
+> \$ docker compose build #--no-cache  
 > \$ docker compose up --detach
 
+## 1.3. Start the bot
 
-#### 1.3. Start the bot:
 Enter screen:
 > \$  screen -S bot_session  
 
@@ -28,14 +29,16 @@ Enter running container of bot in interactive mode:
 If the bot takes forever to launch:
 
 1) check if your proxies are correct
+
 > \$ env | grep -i proxy
 
 2) check if you have access to telegram's API:
+
 > \$ curl -I https://api.telegram.org  
 > \$ ping api.telegram.org  
 
+## 1.3.1 Screen commands
 
-#### 1.3.1 Screen commands:
 To detach from the screen session (without stopping the bot), press the following key combination:
 > \> Ctrl+A, then D  
 
@@ -45,7 +48,8 @@ Enter Scrollback Mode:
 Reattach to the running screen session:
 > \$ screen -r bot_session  
 
-#### 1.4. Finish work:
+## 1.4. Finish work
+
 To exit the container:
 > \$ exit  
 
@@ -53,6 +57,6 @@ Then:
 > \$ docker compose stop  
 > \$ docker compose down  
 
+## If you use VPN
 
-#### If you use VPN:
 In compose.yaml comment out network settings and bring back **network_mode: 'host'**.
