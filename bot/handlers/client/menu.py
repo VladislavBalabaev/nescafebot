@@ -6,7 +6,7 @@ async def set_commands(bot: Bot):
     commands = [
         BotCommand(
             command="/start",
-            description="Создать свой профиль"
+            description="Редактировать профиль"
         ),
         BotCommand(
             command="/blacklist",
