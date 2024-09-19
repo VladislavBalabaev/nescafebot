@@ -22,7 +22,7 @@ class ActiveStates(StatesGroup):
     DEACTIVATED = State()
 
 
-class ActiveYesNo(Enum):
+class ActiveChoice(Enum):
     YES = "Да"
     NO = "Отмена"
 
@@ -35,14 +35,14 @@ async def cmd_active(message: types.Message, state: FSMContext):
     active = active["active_matching"]
 
     if active == "no":
-        keyboard = create_keyboard(ActiveYesNo)
+        keyboard = create_keyboard(ActiveChoice)
         await send_msg_user(message.from_user.id, 
                             "Твой аккаунт неактивен, а значит, ты не участвуешь в рандом кофе(\n\nХочешь сделать его обратно активным?", 
                             reply_markup=keyboard)
 
         await state.set_state(ActiveStates.DEACTIVATED)
     else:
-        keyboard = create_keyboard(ActiveYesNo)
+        keyboard = create_keyboard(ActiveChoice)
         await send_msg_user(message.from_user.id, 
                             "Твой аккаунт активен, а значит, ты будешь участвовать в рандом кофе\n\n Хочешь отдохнуть от кофе и сделать его неактивным?", 
                             reply_markup=keyboard)
@@ -50,8 +50,8 @@ async def cmd_active(message: types.Message, state: FSMContext):
         await state.set_state(ActiveStates.ACTIVATED)
 
 
-@router.message(StateFilter(ActiveStates.ACTIVATED), F.text == ActiveYesNo.NO.value)
-@router.message(StateFilter(ActiveStates.DEACTIVATED), F.text == ActiveYesNo.NO.value)
+@router.message(StateFilter(ActiveStates.ACTIVATED), F.text == ActiveChoice.NO.value)
+@router.message(StateFilter(ActiveStates.DEACTIVATED), F.text == ActiveChoice.NO.value)
 @checker
 @contains_command
 async def active_cancel(message: types.Message, state: FSMContext):
@@ -62,7 +62,7 @@ async def active_cancel(message: types.Message, state: FSMContext):
     await state.clear()
 
 
-@router.message(StateFilter(ActiveStates.ACTIVATED), F.text == ActiveYesNo.YES.value)
+@router.message(StateFilter(ActiveStates.ACTIVATED), F.text == ActiveChoice.YES.value)
 @checker
 @contains_command
 async def Active_after_block_person(message: types.Message, state: FSMContext):
@@ -76,7 +76,7 @@ async def Active_after_block_person(message: types.Message, state: FSMContext):
     await state.clear()
 
 
-@router.message(StateFilter(ActiveStates.DEACTIVATED), F.text == ActiveYesNo.YES.value)
+@router.message(StateFilter(ActiveStates.DEACTIVATED), F.text == ActiveChoice.YES.value)
 @checker
 @contains_command
 async def Active_after_block_person(message: types.Message, state: FSMContext):
@@ -88,3 +88,19 @@ async def Active_after_block_person(message: types.Message, state: FSMContext):
                         reply_markup=types.ReplyKeyboardRemove())
 
     await state.clear()
+
+
+def is_invalid_active_choice(message: types.Message) -> bool:
+    return message.text not in [choice.value for choice in ActiveChoice]
+
+
+@router.message(StateFilter(ActiveStates.ACTIVATED, ActiveStates.DEACTIVATED), is_invalid_active_choice)
+@checker
+@contains_command
+async def blacklist_no_command(message: types.Message):
+    keyboard = create_keyboard(ActiveChoice)
+    await send_msg_user(message.from_user.id, 
+                        "Выбери из предложенных вариантов", 
+                        reply_markup=keyboard)
+
+    return

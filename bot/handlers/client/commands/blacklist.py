@@ -18,11 +18,11 @@ router = Router()
 class BlacklistStates(StatesGroup):
     BLACKLIST = State()
 
-    BLOCK_PERSON = State()
-    AFTER_BLOCK_PERSON = State()
+    BLOCK = State()
+    AFTER_BLOCK = State()
 
-    UNBLOCK_PERSON = State()
-    AFTER_UNBLOCK_PERSON = State()
+    UNBLOCK = State()
+    AFTER_UNBLOCK = State()
 
 
 class BlacklistChoice(Enum):
@@ -62,21 +62,21 @@ async def cmd_blacklist(message: types.Message, state: FSMContext):
 
 
 @router.message(StateFilter(BlacklistStates.BLACKLIST), F.text == BlacklistChoice.ADD.value)
-@router.message(StateFilter(BlacklistStates.AFTER_BLOCK_PERSON), F.text == BlacklistYesNo.YES.value)
+@router.message(StateFilter(BlacklistStates.AFTER_BLOCK), F.text == BlacklistYesNo.YES.value)
 @checker
 @contains_command
-async def blacklist_block_person(message: types.Message, state: FSMContext):
+async def blacklist_block(message: types.Message, state: FSMContext):
     await send_msg_user(message.from_user.id, 
                         "Напиши, кого добавить в чс (напр., @person_tg)", 
                         reply_markup=types.ReplyKeyboardRemove())
 
-    await state.set_state(BlacklistStates.BLOCK_PERSON)
+    await state.set_state(BlacklistStates.BLOCK)
 
 
-@router.message(StateFilter(BlacklistStates.BLOCK_PERSON))
+@router.message(StateFilter(BlacklistStates.BLOCK))
 @checker
 @contains_command
-async def blacklist_after_block_person(message: types.Message, state: FSMContext):
+async def blacklist_after_block(message: types.Message, state: FSMContext):
     username = message.text.strip().replace(' ', '').replace('@', '')
 
     if await blacklist_add(message.from_user.id, username):
@@ -92,25 +92,25 @@ async def blacklist_after_block_person(message: types.Message, state: FSMContext
         reply_markup=keyboard
         )
 
-    await state.set_state(BlacklistStates.AFTER_BLOCK_PERSON)
+    await state.set_state(BlacklistStates.AFTER_BLOCK)
 
 
 @router.message(StateFilter(BlacklistStates.BLACKLIST), F.text == BlacklistChoice.REMOVE.value)
-@router.message(StateFilter(BlacklistStates.AFTER_UNBLOCK_PERSON), F.text == BlacklistYesNo.YES.value)
+@router.message(StateFilter(BlacklistStates.AFTER_UNBLOCK), F.text == BlacklistYesNo.YES.value)
 @checker
 @contains_command
-async def blacklist_unblock_person(message: types.Message, state: FSMContext):
+async def blacklist_unblock(message: types.Message, state: FSMContext):
     await send_msg_user(message.from_user.id, 
                         "Напиши, кого исключить из чс (напр., @person_tg)", 
                         reply_markup=types.ReplyKeyboardRemove())
 
-    await state.set_state(BlacklistStates.UNBLOCK_PERSON)
+    await state.set_state(BlacklistStates.UNBLOCK)
 
 
-@router.message(StateFilter(BlacklistStates.UNBLOCK_PERSON))
+@router.message(StateFilter(BlacklistStates.UNBLOCK))
 @checker
 @contains_command
-async def blacklist_after_unblock_person(message: types.Message, state: FSMContext):
+async def blacklist_after_unblock(message: types.Message, state: FSMContext):
     username = message.text.strip().replace(' ', '').replace('@', '')
 
     if await blacklist_remove(message.from_user.id, username):
@@ -125,12 +125,12 @@ async def blacklist_after_unblock_person(message: types.Message, state: FSMConte
                         f"Хочешь исключить из ЧС ещё чей-нибудь @tg?", 
                         reply_markup=keyboard)
 
-    await state.set_state(BlacklistStates.AFTER_UNBLOCK_PERSON)
+    await state.set_state(BlacklistStates.AFTER_UNBLOCK)
 
 
 @router.message(StateFilter(BlacklistStates.BLACKLIST), F.text == BlacklistChoice.CANCEL.value)
-@router.message(StateFilter(BlacklistStates.AFTER_BLOCK_PERSON), F.text == BlacklistYesNo.NO.value)
-@router.message(StateFilter(BlacklistStates.AFTER_UNBLOCK_PERSON), F.text == BlacklistYesNo.NO.value)
+@router.message(StateFilter(BlacklistStates.AFTER_BLOCK), F.text == BlacklistYesNo.NO.value)
+@router.message(StateFilter(BlacklistStates.AFTER_UNBLOCK), F.text == BlacklistYesNo.NO.value)
 @checker
 @contains_command
 async def blacklist_end(message: types.Message, state: FSMContext):
@@ -150,3 +150,35 @@ async def blacklist_end(message: types.Message, state: FSMContext):
                             "Твой черный список пуст")
 
     await state.clear()
+
+
+def is_invalid_blacklist_choice(message: types.Message) -> bool:
+    return message.text not in [choice.value for choice in BlacklistChoice]
+
+
+@router.message(StateFilter(BlacklistStates.BLACKLIST), is_invalid_blacklist_choice)
+@checker
+@contains_command
+async def blacklist_no_command_choice(message: types.Message):
+    keyboard = create_keyboard(BlacklistChoice)
+    await send_msg_user(message.from_user.id, 
+                        "Выбери из предложенных вариантов", 
+                        reply_markup=keyboard)
+
+    return
+
+
+def is_invalid_blacklist_yesno(message: types.Message) -> bool:
+    return message.text not in [choice.value for choice in BlacklistYesNo]
+
+
+@router.message(StateFilter(BlacklistStates.AFTER_BLOCK, BlacklistStates.AFTER_UNBLOCK), is_invalid_blacklist_yesno)
+@checker
+@contains_command
+async def blacklist_no_command_yesno(message: types.Message, state: FSMContext):
+    keyboard = create_keyboard(BlacklistYesNo)
+    await send_msg_user(message.from_user.id, 
+                        "Выбери из предложенных вариантов", 
+                        reply_markup=keyboard)
+
+    return

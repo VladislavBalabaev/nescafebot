@@ -187,8 +187,10 @@ async def start_program_name(message: types.Message, state: FSMContext):
 
         await state.set_state(StartStates.PROGRAM_YEAR)
     else:
+        keyboard = create_keyboard(StartProgramNames)
         await send_msg_user(message.from_user.id,
-                            "Выбери из предложенных")
+                            "Выбери из предложенных",
+                            reply_markup=keyboard)
 
     return
 
