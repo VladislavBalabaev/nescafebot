@@ -14,6 +14,6 @@ async def zero_message(message: types.Message):
     await recieve_msg_user(message, zero_message=True)
 
     await send_msg_user(message.from_user.id, 
-                        "Выбери что-нибудь из Menu")
+                        "Ты не находишься в какой-либо команде\nВыбери что-нибудь из Menu")
 
     return

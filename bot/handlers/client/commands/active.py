@@ -8,6 +8,7 @@ from aiogram.fsm.state import State, StatesGroup
 from db.operations.messages import send_msg_user
 from db.operations.users import find_user, update_user
 from handlers.client.shared.keyboard import create_keyboard
+from handlers.client.shared.contains import contains_command
 from handlers.common.checks import checker, check_finished_profile
 
 
@@ -52,6 +53,7 @@ async def cmd_active(message: types.Message, state: FSMContext):
 @router.message(StateFilter(ActiveStates.ACTIVATED), F.text == ActiveYesNo.NO.value)
 @router.message(StateFilter(ActiveStates.DEACTIVATED), F.text == ActiveYesNo.NO.value)
 @checker
+@contains_command
 async def active_cancel(message: types.Message, state: FSMContext):
     await send_msg_user(message.from_user.id, 
                         "Окей)", 
@@ -62,6 +64,7 @@ async def active_cancel(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(ActiveStates.ACTIVATED), F.text == ActiveYesNo.YES.value)
 @checker
+@contains_command
 async def Active_after_block_person(message: types.Message, state: FSMContext):
     await update_user(message.from_user.id,
                       {"active_matching": "no"})
@@ -75,6 +78,7 @@ async def Active_after_block_person(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(ActiveStates.DEACTIVATED), F.text == ActiveYesNo.YES.value)
 @checker
+@contains_command
 async def Active_after_block_person(message: types.Message, state: FSMContext):
     await update_user(message.from_user.id,
                       {"active_matching": "yes"})

@@ -12,6 +12,7 @@ from handlers.client.email import send_email
 from db.operations.messages import send_msg_user
 from db.operations.users import update_user, find_user
 from handlers.client.shared.keyboard import create_keyboard
+from handlers.client.shared.contains import contains_command
 
 
 router = Router()
@@ -74,6 +75,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.EMAIL_GET))
 @checker
+@contains_command
 async def start_email_get(message: types.Message, state: FSMContext):
     # TODO: "/" not in message.text
 
@@ -102,6 +104,7 @@ async def start_email_get(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.EMAIL_SET))
 @checker
+@contains_command
 async def start_email_set(message: types.Message, state: FSMContext):
     cache = await find_user(message.from_user.id, ["cache"])
     email_code = cache["cache"]["email_code"]
@@ -129,6 +132,7 @@ async def start_email_set(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.NAME))
 @checker
+@contains_command
 async def start_name(message: types.Message, state: FSMContext):
     if len(message.text) < 50 and len(message.text.split(" ")) <= 3:
         await update_user(message.from_user.id, 
@@ -148,6 +152,7 @@ async def start_name(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.AGE))
 @checker
+@contains_command
 async def start_age(message: types.Message, state: FSMContext):
     if message.text.isdigit() and int(message.text) >= 16 and int(message.text) <= 55:
         await update_user(message.from_user.id, 
@@ -170,6 +175,7 @@ async def start_age(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.PROGRAM_NAME))
 @checker
+@contains_command
 async def start_program_name(message: types.Message, state: FSMContext):
     if StartProgramNames.has_value(message.text):
         await update_user(message.from_user.id, 
@@ -189,6 +195,7 @@ async def start_program_name(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.PROGRAM_YEAR))
 @checker
+@contains_command
 async def start_program_name(message: types.Message, state: FSMContext):
     year = message.text
 
@@ -210,6 +217,7 @@ async def start_program_name(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.ABOUT))
 @checker
+@contains_command
 async def start_about(message: types.Message, state: FSMContext):
     if len(message.text) < 300:
         existed = await find_user(message.from_user.id, ["finished_profile"])
