@@ -15,7 +15,9 @@ class Settings(BaseSettings):
     NESCAFEBOT_TOKEN: SecretStr
     MONGODB_USERNAME: SecretStr
     MONGODB_PASSWORD: SecretStr
-    EMAIL_PASSWORD: SecretStr
+    EMAIL1_PASSWORD: SecretStr
+    EMAIL2_PASSWORD: SecretStr
+    EMAIL3_PASSWORD: SecretStr
 
     model_config: SettingsConfigDict = SettingsConfigDict(
         env_file=env_path,

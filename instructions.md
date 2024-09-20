@@ -5,8 +5,8 @@
 > \> NESCAFEBOT_TOKEN = "_token_"  
 > \> MONGODB_USERNAME = "..."  
 > \> MONGODB_PASSWORD = "..."  
-> \> MONGODB_ABSOLUTE_PATH = "/../"  
-> \> EMAIL_PASSWORD = "..."  
+> \> EMAIL1_PASSWORD = "..."  
+> \> EMAIL2_PASSWORD = "..."  
 
 ## 1.2. Run docker compose
 
@@ -19,8 +19,10 @@ Docker compose images and network between them:
 
 ## 1.3. Start the bot
 
-Enter screen:
-> \$  screen -S bot_session  
+Be sure that you are in directory of nescafebot.  
+
+Enter new window:
+> \$  tmux new -s nescafebot  
 
 Enter running container of bot in interactive mode:
 > \$ docker exec -it tg_bot bash  
@@ -42,11 +44,8 @@ If the bot takes forever to launch:
 To detach from the screen session (without stopping the bot), press the following key combination:
 > \> Ctrl+A, then D  
 
-Enter Scrollback Mode:
-> \> Ctrl + A, then [  
-
 Reattach to the running screen session:
-> \$ screen -r bot_session  
+> \$ tmux a -t nescafebot  
 
 ## 1.4. Finish work
 
