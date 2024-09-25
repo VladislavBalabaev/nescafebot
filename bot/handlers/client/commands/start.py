@@ -40,13 +40,13 @@ class StartProgramNames(Enum):
 
 # @router.message(StateFilter(None), Command("d"))
 # async def cmd_AAAAAA(message: types.Message, state: FSMContext):
-    # await delete_everithing()
+#     await delete_everithing()
 
 
 @router.message(StateFilter(None), Command("start"))
 @checker
 async def cmd_start(message: types.Message, state: FSMContext):
-    exist = await find_user(message.from_user.id, ["info.email"])  # !!!!! check email
+    exist = await find_user(message.from_user.id, ["info.email"])
     exist = exist["info"]["email"]
 
     if not exist:

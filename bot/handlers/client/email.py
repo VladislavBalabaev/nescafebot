@@ -15,8 +15,12 @@ emails = [
         "password": config.EMAIL2_PASSWORD.get_secret_value()
     },
     {
+        "email": "nes.cafe.user4@gmail.com",
+        "password": config.EMAIL4_PASSWORD.get_secret_value()
+    },
+    {
         "email": "madfure@gmail.com",
-        "password": config.EMAIL3_PASSWORD.get_secret_value()
+        "password": config.EMAIL_MADFYRE_PASSWORD.get_secret_value()
     },
 ]
 
