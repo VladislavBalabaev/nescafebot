@@ -42,19 +42,19 @@ async def cmd_match(message: types.Message):
     time_started = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
 
     await actualize_all_users()
-    logging.info(f"MATCHING: Data of active users was actualized.")
-
+    logging.info(f"process='matching'                        !! Data of active users was actualized.")
+ 
     matched_df = await match()
-    logging.info(f"MATCHING: Users were matched; Emojis were attached.")
+    logging.info(f"process='matching'                        !! Users were matched; Emojis were attached.")
 
     await save_matching(matched_df, time_started)
-    logging.info(f"MATCHING: Results of matching were saved.")
+    logging.info(f"process='matching'                        !! Results of matching were saved.")
 
     await sending.send_matching_admin(matched_df)
-    logging.info(f"MATCHING: Admins were notified.")
+    logging.info(f"process='matching'                        !! Admins were notified.")
 
     await sending.send_matching_client(matched_df)
-    logging.info(f"MATCHING: Users were notified.")
+    logging.info(f"process='matching'                        !! Users were notified.")
 
     return
 

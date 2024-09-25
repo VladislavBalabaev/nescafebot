@@ -1,3 +1,4 @@
+import logging
 import aiosmtplib
 from random import choice
 from email.message import EmailMessage
@@ -48,7 +49,13 @@ async def send_email(email_to, text):
 
         return
     except SMTPAuthenticationError:
+        logging.warning(f"process='email send'                      !! Email \"{email_sender['email']}\" is not working. Was trying to send email to {email_to}.")
+
+        for admin in ADMINS:
+            await bot.send_message(admin, f"WARNING: Email \"{email_sender['email']}\" is not working")
+
         send_email(email_to, text)
+
         return
 
 
@@ -74,6 +81,8 @@ async def test_emails():
             )
 
         except SMTPAuthenticationError:
+            logging.warning(f"process='email test'                      !! Email \"{email_sender['email']}\" is not working.")
+
             for admin in ADMINS:
                 await bot.send_message(admin, f"WARNING: Email \"{email_sender['email']}\" is not working")
 
