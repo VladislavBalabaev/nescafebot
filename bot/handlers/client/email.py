@@ -54,7 +54,7 @@ async def send_email(email_to, text):
         for admin in ADMINS:
             await bot.send_message(admin, f"WARNING: Email \"{email_sender['email']}\" is not working")
 
-        send_email(email_to, text)
+        await send_email(email_to, text)
 
         return
 

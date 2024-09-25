@@ -152,7 +152,7 @@ async def start_name(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def start_age(message: types.Message, state: FSMContext):
-    if message.text.isdigit() and int(message.text) >= 16 and int(message.text) <= 55:
+    if message.text.isdigit() and int(message.text) >= 16 and int(message.text) <= 99:
         await update_user(message.from_user.id, 
                           {"info.age": message.text})
 
