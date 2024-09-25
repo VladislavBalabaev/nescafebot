@@ -18,7 +18,6 @@ class Settings(BaseSettings):
     EMAIL1_PASSWORD: SecretStr
     EMAIL2_PASSWORD: SecretStr
     EMAIL4_PASSWORD: SecretStr
-    EMAIL_MADFYRE_PASSWORD: SecretStr
 
     model_config: SettingsConfigDict = SettingsConfigDict(
         env_file=env_path,

@@ -5,6 +5,7 @@ from create_bot import dp, bot
 from handlers.admin import admin
 from handlers.client import client
 from handlers.client.menu import set_commands
+from handlers.client.email import test_emails
 from handlers.admin.send_on import send_startup, send_shutdown
 from handlers.common.pending import notify_users_with_pending_updates
 from db.connect import setup_mongo_connection, close_mongo_connection
@@ -16,6 +17,7 @@ async def on_startup():
 
     await setup_mongo_connection()
     await send_startup()
+    await test_emails()
     await notify_users_with_pending_updates()
 
 
