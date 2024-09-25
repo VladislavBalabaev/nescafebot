@@ -4,9 +4,9 @@ from functools import wraps
 from datetime import datetime
 
 from create_bot import bot
-from db.connect import get_mongo_users, get_mongo_messages
 from db.operations.utils.conversion import user_conversion
 from db.operations.users import update_user, find_all_users
+from db.connect import get_mongo_users, get_mongo_messages, get_mongo_matches
 
 
 async def create_user(message: types.Message):
@@ -82,9 +82,11 @@ def new_user(f):
 async def delete_everithing():
     mongo_users = get_mongo_users()
     mongo_messages = get_mongo_messages()
+    mongo_matches = get_mongo_matches()
 
     await mongo_users.delete_many({})
     await mongo_messages.delete_many({})
+    await mongo_matches.delete_many({})
 
     return
 

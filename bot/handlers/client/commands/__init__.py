@@ -1,1 +1,2 @@
-from . import cancel, start, blacklist, active, help_, zero_message
+from ...common.commands import cancel, zero_message
+from . import start, blacklist, active, help_

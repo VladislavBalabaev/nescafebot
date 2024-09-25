@@ -1,9 +1,10 @@
 import asyncio
 
-from configs import logs
 from create_bot import dp, bot
+from configs import logs
 from handlers.admin import admin
 from handlers.client import client
+from handlers.common import common_handlers
 from handlers.client.menu import set_commands
 from handlers.client.email import test_emails
 from handlers.admin.send_on import send_startup, send_shutdown
@@ -29,8 +30,10 @@ async def on_shutdown():
 
 async def main():
     try:
+        common_handlers.register_handler_cancel(dp)
         admin.register_handlers_admin(dp)
         client.register_handlers_client(dp)
+        common_handlers.register_handler_zero_message(dp)
 
         dp.startup.register(on_startup)
         dp.shutdown.register(on_shutdown)
