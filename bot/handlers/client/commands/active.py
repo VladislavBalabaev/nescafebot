@@ -44,7 +44,7 @@ async def cmd_active(message: types.Message, state: FSMContext):
     else:
         keyboard = create_keyboard(ActiveChoice)
         await send_msg_user(message.from_user.id, 
-                            "Твой аккаунт активен, а значит, ты будешь участвовать в рандом кофе\n\n Хочешь отдохнуть от кофе и сделать его неактивным?", 
+                            "Твой аккаунт активен, а значит, ты будешь участвовать в рандом кофе\n\nХочешь отдохнуть от кофе и сделать его неактивным?", 
                             reply_markup=keyboard)
 
         await state.set_state(ActiveStates.ACTIVATED)
