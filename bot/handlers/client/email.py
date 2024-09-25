@@ -54,29 +54,27 @@ async def send_email(email_to, text):
 
 async def test_emails():
     global emails
-
     
-    try:
-        email_sender = choice(emails)
+    for email_sender in emails:
+        try:
+            message = EmailMessage()
+            message["Subject"] = "Проверка работоспособности (NEScafeBot)"
+            message["From"] = email_sender["email"]
+            message["To"] = "vbalabaev@nes.ru"
+            message.set_content("Почта работает.")
 
-        message = EmailMessage()
-        message["Subject"] = "Проверка работоспособности (NEScafeBot)"
-        message["From"] = email_sender["email"]
-        message["To"] = "vbalabaev@nes.ru"
-        message.set_content("Почта работает.")
 
+            await aiosmtplib.send(
+                message,
+                username=email_sender["email"],
+                password=email_sender["password"],
+                hostname="smtp.gmail.com",
+                port=587,
+                start_tls=True,
+            )
 
-        await aiosmtplib.send(
-            message,
-            username=email_sender["email"],
-            password=email_sender["password"],
-            hostname="smtp.gmail.com",
-            port=587,
-            start_tls=True,
-        )
+        except SMTPAuthenticationError:
+            for admin in ADMINS:
+                await bot.send_message(admin, f"WARNING: Email \"{email_sender['email']}\" is not working")
 
-        return
-    except SMTPAuthenticationError:
-        for admin in ADMINS:
-            await bot.send_message(admin, f"WARNING: Email \"{email_sender['email']}\" is not working")
-        return
+    return
