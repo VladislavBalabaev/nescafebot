@@ -1,16 +1,15 @@
 import logging
 from datetime import datetime
 from aiogram import types, Router
-from aiogram.filters import Filter
 from aiogram.fsm.context import FSMContext
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.filters.command import Command, CommandObject
 
-from configs.selected_ids import ADMINS
 from handlers.common.checks import checker
 from handlers.admin.matching import sending
 from db.operations.messages import send_msg_user
+from handlers.admin.admin_filter import AdminFilter
 from handlers.admin.matching.assignment import match
 from handlers.admin.matching.save import save_matching
 from db.operations.user_profile import actualize_all_users
@@ -26,14 +25,6 @@ class SendMessageStates(StatesGroup):
 
 class SendMessageToAllStates(StatesGroup):
     MESSAGE = State()
-
-
-class AdminFilter(Filter):
-    def __init__(self) -> None:
-        pass
-
-    async def __call__(self, message: types.Message) -> bool:
-        return message.from_user.id in ADMINS
 
 
 @router.message(StateFilter(None), Command("match"), AdminFilter())
@@ -63,7 +54,7 @@ async def cmd_match(message: types.Message):
 @checker
 async def cmd_send_message(message: types.Message, command: CommandObject, state: FSMContext):
     if not command.args or len(command.args.split()) != 1:
-        await message.answer("Введи пользователя:\n/send_message @vbalab")
+        await send_msg_user(message.from_user.id, "Введи пользователя:\n/send_message @vbalab")
         return
 
     username = command.args.replace('@', '').replace(' ', '')
@@ -71,7 +62,7 @@ async def cmd_send_message(message: types.Message, command: CommandObject, state
     user_id = await find_id_by_username(username)
     await state.update_data(user_id=user_id)
 
-    await message.answer("Введи сообщение")
+    await send_msg_user(message.from_user.id, "Введи сообщение")
 
     await state.set_state(SendMessageStates.MESSAGE)
 
@@ -95,7 +86,7 @@ async def send_message_message(message: types.Message, state: FSMContext):
 @router.message(StateFilter(None), Command("send_message_to_all"), AdminFilter())
 @checker
 async def cmd_send_message_to_all(message: types.Message, state: FSMContext):
-    await message.answer("Введи сообщение")
+    await send_msg_user(message.from_user.id, "Введи сообщение")
 
     await state.set_state(SendMessageToAllStates.MESSAGE)
 

@@ -1,28 +1,19 @@
 import os
 import json
 from aiogram import types, Router
-from aiogram.filters import Filter
 from aiogram.filters.state import StateFilter
 from aiogram.filters.command import Command, CommandObject
 
 from create_bot import bot
 from configs.logs import logs_path
 from configs.env_reader import TEMP_DIR
-from configs.selected_ids import ADMINS
 from handlers.common.checks import checker
-from db.operations.messages import find_messages
+from handlers.admin.admin_filter import AdminFilter
 from db.operations.users import find_user, find_id_by_username
+from db.operations.messages import send_msg_user, find_messages
 
 
 router = Router()
-
-
-class AdminFilter(Filter):
-    def __init__(self) -> None:
-        pass
-
-    async def __call__(self, message: types.Message) -> bool:
-        return message.from_user.id in ADMINS
 
 
 async def send_temporary_file(user_id: int, text: str):
@@ -40,7 +31,7 @@ async def send_temporary_file(user_id: int, text: str):
 @router.message(StateFilter(None), Command("admin"), AdminFilter())
 @checker
 async def cmd_admin(message: types.Message):
-    await message.answer("/logs - текущие логи;\n/messages @tg 15 - последние N сообщений пользователя;\n/user @tg - данные пользователя;\n/match - сделать мэтчинг;\n/send_message @tg - отправить сообщение пользователю;\n/send_message_to_all - отправить сообщение всем пользователям.")
+    await send_msg_user(message.from_user.id, "/logs - текущие логи;\n/messages @tg 15 - последние N сообщений пользователя;\n/user @tg - данные пользователя;\n/match - сделать мэтчинг;\n/send_message @tg - отправить сообщение пользователю;\n/send_message_to_all - отправить сообщение всем пользователям;\n/block_matching - заблокировать мэтчинг для пользователя.")
 
     return
 
@@ -57,7 +48,7 @@ async def cmd_logs(message: types.Message,):
 @checker
 async def cmd_messages(message: types.Message, command: CommandObject):
     if not command.args or len(command.args.split()) != 2:
-        await message.answer("Введи пользователя и кол-во сообщений:\n/messages @vbalab 30")
+        await send_msg_user(message.from_user.id, "Введи пользователя и кол-во сообщений:\n/messages @vbalab 30")
         return
 
     args = command.args.split()
@@ -84,8 +75,7 @@ async def cmd_messages(message: types.Message, command: CommandObject):
 @checker
 async def cmd_user(message: types.Message, command: CommandObject):
     if not command.args or len(command.args.split()) != 1:
-        await message.answer("Введи пользователя:\n/user @vbalab")
-
+        await send_msg_user(message.from_user.id, "Введи пользователя:\n/user @vbalab")
         return
 
     username = command.args.split()[0].replace('@', '').replace(" ", '')
