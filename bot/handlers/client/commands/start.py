@@ -77,8 +77,6 @@ async def cmd_start(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def start_email_get(message: types.Message, state: FSMContext):
-    # TODO: "/" not in message.text
-
     if "@nes.ru" in message.text:
         await send_msg_user(message.from_user.id, 
                             "Секундочку, отправляем письмо")
