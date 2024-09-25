@@ -6,7 +6,7 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
-from db.operations.user_profile import delete_everithing
+# from db.operations.user_profile import delete_everithing
 from handlers.common.checks import checker
 from handlers.client.email import send_email
 from db.operations.messages import send_msg_user
@@ -38,9 +38,9 @@ class StartProgramNames(Enum):
         return value in cls._value2member_map_
 
 
-@router.message(StateFilter(None), Command("d"))
-async def cmd_AAAAAA(message: types.Message, state: FSMContext):
-    await delete_everithing()
+# @router.message(StateFilter(None), Command("d"))
+# async def cmd_AAAAAA(message: types.Message, state: FSMContext):
+#     await delete_everithing()
 
 
 @router.message(StateFilter(None), Command("start"))
