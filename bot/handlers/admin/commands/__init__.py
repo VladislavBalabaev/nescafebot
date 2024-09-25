@@ -1,1 +1,1 @@
-from . import interactive, non_interactive
+from . import block_matching, interactive, non_interactive

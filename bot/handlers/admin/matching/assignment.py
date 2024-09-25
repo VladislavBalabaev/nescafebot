@@ -35,8 +35,8 @@ def uniform_blacklist_matching(blacklists):
 
 
 async def match():
-    users = await find_all_users(["_id", "info", "blacklist", "blocked_bot", "active_matching"])
-    users = [user for user in users if user["blocked_bot"] == "no" and user["active_matching"] == "yes"]
+    users = await find_all_users(["_id", "info", "blacklist", "blocked_bot", "active_matching", "blocked_matching"])
+    users = [user for user in users if user["blocked_bot"] == "no" and user["active_matching"] == "yes" and user["blocked_matching"] == "no"]
 
     blacklists = {user["info"]["username"]: user["blacklist"] for user in users}
     matched = uniform_blacklist_matching(blacklists)
