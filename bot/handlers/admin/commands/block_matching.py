@@ -34,12 +34,12 @@ class BlockMatchingChoice(Enum):
 
 
 async def block_matching_add(username: str):
-    user_id = find_id_by_username(username)
+    user_id = await find_id_by_username(username)
 
-    has_blocked_matching = await find_user(user_id, ["blocked_matching"])
-    has_blocked_matching = has_blocked_matching["blocked_matching"]
+    blocked_matching = await find_user(user_id, ["blocked_matching"])
+    blocked_matching = blocked_matching["blocked_matching"]
 
-    if has_blocked_matching == "yes":
+    if blocked_matching == "yes":
         return False
 
     await update_user(user_id, {"blocked_matching": "yes"})
@@ -48,12 +48,12 @@ async def block_matching_add(username: str):
 
 
 async def block_matching_remove(username: str):
-    user_id = find_id_by_username(username)
+    user_id = await find_id_by_username(username)
 
-    has_blocked_matching = await find_user(user_id, ["blocked_matching"])
-    has_blocked_matching = has_blocked_matching["blocked_matching"]
+    blocked_matching = await find_user(user_id, ["blocked_matching"])
+    blocked_matching = blocked_matching["blocked_matching"]
 
-    if has_blocked_matching == "no":
+    if blocked_matching == "no":
         return False
 
     await update_user(user_id, {"blocked_matching": "no"})
