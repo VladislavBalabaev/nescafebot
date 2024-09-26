@@ -31,7 +31,8 @@ async def send_temporary_file(user_id: int, text: str):
 @router.message(StateFilter(None), Command("admin"), AdminFilter())
 @checker
 async def cmd_admin(message: types.Message):
-    await send_msg_user(message.from_user.id, "/logs - текущие логи;\n/messages @tg 15 - последние N сообщений пользователя;\n/user @tg - данные пользователя;\n/all_users - данные всех пользователей;\n/match - сделать мэтчинг;\n/send_message @tg - отправить сообщение пользователю;\n/send_message_to_all - отправить сообщение всем пользователям;\n/block_matching - заблокировать мэтчинг для пользователя.")
+    await send_msg_user(message.from_user.id, 
+                        """/logs - текущие логи;\n/all_users - данные всех пользователей;\n/messages @tg 15 - последние N сообщений пользователя;\n/user @tg - данные пользователя;\n\n/send_message @tg - отправить сообщение пользователю;\n\n/send_message_to_all - отправить сообщение всем пользователям;\n\n/block_matching - заблокировать мэтчинг для пользователя.\n\n/pseudo_match - сделать мэтчинг;\n\n/match - сделать мэтчинг;""")
 
     return
 

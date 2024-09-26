@@ -50,6 +50,21 @@ async def cmd_match(message: types.Message):
     return
 
 
+@router.message(StateFilter(None), Command("pseudo_match"), AdminFilter())
+@checker
+async def cmd_pseudo_match(message: types.Message):
+    await actualize_all_users()
+    logging.info(f"process='matching'                        !! Data of active users was actualized.")
+ 
+    matched_df = await match()
+    logging.info(f"process='matching'                        !! Users were matched; Emojis were attached.")
+
+    await sending.send_matching_admin(matched_df)
+    logging.info(f"process='matching'                        !! Admins were notified.")
+
+    return
+
+
 @router.message(StateFilter(None), Command("send_message"), AdminFilter())
 @checker
 async def cmd_send_message(message: types.Message, command: CommandObject, state: FSMContext):
