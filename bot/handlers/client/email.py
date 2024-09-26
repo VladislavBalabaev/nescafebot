@@ -54,8 +54,6 @@ async def send_email(email_to, text):
             port=587,
             start_tls=True,
         )
-
-        return
     except SMTPAuthenticationError:
         logging.warning(f"process='email send'                      !! Email \"{email_sender['email']}\" is not working. Was trying to send email to {email_to}.")
 
@@ -64,7 +62,7 @@ async def send_email(email_to, text):
 
         await send_email(email_to, text)
 
-        return
+    return
 
 
 async def test_emails():
