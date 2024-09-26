@@ -12,15 +12,23 @@ from configs.selected_ids import ADMINS
 emails = [
     {
         "email": "nes.cafe.user1@gmail.com",
-        "password": config.EMAIL1_PASSWORD.get_secret_value()
+        "password": config.EMAIL1_PASSWORD.get_secret_value(),
     },
     {
         "email": "nes.cafe.user2@gmail.com",
-        "password": config.EMAIL2_PASSWORD.get_secret_value()
+        "password": config.EMAIL2_PASSWORD.get_secret_value(),  
     },
     {
         "email": "nes.cafe.user4@gmail.com",
-        "password": config.EMAIL4_PASSWORD.get_secret_value()
+        "password": config.EMAIL4_PASSWORD.get_secret_value(),
+    },
+    {
+        "email": "nes.cafe.user5@gmail.com",
+        "password": config.EMAIL5_PASSWORD.get_secret_value(),  
+    },
+    {
+        "email": "nes.cafe.user6@gmail.com",
+        "password": config.EMAIL6_PASSWORD.get_secret_value(),  
     },
 ]
 
@@ -62,6 +70,8 @@ async def send_email(email_to, text):
 async def test_emails():
     global emails
     
+    failed_emails = []
+
     for email_sender in emails:
         try:
             message = EmailMessage()
@@ -85,5 +95,12 @@ async def test_emails():
 
             for admin in ADMINS:
                 await bot.send_message(admin, f"WARNING: Email \"{email_sender['email']}\" is not working")
+
+            failed_emails.append(email_sender)
+
+    for email_sender in failed_emails:
+        emails.remove(email_sender);
+
+    logging.info("### Emails have been checked! ###")
 
     return
