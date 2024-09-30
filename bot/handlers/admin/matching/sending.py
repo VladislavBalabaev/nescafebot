@@ -64,4 +64,8 @@ async def send_matching_client(matched: pd.DataFrame):
         else:
             raise ValueError(f"_id='{user_id}' has more than 2 assignments.")
 
+        # TEMPORARY
+        await send_msg_user(user_id,
+                            f"Хотим уточнить, что распределение участников асимметричное.\nТо есть, те люди, которые тебе выпадут, скорее всего не получат тебя")
+
     return

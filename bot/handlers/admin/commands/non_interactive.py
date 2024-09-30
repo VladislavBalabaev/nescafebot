@@ -94,7 +94,7 @@ async def cmd_user(message: types.Message, command: CommandObject):
 @router.message(StateFilter(None), Command("all_users"), AdminFilter())
 @checker
 async def cmd_all_users(message: types.Message):
-    users = await find_all_users(["_id", "info.username", "info.email"])
+    users = await find_all_users(["_id", "info.username", "info.email", "finished_profile", "active_matching"])
 
     users_json = json.dumps(users, indent=3, ensure_ascii=False)
     users_formatted = f"<pre>{users_json}</pre>"
