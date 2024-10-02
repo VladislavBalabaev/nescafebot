@@ -5,6 +5,10 @@ from db.operations.utils.conversion import user_conversion
 
 
 async def update_user(user_id: int, keys_values: dict):
+    """
+    Updates the specified keys and values for a user in the MongoDB 'users' collection.
+    Logs the changes made.
+    """
     mongo_users = get_mongo_users()
 
     filter = {"_id": user_id}
@@ -19,6 +23,10 @@ async def update_user(user_id: int, keys_values: dict):
 
 
 async def find_user(user_id: int, keys: list = []):
+    """
+    Retrieves a user from the MongoDB 'users' collection based on user ID.
+    Specific fields can be retrieved by providing keys.
+    """
     mongo_users = get_mongo_users()
 
     keys = {k: 1 for k in keys}
@@ -32,6 +40,10 @@ async def find_user(user_id: int, keys: list = []):
 
 
 async def find_all_users(keys: list = []):
+    """
+    Retrieves all users from the MongoDB 'users' collection.
+    Specific fields can be retrieved by providing keys.
+    """
     mongo_users = get_mongo_users()
 
     keys = {k: 1 for k in keys}
@@ -47,6 +59,9 @@ async def find_all_users(keys: list = []):
 
 
 async def delete_user(user_id: int):
+    """
+    Deletes a user from the MongoDB 'users' collection based on user ID.
+    """
     mongo_users = get_mongo_users()
     
     await mongo_users.delete_one({"_id": user_id})
@@ -55,6 +70,9 @@ async def delete_user(user_id: int):
 
 
 async def find_id_by_username(username: str):
+    """
+    Finds a user's ID based on their username from the MongoDB 'users' collection.
+    """
     mongo_users = get_mongo_users()
 
     user = await mongo_users.find_one({"info.username": username}, 
@@ -64,6 +82,10 @@ async def find_id_by_username(username: str):
 
 
 async def blacklist_add(user_id: int, username):
+    """
+    Adds a username to the user's blacklist in the MongoDB 'users' collection.
+    Returns False if the user is already in the blacklist.
+    """
     blacklist = await find_user(user_id, ["blacklist"])
     blacklist = blacklist["blacklist"]
 
@@ -78,6 +100,10 @@ async def blacklist_add(user_id: int, username):
 
 
 async def blacklist_remove(user_id: int, username):
+    """
+    Removes a username from the user's blacklist in the MongoDB 'users' collection.
+    Returns False if the username is not in the blacklist.
+    """
     blacklist = await find_user(user_id, ["blacklist"])
     blacklist = blacklist["blacklist"]
 

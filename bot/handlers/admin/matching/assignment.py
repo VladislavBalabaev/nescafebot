@@ -8,10 +8,12 @@ from db.operations.users import find_all_users
 
 
 def uniform_blacklist_matching(blacklists):
-    # max_assignments = (2 * len(users)) // len(users) + 1
+    """
+    Matches users while respecting their blacklists. Each user is matched with up to 2 candidates 
+    who are not in their blacklist and have not exceeded the maximum number of assignments.
+    """
     max_assignments = 2
-
-
+    # max_assignments = (2 * len(users)) // len(users) + 1
     users = list(blacklists.keys())
     matched = {user: [] for user in users}
     assignment_counts = defaultdict(int)                # a dictionary that provides a default value for a non-existent key
@@ -35,13 +37,16 @@ def uniform_blacklist_matching(blacklists):
 
 
 async def match():
+    """
+    Retrieves users from the database, filters out users with matching restrictions, 
+    and performs the matching process while respecting blacklists. Attaches random emojis to each match.
+    """
     users = await find_all_users(["_id", "info", "blacklist", "blocked_bot", "active_matching", "blocked_matching"])
     users = [user for user in users if user["blocked_bot"] == "no" and user["active_matching"] == "yes" and user["blocked_matching"] == "no"]
 
     blacklists = {user["info"]["username"]: user["blacklist"] for user in users}
     matched = uniform_blacklist_matching(blacklists)
     matched = pd.DataFrame(matched.items(), columns=["username", "assignments"])
-
 
     emojis = distinct_emoji_list()
     matched["emoji"] = [secrets.choice(emojis) for _ in range(matched.shape[0])]

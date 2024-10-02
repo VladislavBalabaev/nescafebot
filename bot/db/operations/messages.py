@@ -9,6 +9,9 @@ from db.operations.user_profile import new_user, MongoDBUserNotFound
 
 
 async def find_messages(user_id: int):
+    """
+    Retrieves messages of a user from MongoDB. Raises an exception if the user is not found.
+    """
     mongo_messages = get_mongo_messages()
 
     messages = await mongo_messages.find_one({"_id": user_id}, {"messages": 1})
@@ -21,6 +24,9 @@ async def find_messages(user_id: int):
 
 
 async def update_messages(user_id: int, messages):
+    """
+    Updates the messages for a user in MongoDB.
+    """
     mongo_messages = get_mongo_messages()
 
     filter = {"_id": user_id}
@@ -32,6 +38,9 @@ async def update_messages(user_id: int, messages):
 
 
 async def delete_messages(user_id: int):
+    """
+    Deletes the messages for a user from MongoDB.
+    """
     mongo_messages = get_mongo_messages()
     
     await mongo_messages.delete_one({"_id": user_id})
@@ -45,6 +54,9 @@ async def send_msg_user(
     fail: bool = False, 
     reply_markup: types.ReplyKeyboardMarkup = None
     ):
+    """
+    Sends a message to the user, logs the message, and updates the message history in MongoDB.
+    """
     messages = await find_messages(user_id)
 
     messages.append({
@@ -70,6 +82,9 @@ async def recieve_msg_user(
     pending: bool = False, 
     zero_message: bool = False,
     ):
+    """
+    Receives a message from a user, logs it, and updates the message history in MongoDB.
+    """
     user_id = message.from_user.id
 
     messages = await find_messages(user_id)

@@ -3,7 +3,15 @@ import pandas as pd
 
 
 def distinct_emoji_list():
+    """
+    Returns a list of simple, non-complex emojis. 
+    Filters out emojis with special characters like skin tone modifiers or those that are composed of multiple code points.
+    """
     def is_simple_emoji(emj):
+        """
+        Determines if an emoji is 'simple' by ensuring it does not contain special characters 
+        or consist of multiple code points.
+        """
         if '\\U000' in repr(emj):
             return False
 
@@ -23,12 +31,14 @@ def distinct_emoji_list():
             '\u2029',  # Paragraph separator
         ]
 
-
         # Check if emoji contains any of the special characters or is a sequence of multiple code points
         return not any(char in emj for char in special_chars) and len(emj) == len(emj.encode('utf-16', 'surrogatepass').decode('utf-16'))
 
 
     def is_non_letter_emoji(emj):
+        """
+        Filters out emojis that are regional indicator symbols (i.e., flag characters).
+        """
         regional_indicator_range = range(0x1F1E6, 0x1F1FF + 1)
 
         return not all(ord(char) in regional_indicator_range for char in emj)

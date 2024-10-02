@@ -16,13 +16,18 @@ router = Router()
 
 
 class ActiveStates(StatesGroup):
+    """
+    State management for checking if a user's account is active or inactive.
+    """
     ACTIVE = State()
-
     ACTIVATED = State()
     DEACTIVATED = State()
 
 
 class ActiveChoice(Enum):
+    """
+    Enum for user choices to activate or deactivate their account.
+    """
     YES = "Да"
     NO = "Отмена"
 
@@ -31,6 +36,10 @@ class ActiveChoice(Enum):
 @checker
 @check_finished_profile
 async def cmd_active(message: types.Message, state: FSMContext):
+    """
+    Handles the /active command to check if a user wants to activate or deactivate their account.
+    Prompts the user for their choice and sets the appropriate state.
+    """
     active = await find_user(message.from_user.id, ["active_matching"])
     active = active["active_matching"]
 
@@ -55,6 +64,9 @@ async def cmd_active(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def active_cancel(message: types.Message, state: FSMContext):
+    """
+    Cancels the activation/deactivation process if the user selects "No."
+    """
     await send_msg_user(message.from_user.id, 
                         "Окей)", 
                         reply_markup=types.ReplyKeyboardRemove())
@@ -66,6 +78,9 @@ async def active_cancel(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def Active_after_block_person(message: types.Message, state: FSMContext):
+    """
+    Deactivates the user's account when they confirm by choosing "Yes."
+    """
     await update_user(message.from_user.id,
                       {"active_matching": "no"})
 
@@ -80,6 +95,9 @@ async def Active_after_block_person(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def Active_after_block_person(message: types.Message, state: FSMContext):
+    """
+    Activates the user's account when they confirm by choosing "Yes."
+    """
     await update_user(message.from_user.id,
                       {"active_matching": "yes"})
 
@@ -91,6 +109,9 @@ async def Active_after_block_person(message: types.Message, state: FSMContext):
 
 
 def is_invalid_active_choice(message: types.Message) -> bool:
+    """
+    Checks if the user input is a valid choice for activating or deactivating their account.
+    """
     return message.text not in [choice.value for choice in ActiveChoice]
 
 
@@ -98,6 +119,9 @@ def is_invalid_active_choice(message: types.Message) -> bool:
 @checker
 @contains_command
 async def blacklist_no_command(message: types.Message):
+    """
+    Informs the user to select from the available options if an invalid choice is made.
+    """
     keyboard = create_keyboard(ActiveChoice)
     await send_msg_user(message.from_user.id, 
                         "Выбери из предложенных вариантов", 

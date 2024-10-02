@@ -8,6 +8,10 @@ from handlers.admin.commands.non_interactive import send_temporary_file
 
 
 async def send_matching_admin(matched: pd.DataFrame):
+    """
+    Sends the matching results to all admins. If the message content is too long, 
+    it sends it as a temporary file.
+    """
     matched_formatted = matched.drop(["info"], axis=1).T.to_dict('dict')
     matched_formatted = json.dumps(matched_formatted, indent=3, ensure_ascii=False)
     matched_formatted = f"<pre>{matched_formatted}</pre>"
@@ -22,7 +26,14 @@ async def send_matching_admin(matched: pd.DataFrame):
 
 
 async def send_matching_client(matched: pd.DataFrame):
+    """
+    Sends the matching results to each user, providing information on who they were matched with, 
+    along with their respective emoji identifiers. If no matches are found, the user is notified.
+    """
     def info_by_username(username):
+        """
+        Formats the information of the matched user to be sent to the client.
+        """
         nonlocal matched
 
         row = matched.loc[matched["username"] == username].iloc[0]
@@ -37,10 +48,10 @@ async def send_matching_client(matched: pd.DataFrame):
         assignments = matched.loc[user_id, 'assignments']
         n = len(assignments)
 
-        if n==0:
+        if n == 0:
             await send_msg_user(user_id,
                                 f"В этот раз тебе не досталось тех, кому можно написать.\nВозможно, это потому что у тебя слишком много людей в черном списке.\n\nВерни кого-нибудь из него и в следующий раз шанс кого-нибудь получить будет больше")
-        elif n==1:
+        elif n == 1:
             await send_msg_user(user_id,
                                 f"В этот раз тебе выпал только один человек, которому ты можешь написать:")
 
@@ -49,7 +60,7 @@ async def send_matching_client(matched: pd.DataFrame):
 
             await send_msg_user(user_id, 
                                 "Ты можешь написать ему его смайл, он сразу поймет, что выпал тебе на кофе)")
-        elif n==2:
+        elif n == 2:
             await send_msg_user(user_id,
                                 f"В этот раз тебе выпали двое человек, которым ты можешь написать:")
 

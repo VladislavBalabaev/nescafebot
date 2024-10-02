@@ -19,6 +19,10 @@ router = Router()
 
 
 class StartStates(StatesGroup):
+    """
+    State management for handling the registration process, including email verification, profile setup, 
+    and program details.
+    """
     EMAIL_GET = State()
     EMAIL_SET = State()
     NAME = State()
@@ -29,12 +33,18 @@ class StartStates(StatesGroup):
 
 
 class StartProgramNames(Enum):
+    """
+    Enum class representing available program names (BAE, MAE, MAF/MIF) for the registration process.
+    """
     BAE = "BAE"
     MAE = "MAE"
     MAF = "MAF/MIF"
 
     @classmethod
     def has_value(cls, value):
+        """
+        Checks if the provided value is a valid program name.
+        """
         return value in cls._value2member_map_
 
 
@@ -46,6 +56,10 @@ class StartProgramNames(Enum):
 @router.message(StateFilter(None), Command("start"))
 @checker
 async def cmd_start(message: types.Message, state: FSMContext):
+    """
+    Handles the /start command. Initiates the registration process or allows users to update their profile 
+    if they have already registered.
+    """
     exist = await find_user(message.from_user.id, ["info.email"])
     exist = exist["info"]["email"]
 
@@ -77,6 +91,9 @@ async def cmd_start(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def start_email_get(message: types.Message, state: FSMContext):
+    """
+    Collects the user's @nes.ru email address and sends a verification code if the email is valid.
+    """
     if "@nes.ru" in message.text:
         await send_msg_user(message.from_user.id,
                             "Отлично, сейчас отправим тебе письмо с кодом подтверждения.\nПодожди секундочку...")
@@ -104,6 +121,9 @@ async def start_email_get(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def start_email_set(message: types.Message, state: FSMContext):
+    """
+    Verifies the email by checking the user's input against the sent verification code.
+    """
     cache = await find_user(message.from_user.id, ["cache"])
     email_code = cache["cache"]["email_code"]
 
@@ -132,6 +152,9 @@ async def start_email_set(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def start_name(message: types.Message, state: FSMContext):
+    """
+    Collects the user's name and moves to the next step in the registration process.
+    """
     if len(message.text) < 50 and len(message.text.split(" ")) <= 3:
         await update_user(message.from_user.id, 
                           {"info.written_name": message.text})
@@ -152,6 +175,9 @@ async def start_name(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def start_age(message: types.Message, state: FSMContext):
+    """
+    Collects the user's age and verifies that it's a valid number within the acceptable range.
+    """
     if message.text.isdigit() and int(message.text) >= 16 and int(message.text) <= 99:
         await update_user(message.from_user.id, 
                           {"info.age": message.text})
@@ -175,6 +201,9 @@ async def start_age(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def start_program_name(message: types.Message, state: FSMContext):
+    """
+    Collects the user's program name and ensures it's a valid option from the predefined list.
+    """
     if StartProgramNames.has_value(message.text):
         await update_user(message.from_user.id, 
                           {"info.program.name": message.text})
@@ -196,7 +225,10 @@ async def start_program_name(message: types.Message, state: FSMContext):
 @router.message(StateFilter(StartStates.PROGRAM_YEAR))
 @checker
 @contains_command
-async def start_program_name(message: types.Message, state: FSMContext):
+async def start_program_year(message: types.Message, state: FSMContext):
+    """
+    Collects the user's program year and ensures it's a valid number.
+    """
     year = message.text
 
     if year.isdigit() and int(year) >= 1990 and int(year) < 9999:
@@ -219,6 +251,9 @@ async def start_program_name(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def start_about(message: types.Message, state: FSMContext):
+    """
+    Collects a short description from the user and finalizes the registration process.
+    """
     if len(message.text) < 300:
         existed = await find_user(message.from_user.id, ["finished_profile"])
         existed = existed["finished_profile"]

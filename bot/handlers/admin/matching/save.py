@@ -4,6 +4,10 @@ from db.connect import get_mongo_matches
 
 
 async def save_matching(matched_df: pd.DataFrame, time_started: str):
+    """
+    Saves the matching results to the MongoDB 'matches' collection. 
+    The results are stored as a dictionary, with the match timestamp as the document ID.
+    """
     mongo_matches = get_mongo_matches()
 
     matched_df = matched_df.copy()

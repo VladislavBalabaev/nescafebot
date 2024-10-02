@@ -5,6 +5,10 @@ from db.operations.messages import send_msg_user, recieve_msg_user
 
 @error_sender
 async def notify_users_with_pending_updates():
+    """
+    Notifies users with pending updates when the bot becomes active again. 
+    Retrieves any pending updates, logs the messages, and prompts users to try again.
+    """
     updates = await bot.get_updates(offset=None, timeout=1)
 
     notified_users = set()

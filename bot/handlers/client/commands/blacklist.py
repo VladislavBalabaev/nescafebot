@@ -16,22 +16,29 @@ router = Router()
 
 
 class BlacklistStates(StatesGroup):
+    """
+    State management for adding or removing users from the blacklist.
+    """
     BLACKLIST = State()
-
     BLOCK = State()
     AFTER_BLOCK = State()
-
     UNBLOCK = State()
     AFTER_UNBLOCK = State()
 
 
 class BlacklistChoice(Enum):
+    """
+    Enum for choosing whether to add or remove users from the blacklist.
+    """
     ADD = "Добавлять в ЧС"
     REMOVE = "Удалять из ЧС"
     CANCEL = "Отмена"
 
 
 class BlacklistYesNo(Enum):
+    """
+    Enum for confirming if the user wants to continue adding or removing users.
+    """
     YES = "Да"
     NO = "Нет"
 
@@ -40,6 +47,10 @@ class BlacklistYesNo(Enum):
 @checker
 @check_finished_profile
 async def cmd_blacklist(message: types.Message, state: FSMContext):
+    """
+    Handles the /blacklist command and provides options to add or remove users from the blacklist.
+    Displays the current blacklist if it exists.
+    """
     await send_msg_user(message.from_user.id, 
                         "Люди из черного списка не будут предлагаться тебе и ты не будешь предложен(а) им на последующих кофе.\n\nСейчас ты можешь добавить какого-либо конкретного человека через его @tg, а также удалить человека из черного списка, если он там находится.")
 
@@ -66,6 +77,9 @@ async def cmd_blacklist(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def blacklist_block(message: types.Message, state: FSMContext):
+    """
+    Prompts the user to enter a username to add to the blacklist.
+    """
     await send_msg_user(message.from_user.id, 
                         "Напиши, кого добавить в чс (напр., @person_tg)", 
                         reply_markup=types.ReplyKeyboardRemove())
@@ -77,6 +91,10 @@ async def blacklist_block(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def blacklist_after_block(message: types.Message, state: FSMContext):
+    """
+    Adds the specified user to the blacklist and confirms the action. 
+    Prompts the user to add another user if desired.
+    """
     username = message.text.strip().replace(' ', '').replace('@', '')
 
     if await blacklist_add(message.from_user.id, username):
@@ -100,6 +118,9 @@ async def blacklist_after_block(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def blacklist_unblock(message: types.Message, state: FSMContext):
+    """
+    Prompts the user to enter a username to remove from the blacklist.
+    """
     await send_msg_user(message.from_user.id, 
                         "Напиши, кого исключить из чс (напр., @person_tg)", 
                         reply_markup=types.ReplyKeyboardRemove())
@@ -111,6 +132,10 @@ async def blacklist_unblock(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def blacklist_after_unblock(message: types.Message, state: FSMContext):
+    """
+    Removes the specified user from the blacklist and confirms the action. 
+    Prompts the user to remove another user if desired.
+    """
     username = message.text.strip().replace(' ', '').replace('@', '')
 
     if await blacklist_remove(message.from_user.id, username):
@@ -134,6 +159,9 @@ async def blacklist_after_unblock(message: types.Message, state: FSMContext):
 @checker
 @contains_command
 async def blacklist_end(message: types.Message, state: FSMContext):
+    """
+    Ends the blacklist modification process and displays the updated blacklist.
+    """
     await send_msg_user(message.from_user.id,
                         "Хорошо",
                         reply_markup=types.ReplyKeyboardRemove())
@@ -153,6 +181,9 @@ async def blacklist_end(message: types.Message, state: FSMContext):
 
 
 def is_invalid_blacklist_choice(message: types.Message) -> bool:
+    """
+    Checks if the user input is a valid choice for the blacklist process.
+    """
     return message.text not in [choice.value for choice in BlacklistChoice]
 
 
@@ -160,6 +191,9 @@ def is_invalid_blacklist_choice(message: types.Message) -> bool:
 @checker
 @contains_command
 async def blacklist_no_command_choice(message: types.Message):
+    """
+    Informs the user to select from the available options if an invalid choice is made during the blacklist process.
+    """
     keyboard = create_keyboard(BlacklistChoice)
     await send_msg_user(message.from_user.id, 
                         "Выбери из предложенных вариантов", 
@@ -169,6 +203,9 @@ async def blacklist_no_command_choice(message: types.Message):
 
 
 def is_invalid_blacklist_yesno(message: types.Message) -> bool:
+    """
+    Checks if the user input is a valid yes/no choice for the blacklist process.
+    """
     return message.text not in [choice.value for choice in BlacklistYesNo]
 
 
@@ -176,6 +213,9 @@ def is_invalid_blacklist_yesno(message: types.Message) -> bool:
 @checker
 @contains_command
 async def blacklist_no_command_yesno(message: types.Message, state: FSMContext):
+    """
+    Informs the user to select from the available yes/no options if an invalid choice is made.
+    """
     keyboard = create_keyboard(BlacklistYesNo)
     await send_msg_user(message.from_user.id, 
                         "Выбери из предложенных вариантов", 

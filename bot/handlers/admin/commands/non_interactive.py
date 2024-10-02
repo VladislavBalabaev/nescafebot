@@ -17,6 +17,9 @@ router = Router()
 
 
 async def send_temporary_file(user_id: int, text: str):
+    """
+    Sends a temporary text file to the user with the provided content and deletes the file after sending.
+    """
     file_path = TEMP_DIR / f"user_{user_id}.txt"
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(text)
@@ -31,6 +34,9 @@ async def send_temporary_file(user_id: int, text: str):
 @router.message(StateFilter(None), Command("admin"), AdminFilter())
 @checker
 async def cmd_admin(message: types.Message):
+    """
+    Sends a list of available admin commands to the user.
+    """
     await send_msg_user(message.from_user.id, 
                         """/logs - текущие логи;\n/all_users - данные всех пользователей;\n/messages @tg 15 - последние N сообщений пользователя;\n/user @tg - данные пользователя;\n\n/send_message @tg - отправить сообщение пользователю;\n\n/send_message_to_all - отправить сообщение всем пользователям;\n\n/block_matching - заблокировать мэтчинг для пользователя.\n\n/pseudo_match - сделать мэтчинг;\n\n/match - сделать мэтчинг;""")
 
@@ -39,7 +45,10 @@ async def cmd_admin(message: types.Message):
 
 @router.message(StateFilter(None), Command("logs"), AdminFilter())
 @checker
-async def cmd_logs(message: types.Message,):
+async def cmd_logs(message: types.Message):
+    """
+    Sends the current log file to the admin.
+    """
     await message.answer_document(types.FSInputFile(logs_path))
 
     return
@@ -48,6 +57,10 @@ async def cmd_logs(message: types.Message,):
 @router.message(StateFilter(None), Command("messages"), AdminFilter())
 @checker
 async def cmd_messages(message: types.Message, command: CommandObject):
+    """
+    Retrieves and sends the last N messages of a specified user to the admin.
+    If the message content is too long, it sends it as a temporary file.
+    """
     if not command.args or len(command.args.split()) != 2:
         await send_msg_user(message.from_user.id, "Введи пользователя и кол-во сообщений:\n/messages @vbalab 30")
         return
@@ -63,7 +76,6 @@ async def cmd_messages(message: types.Message, command: CommandObject):
     messages_json = json.dumps(messages, indent=3, ensure_ascii=False)
     messages_formatted = f"<pre>{messages_json}</pre>"
 
-
     if len(messages_formatted) > 4000:
         await send_temporary_file(message.from_user.id, messages_json)
     else:
@@ -75,6 +87,9 @@ async def cmd_messages(message: types.Message, command: CommandObject):
 @router.message(StateFilter(None), Command("user"), AdminFilter())
 @checker
 async def cmd_user(message: types.Message, command: CommandObject):
+    """
+    Retrieves and sends the profile information of a specified user to the admin.
+    """
     if not command.args or len(command.args.split()) != 1:
         await send_msg_user(message.from_user.id, "Введи пользователя:\n/user @vbalab")
         return
@@ -94,6 +109,10 @@ async def cmd_user(message: types.Message, command: CommandObject):
 @router.message(StateFilter(None), Command("all_users"), AdminFilter())
 @checker
 async def cmd_all_users(message: types.Message):
+    """
+    Retrieves and sends the profile information of all users to the admin.
+    If the content is too long, it sends it as a temporary file.
+    """
     users = await find_all_users(["_id", "info.username", "info.email", "finished_profile", "active_matching"])
 
     users_json = json.dumps(users, indent=3, ensure_ascii=False)

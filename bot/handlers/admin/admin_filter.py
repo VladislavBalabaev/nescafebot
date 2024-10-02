@@ -5,6 +5,9 @@ from configs.selected_ids import ADMINS
 
 
 class AdminFilter(Filter):
+    """
+    A filter that checks if the message sender is an admin by verifying their user ID.
+    """
     def __init__(self) -> None:
         pass
 

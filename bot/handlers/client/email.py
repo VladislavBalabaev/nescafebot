@@ -34,6 +34,10 @@ emails = [
 
 
 async def send_email(email_to, text):
+    """
+    Sends an email with a verification code to the specified email address.
+    If the email sender fails, it retries with another email account.
+    """
     global emails
 
     try:
@@ -66,6 +70,10 @@ async def send_email(email_to, text):
 
 
 async def test_emails():
+    """
+    Tests all configured email accounts to ensure they are working. 
+    Removes non-working email accounts from the list.
+    """
     global emails
     
     failed_emails = []

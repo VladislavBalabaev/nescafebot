@@ -3,6 +3,9 @@ from aiogram.types import BotCommand
 
 
 async def set_commands(bot: Bot):
+    """
+    Sets the list of commands available to users in the bot's menu.
+    """
     commands = [
         BotCommand(
             command="/start",

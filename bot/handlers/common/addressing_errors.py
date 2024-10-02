@@ -9,6 +9,9 @@ from configs.selected_ids import ADMINS
 
 
 async def error_occured(message: types.Message, state: FSMContext, error: Exception):
+    """
+    Handles an error by logging the traceback, notifying the user, and sending the error details to admins.
+    """
     if state is not None:
         state = await state.get_state()
 
@@ -31,7 +34,12 @@ async def error_occured(message: types.Message, state: FSMContext, error: Except
             f"{tb_message}"
         )
 
+
 def error_sender(f):
+    """
+    Decorator that wraps functions to handle any exceptions. 
+    If an error occurs, it sends error details to admins and logs the traceback.
+    """
     @wraps(f)
     async def wrapper(*args, **kwargs):
         try:

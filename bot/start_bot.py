@@ -1,7 +1,7 @@
 import asyncio
 
-from create_bot import dp, bot
 from configs import logs
+from create_bot import dp, bot
 from handlers.admin import admin
 from handlers.client import client
 from handlers.common import common_handlers
@@ -13,6 +13,9 @@ from db.connect import setup_mongo_connection, close_mongo_connection
 
 
 async def on_startup():
+    """
+    Initializes logging, database connection, sends startup notifications, and handles pending updates.
+    """
     _ = asyncio.create_task(logs.init_logger())
     await asyncio.sleep(0)
 
@@ -23,12 +26,18 @@ async def on_startup():
 
 
 async def on_shutdown():
+    """
+    Sends shutdown notifications and closes the database connection.
+    """
     await send_shutdown()
 
     close_mongo_connection()
 
 
 async def main():
+    """
+    Registers handlers, sets commands, and starts polling for updates.
+    """
     try:
         common_handlers.register_handler_cancel(dp)
         admin.register_handlers_admin(dp)

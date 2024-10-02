@@ -10,6 +10,9 @@ from db.connect import get_mongo_users, get_mongo_messages, get_mongo_matches
 
 
 async def create_user(message: types.Message):
+    """
+    Creates a new user in the MongoDB 'users' and 'messages' collections with the initial structure.
+    """
     mongo_users = get_mongo_users()
     mongo_messages = get_mongo_messages()
 
@@ -54,12 +57,18 @@ async def create_user(message: types.Message):
 
 
 class MongoDBUserNotFound(Exception):
+    """
+    Exception raised when a user is not found in MongoDB.
+    """
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
 
 
 def new_user(f):
+    """
+    Decorator that creates a new user in MongoDB if the user does not exist.
+    """
     @wraps(f)
     async def wrapper(*args, **kwargs):
         try:
@@ -80,6 +89,9 @@ def new_user(f):
 
 
 async def delete_everithing():
+    """
+    Deletes all entries from the 'users', 'messages', and 'matches' collections in MongoDB.
+    """
     mongo_users = get_mongo_users()
     mongo_messages = get_mongo_messages()
     mongo_matches = get_mongo_matches()
@@ -92,17 +104,18 @@ async def delete_everithing():
 
 
 async def actualize_user(user_id: int):
+    """
+    Updates the user's profile with their latest username and full name, and marks whether they have blocked the bot.
+    """
     try:
         user: types.User = await bot.get_chat(user_id)
     except Exception as e:
         if "Forbidden" in str(e):
             await update_user(user_id, {"blocked_bot": "yes"})
-
         else:
             logging.exception(f"\nERROR: [Error retrieving chat for user {user_id}]\nTRACEBACK:")
         
         return
-
 
     await update_user(user_id, {
         "info.username": user.username,
@@ -115,6 +128,9 @@ async def actualize_user(user_id: int):
 
 
 async def actualize_all_users():
+    """
+    Updates the profile information for all users who have active matching enabled.
+    """
     users = await find_all_users(["_id", "blocked_bot", "active_matching"])
 
     for user in users:

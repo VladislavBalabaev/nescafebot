@@ -5,6 +5,10 @@ from db.operations.messages import send_msg_user
 
 
 def contains_command(f):
+    """
+    Decorator that checks if the user input contains a command (i.e., starts with '/').
+    If a command is detected, it prompts the user to cancel or retry their previous input.
+    """
     @wraps(f)
     async def wrapper(*args, **kwargs):
         message = None

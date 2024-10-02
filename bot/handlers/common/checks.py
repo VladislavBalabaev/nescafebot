@@ -7,6 +7,10 @@ from db.operations.messages import send_msg_user, recieve_msg_user
 
 
 async def has_finished_profile(message: types.Message) -> bool:
+    """
+    Checks if the user has completed their profile.
+    Returns True if the profile is marked as finished, otherwise False.
+    """
     finished_profile = await find_user(message.from_user.id, ["finished_profile"])
     finished_profile = finished_profile["finished_profile"]
 
@@ -14,6 +18,10 @@ async def has_finished_profile(message: types.Message) -> bool:
 
 
 def check_finished_profile(f):
+    """
+    Decorator that checks if the user has completed their profile. 
+    If not, prompts the user to finish registration via the /start command.
+    """
     @wraps(f)
     async def wrapper(*args, **kwargs):
         message = None
@@ -22,7 +30,6 @@ def check_finished_profile(f):
                 message = arg
                 break
         message = kwargs.get("message", message)
-
 
         finished_profile = await has_finished_profile(message)
 
@@ -36,6 +43,10 @@ def check_finished_profile(f):
 
 
 def text_checker(f):
+    """
+    Decorator that checks if the received message contains text. 
+    If not, prompts the user to send a valid text message.
+    """
     @wraps(f)
     async def wrapper(*args, **kwargs):
         message = None
@@ -44,7 +55,6 @@ def text_checker(f):
                 message = arg
                 break
         message = kwargs.get("message", message)
-
 
         if message.text:
             await f(*args, **kwargs)
@@ -62,6 +72,9 @@ def text_checker(f):
 
 
 def receiver_msg(f):
+    """
+    Decorator that logs received messages by calling the 'recieve_msg_user' function.
+    """
     @wraps(f)
     async def wrapper(*args, **kwargs):
         message = None
@@ -78,4 +91,7 @@ def receiver_msg(f):
 
 
 def checker(f):
+    """
+    Combines multiple decorators (error handling, message logging, and text checking) into one.
+    """
     return error_sender(receiver_msg(text_checker(f)))

@@ -12,6 +12,10 @@ router = Router()
 @router.message(StateFilter(None), Command("help"))
 @checker
 async def cmd_help(message: types.Message):
+    """
+    Handles the /help command, providing users with information on available commands 
+    and how to use the bot's features, including profile management and blacklist control.
+    """
     await send_msg_user(message.from_user.id, 
                         "Ты можешь открыть Menu, там находятся все доступные тебе команды\n\nЕсли хочешь создать (если еще не создан) или обновить профиль, напиши /start.\nПосмотреть черный список, добавить в него или исключить из, выбери /blacklist.\nПосмотреть будет ли аккаунт участвовать в следующем кофе - /active.")
     await send_msg_user(message.from_user.id, 
