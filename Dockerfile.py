@@ -3,7 +3,7 @@ FROM python:3.10.13-bullseye
 WORKDIR /usr/src/app
 
 RUN apt-get update
-RUN apt-get install -y nano iputils-ping vim
+RUN apt-get install -y nano iputils-ping vim tmux
 
 COPY requirements.txt ./
 RUN python -m pip cache purge

@@ -1,4 +1,3 @@
-import asyncio
 from enum import Enum
 from random import randint
 from aiogram import types, Router
@@ -7,18 +6,23 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 
+# from db.operations.user_profile import delete_everithing
 from handlers.common.checks import checker
 from handlers.client.email import send_email
-from db.operations.user_profile import create_user
+from db.operations.messages import send_msg_user
 from db.operations.users import update_user, find_user
 from handlers.client.shared.keyboard import create_keyboard
-from db.operations.messages import send_msg_user, recieve_msg_user
+from handlers.client.shared.contains import contains_command
 
 
 router = Router()
 
 
 class StartStates(StatesGroup):
+    """
+    State management for handling the registration process, including email verification, profile setup, 
+    and program details.
+    """
     EMAIL_GET = State()
     EMAIL_SET = State()
     NAME = State()
@@ -29,38 +33,49 @@ class StartStates(StatesGroup):
 
 
 class StartProgramNames(Enum):
+    """
+    Enum class representing available program names (BAE, MAE, MAF/MIF) for the registration process.
+    """
     BAE = "BAE"
     MAE = "MAE"
     MAF = "MAF/MIF"
 
     @classmethod
     def has_value(cls, value):
+        """
+        Checks if the provided value is a valid program name.
+        """
         return value in cls._value2member_map_
+
+
+# @router.message(StateFilter(None), Command("d"))
+# async def cmd_AAAAAA(message: types.Message, state: FSMContext):
+#     await delete_everithing()
 
 
 @router.message(StateFilter(None), Command("start"))
 @checker
 async def cmd_start(message: types.Message, state: FSMContext):
-    # await delete_everithing()
+    """
+    Handles the /start command. Initiates the registration process or allows users to update their profile 
+    if they have already registered.
+    """
+    exist = await find_user(message.from_user.id, ["info.email"])
+    exist = exist["info"]["email"]
 
-    exist = await find_user(message.from_user.id, ["_id"])
     if not exist:
         if message.from_user.username is None:
-            await message.answer("Данным ботом могут пользоваться только зарегестрированные в телеграм пользователи.")
+            await message.answer("Данным ботом могут пользоваться только зарегестрированные в телеграм пользователи.\nЗарегестрируйся в телеграм, чтобы у тебя появился свой @tg и приходи, будем ждать)")
             return
 
-        await create_user(message)
+        await send_msg_user(message.from_user.id, 
+                            "Привет!\nДобро пожаловать в бот Random Coffee для действующих студентов РЭШ, созданный студентами MAE'25 @vbalab и @Madfyre.\n\nВсё очень просто: раз в две недели, с учётом твоего чёрного списка, мы случайным образом подбираем тебе двух других студентов для встречи за кофе.\n\nДавай начнём с регистрации, это займёт минуту!")
 
         await send_msg_user(message.from_user.id, 
-                            "Привет!\nЭто бот random coffee для действующих студентов РЭШ созданный студентами MAE'25 @vbalab и @Madfyre.\n\nКонцепция бота очень простая, раз в две недели с учетом твоего черного списка пользователей мы случайным образом подбираем тебе двух пользователей бота, с которыми ты сможешь попить кофе.\n\nОб остальных подробностях поговорим позже, давай сначала тебя зарегистрируем")
+                            "Пожалуйста, укажи свой адрес электронной почты @nes.ru.\n\nЭто нужно, чтобы подтвердить, что ты студент РЭШ")
 
-
-    has_email = await find_user(message.from_user.id, ["info.email"])
-    has_email = has_email["info"]["email"]
-
-    if has_email:
-        await recieve_msg_user(message)
-
+        await state.set_state(StartStates.EMAIL_GET)
+    else:
         await send_msg_user(message.from_user.id, 
                             "Почта у тебя уже привязана, поэтому давай пройдемся по данным")
 
@@ -68,27 +83,20 @@ async def cmd_start(message: types.Message, state: FSMContext):
                             "Как тебя зовут?")
 
         await state.set_state(StartStates.NAME)
-    else:
-        await recieve_msg_user(message)
 
-
-        await asyncio.sleep(1)
-        await send_msg_user(message.from_user.id, 
-                            "Какая у тебя @nes.ru почта?\n\nОна нужна нам, чтобы мы могли подтвердить, что ты студент РЭШ")
-
-        await state.set_state(StartStates.EMAIL_GET)
-    
     return
 
 
 @router.message(StateFilter(StartStates.EMAIL_GET))
 @checker
+@contains_command
 async def start_email_get(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
+    """
+    Collects the user's @nes.ru email address and sends a verification code if the email is valid.
+    """
     if "@nes.ru" in message.text:
-        await send_msg_user(message.from_user.id, 
-                            "Секундочку, отправляем письмо")
+        await send_msg_user(message.from_user.id,
+                            "Отлично, сейчас отправим тебе письмо с кодом подтверждения.\nПодожди секундочку...")
 
         code = str(randint(100000, 999999))
 
@@ -98,12 +106,12 @@ async def start_email_get(message: types.Message, state: FSMContext):
         await send_email(message.text, f"Еще раз привет!\nТвой код для NEScafeBot: {code}.\nКод был отправлен для аккаунта @{message.from_user.username}")
 
         await send_msg_user(message.from_user.id, 
-                            "Мы отправили тебе на почту код из 6 цифр.\nНапиши его, пожалуйста, сюда")
+                            "Мы отправили тебе на почту код из 6 цифр.\nПожалуйста, введи его сюда")
 
         await state.set_state(StartStates.EMAIL_SET)
     else:
         await send_msg_user(message.from_user.id, 
-                            "Это не почта РЭШ\nДавай заново",
+                            "Это не @nes.ru адрес электронной почты 😕\n\nПожалуйста, введи правильный адрес",
                             fail=True)
     
     return
@@ -111,9 +119,11 @@ async def start_email_get(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.EMAIL_SET))
 @checker
+@contains_command
 async def start_email_set(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
+    """
+    Verifies the email by checking the user's input against the sent verification code.
+    """
     cache = await find_user(message.from_user.id, ["cache"])
     email_code = cache["cache"]["email_code"]
 
@@ -124,25 +134,27 @@ async def start_email_set(message: types.Message, state: FSMContext):
                           {"info.email": email, "cache": {}})
 
         await send_msg_user(message.from_user.id, 
-                            "Отлично!\nПривязали почту к твоему аккаунту")
+                            "Отлично!\nТвой адрес электронной почты успешно подтверждён и привязан к аккаунту")
 
         await send_msg_user(message.from_user.id, 
-                            "Как тебя зовут?")
+                            "Как тебя зовут? 😊")
 
         await state.set_state(StartStates.NAME)
     else:
         await send_msg_user(message.from_user.id, 
-                            "Код неверный)\nДавай заново",
+                            "Упс, неверный код😕\nПопробуй ещё раз.\n\nP.S. Если ты случайно указал не тот адрес электронной почты, введи /cancel и начни регистрацию заново с помощью команды /start.",
                             fail=True)
-    
+
     return
 
 
 @router.message(StateFilter(StartStates.NAME))
 @checker
+@contains_command
 async def start_name(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
+    """
+    Collects the user's name and moves to the next step in the registration process.
+    """
     if len(message.text) < 50 and len(message.text.split(" ")) <= 3:
         await update_user(message.from_user.id, 
                           {"info.written_name": message.text})
@@ -153,7 +165,7 @@ async def start_name(message: types.Message, state: FSMContext):
         await state.set_state(StartStates.AGE)
     else:
         await send_msg_user(message.from_user.id, 
-                            "Слишком длинное имя)\nДавай заново",
+                            "Кажется, это имя слишком длинное 😅",
                             fail=True)
     
     return
@@ -161,23 +173,25 @@ async def start_name(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.AGE))
 @checker
+@contains_command
 async def start_age(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
-    if message.text.isdigit() and int(message.text) >= 16 and int(message.text) <= 55:
+    """
+    Collects the user's age and verifies that it's a valid number within the acceptable range.
+    """
+    if message.text.isdigit() and int(message.text) >= 16 and int(message.text) <= 99:
         await update_user(message.from_user.id, 
                           {"info.age": message.text})
 
         keyboard = create_keyboard(StartProgramNames)
 
         await send_msg_user(message.from_user.id,
-                            "Выбери свою программу",
+                            "Пожалуйста, выбери свою программу обучения из списка ниже",
                             reply_markup=keyboard)
 
         await state.set_state(StartStates.PROGRAM_NAME)
     else:
         await send_msg_user(message.from_user.id, 
-                            "Это точно не возраст)\nДавай заново",
+                            "Хмм, это не похоже на возраст 😕\n\nПожалуйста, введи свой возраст цифрами",
                             fail=True)
     
     return
@@ -185,9 +199,11 @@ async def start_age(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.PROGRAM_NAME))
 @checker
+@contains_command
 async def start_program_name(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
+    """
+    Collects the user's program name and ensures it's a valid option from the predefined list.
+    """
     if StartProgramNames.has_value(message.text):
         await update_user(message.from_user.id, 
                           {"info.program.name": message.text})
@@ -198,17 +214,21 @@ async def start_program_name(message: types.Message, state: FSMContext):
 
         await state.set_state(StartStates.PROGRAM_YEAR)
     else:
+        keyboard = create_keyboard(StartProgramNames)
         await send_msg_user(message.from_user.id,
-                            "Выбери из предложенных")
+                            "Пожалуйста, выбери один из предложенных вариантов 😊",
+                            reply_markup=keyboard)
 
     return
 
 
 @router.message(StateFilter(StartStates.PROGRAM_YEAR))
 @checker
-async def start_program_name(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
+@contains_command
+async def start_program_year(message: types.Message, state: FSMContext):
+    """
+    Collects the user's program year and ensures it's a valid number.
+    """
     year = message.text
 
     if year.isdigit() and int(year) >= 1990 and int(year) < 9999:
@@ -216,12 +236,12 @@ async def start_program_name(message: types.Message, state: FSMContext):
                           {"info.program.year": year})
 
         await send_msg_user(message.from_user.id, 
-                            "Напиши о себе в паре предложений")
+                            "Расскажи о себе в нескольких предложениях.\nЭто поможет другим участникам узнать тебя лучше")
 
         await state.set_state(StartStates.ABOUT)
     else:
         await send_msg_user(message.from_user.id, 
-                            "Это не год.\nВыбери год программы, которую хочешь добавить в черный список в формате yyyy (напр., 2009)",
+                            "Это не похоже на год 😕\n\nПожалуйста, введи год в формате yyyy (например, 2023)",
                             fail=True)
 
     return
@@ -229,10 +249,11 @@ async def start_program_name(message: types.Message, state: FSMContext):
 
 @router.message(StateFilter(StartStates.ABOUT))
 @checker
+@contains_command
 async def start_about(message: types.Message, state: FSMContext):
-    await recieve_msg_user(message)
-
-
+    """
+    Collects a short description from the user and finalizes the registration process.
+    """
     if len(message.text) < 300:
         existed = await find_user(message.from_user.id, ["finished_profile"])
         existed = existed["finished_profile"]
@@ -242,24 +263,26 @@ async def start_about(message: types.Message, state: FSMContext):
                         "active_matching": "yes",
                         "finished_profile": "yes",})
 
-        if existed:
+        if existed == "yes":
             await send_msg_user(message.from_user.id,
-                                "Данные профиля изменены!")
+                                "Твои данные обновлены! 🎉")
         else:
             await send_msg_user(message.from_user.id,
-                                "Это все, что нам нужно!\nЕсли захочешь изменить что-либо о себе, просто напиши /start.\n\nP.S. Почту повторно подтверждать не придется)")
+                                "Отлично, регистрация завершена! 🎉\nЕсли захочешь изменить свои данные, просто отправь команду /start.\n\nP.S. Повторно подтверждать адрес электронной почты не потребуется 😉")
             await send_msg_user(message.from_user.id, 
-                                "Теперь чуть подробнее расскажем о боте)\n\nКак уже говорилось, суть бота в том, чтобы раз в две недели подбирать случайным образом компаньона на кофе, для того, чтобы познакомиться или просто приятно провести время.\n\nВо время распределения тебе придет твой смайл, например, :gorilla:. А также от нуля до двух пользователей с их смайлами.\nТы можешь написать человеку только лишь его смайл и он сразу поймет, по какому поводу ты пишешь)")
+                                "Теперь расскажем подробнее о боте 😊\n\nКак уже говорилось, бот помогает случайным образом находить тебе компанию для кофе раз в две недели, чтобы познакомиться с новыми людьми или просто приятно провести время.\n\nПри распределении ты получишь свой смайл, например, 🐘. А также от 0 до 2 человек, которые тебе выпали, вместе с их смайлами.\n\nСмайл — это как приватный ключ и подтверждение того, что именно ты выпал другому человеку в Random Coffee.\nПоэтому ты можешь написать человеку только его смайл, и он сразу поймёт, по какому поводу ты пишешь!\n\nХотим уточнить, что распределение участников асимметричное. То есть, те люди, которые тебе выпадут, скорее всего не получат тебя")
+            await send_msg_user(message.from_user.id, 
+                                "[Если будут какие-либо пожелания и комментарии по поводу самого бота, пожалуйста, обращайся к создателям бота: @vbalab и @Madfyre]")
 
         await send_msg_user(message.from_user.id, 
                             "Также ты можешь добавить людей в свой черный список командой /blacklist, так пользователь никогда не попадется тебе, а ты пользователю.\n\nОт рандом кофе можно и отдохнуть, для этого есть /active, которое позволяет исключить твой аккаунт из последующих рандом кофе")
         await send_msg_user(message.from_user.id, 
-                            "Enjoy!!")
+                            "Enjoy!! ☕️😊")
 
         await state.clear()
     else:
         await send_msg_user(message.from_user.id, 
-                            "Слишком много написанного)\nДавай заново",
+                            "Похоже, что описание слишком длинное 😅\n\nПожалуйста, попробуй написать покороче (до 300 символов)",
                             fail=True)
 
     return

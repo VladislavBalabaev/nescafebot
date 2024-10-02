@@ -1,3 +1,4 @@
+import re
 import asyncio
 import logging
 from queue import Queue
@@ -14,21 +15,34 @@ logs_path.parent.mkdir(parents=True, exist_ok=True)
 
 
 class AiogramFilter(logging.Filter):
+    """
+    Filter to block 'aiogram' INFO-level logs from being displayed in the console, but allows others.
+    """
     def filter(self, record):
-        # Block 'aiogram' INFO logs from console, but allow others
         if record.levelname == 'INFO' and record.name.startswith('aiogram'):
             return False
         return True
 
 
-# console_format = logging.Formatter("%(levelname)-8s :: %(asctime)s.%(msecs)03d :: %(message)s", "%H:%M:%S")
+class RemoveColorCodesFilter(logging.Filter):
+    """
+    Filter that removes color codes from log messages before writing them to the log file.
+    """
+    def filter(self, record):
+        record.msg = self.remove_color_codes(record.msg)
+        return True
+
+    @staticmethod
+    def remove_color_codes(text):
+        return re.sub(r'\x1b\[[0-9;]*m', '', text)
+
+
 colored_console_format = ColoredFormatter(
     "%(log_color)s%(levelname)-8s%(reset)s :: %(asctime)s.%(msecs)03d :: %(message)s",
     datefmt='%H:%M:%S',
     reset=True,
     log_colors={
         'DEBUG': 'cyan',
-        'INFO': 'green',
         'WARNING': 'yellow',
         'ERROR': 'red',
         'CRITICAL': 'red,bg_white',
@@ -40,6 +54,10 @@ file_format = logging.Formatter("%(levelname)-8s :: %(name)-25s :: %(asctime)s :
 
 
 async def init_logger():
+    """
+    Initializes the logging system with console and file handlers.
+    Uses a QueueListener to asynchronously handle log messages.
+    """
     que = Queue()
 
     root_logger = logging.getLogger()
@@ -60,9 +78,9 @@ async def init_logger():
     file_handler = RotatingFileHandler(logs_path)
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(file_format)
+    file_handler.addFilter(RemoveColorCodesFilter())
 
     listener = QueueListener(que, console_handler, file_handler, respect_handler_level=True)
-
 
     try:
         listener.start()

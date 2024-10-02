@@ -8,7 +8,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ${MONGODB_ABSOLUTE_PATH}:/data/db 
+      - ${PWD}/data/mongo_db_data:/data/db  
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
@@ -25,6 +25,8 @@ services:
       - DB_network
     ports:
       - 79:8888
+    volumes:
+      - ${PWD}/data/logs:/usr/src/app/data/logs
     command: bash
     tty: true
     stdin_open: true

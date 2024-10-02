@@ -12,11 +12,17 @@ env_path = BOT_DIR / ".env"
 
 
 class Settings(BaseSettings):
+    """
+    Reads environment variables including the bot token, MongoDB credentials, and email passwords.
+    """
     NESCAFEBOT_TOKEN: SecretStr
     MONGODB_USERNAME: SecretStr
     MONGODB_PASSWORD: SecretStr
-    MONGODB_ABSOLUTE_PATH: SecretStr
-    EMAIL_PASSWORD: SecretStr
+    EMAIL1_PASSWORD: SecretStr
+    EMAIL2_PASSWORD: SecretStr
+    EMAIL4_PASSWORD: SecretStr
+    EMAIL5_PASSWORD: SecretStr
+    EMAIL6_PASSWORD: SecretStr
 
     model_config: SettingsConfigDict = SettingsConfigDict(
         env_file=env_path,

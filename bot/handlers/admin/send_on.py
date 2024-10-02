@@ -7,6 +7,9 @@ from configs.selected_ids import ADMINS
 
 
 async def send_startup():
+    """
+    Sends a startup notification to all admins and logs the startup event.
+    """
     logging.info("### Bot has started working! ###")
 
     for admin in ADMINS:
@@ -14,6 +17,9 @@ async def send_startup():
 
 
 async def send_shutdown():
+    """
+    Sends a shutdown notification and the bot's logs to all admins, and logs the shutdown event.
+    """
     logging.info("### Bot has finished working! ###")
 
     for admin in ADMINS:

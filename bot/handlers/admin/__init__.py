@@ -1,1 +1,1 @@
-from . import admin, matching, commands, send_on
+from . import admin, admin_filter, matching, commands, send_on
