@@ -8,7 +8,7 @@ The bot matches users for coffee meetups while respecting their blacklists and a
 
 The bot is built using **Python, MongoDB, Redis, Docker**, with **asynchronous** message handling powered by the aiogram framework.
 
-## Project Structure
+## Project Structure Description
 
 The project follows a structured organization to separate different functionalities like configurations, database interactions, and message handling. Below is an outline of the project’s main directories and files.
 
@@ -97,3 +97,63 @@ This subdirectory contains shared utilities and handlers that are used across bo
 * **pending.py**: Handles pending updates by notifying users if the bot was inactive and asking them to resend their messages.
 
 * **cancel.py, zero_message.py**: These files define handlers for commands that allow users to cancel ongoing processes or handle unrecognized messages when no specific state is active.
+
+## Project Tree Structure
+
+```txt
+├── bot
+│   ├── configs
+│   │   ├── env_reader.py
+│   │   ├── logs.py
+│   │   └── selected_ids.py
+│   ├── create_bot.py
+│   ├── db
+│   │   ├── connect.py
+│   │   └── operations
+│   │       ├── messages.py
+│   │       ├── user_profile.py
+│   │       ├── users.py
+│   │       └── utils
+│   │           └── conversion.py
+│   ├── handlers
+│   │   ├── admin
+│   │   │   ├── admin_filter.py
+│   │   │   ├── admin.py
+│   │   │   ├── commands
+│   │   │   │   ├── block_matching.py
+│   │   │   │   ├── interactive.py
+│   │   │   │   └── non_interactive.py
+│   │   │   ├── matching
+│   │   │   │   ├── assignment.py
+│   │   │   │   ├── emojis.py
+│   │   │   │   ├── save.py
+│   │   │   │   └── sending.py
+│   │   │   └── send_on.py
+│   │   ├── client
+│   │   │   ├── client.py
+│   │   │   ├── commands
+│   │   │   │   ├── active.py
+│   │   │   │   ├── blacklist.py
+│   │   │   │   ├── help_.py
+│   │   │   │   └── start.py
+│   │   │   ├── email.py
+│   │   │   ├── menu.py
+│   │   │   └── shared
+│   │   │       ├── contains.py
+│   │   │       └── keyboard.py
+│   │   └── common
+│   │       ├── addressing_errors.py
+│   │       ├── checks.py
+│   │       ├── commands
+│   │       │   ├── cancel.py
+│   │       │   └── zero_message.py
+│   │       ├── common_handlers.py
+│   │       └── pending.py
+│   └── start_bot.py
+├── compose.yaml
+├── Dockerfile.py
+├── documentation.md
+├── instructions.md
+├── README.md
+└── requirements.txt
+```
