@@ -29,7 +29,7 @@ class ActiveChoice(Enum):
     Enum for user choices to activate or deactivate their account.
     """
     YES = "Да"
-    NO = "Отмена"
+    NO = "Не менять"
 
 
 @router.message(StateFilter(None), Command("active"))
@@ -68,7 +68,7 @@ async def active_cancel(message: types.Message, state: FSMContext):
     Cancels the activation/deactivation process if the user selects "No."
     """
     await send_msg_user(message.from_user.id, 
-                        "Окей)", 
+                        "Хорошо", 
                         reply_markup=types.ReplyKeyboardRemove())
 
     await state.clear()

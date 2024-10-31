@@ -1,5 +1,7 @@
 import json
+import logging
 import pandas as pd
+from aiogram import exceptions
 
 from create_bot import bot
 from configs.selected_ids import ADMINS
@@ -17,11 +19,14 @@ async def send_matching_admin(matched: pd.DataFrame):
     matched_formatted = f"<pre>{matched_formatted}</pre>"
 
     for admin in ADMINS:
-        if len(matched_formatted) > 4000:
-            await send_temporary_file(admin, matched_formatted)
-        else:
-            await bot.send_message(admin, matched_formatted, parse_mode="HTML")
-
+        try:
+                
+            if len(matched_formatted) > 4000:
+                await send_temporary_file(admin, matched_formatted)
+            else:
+                await bot.send_message(admin, matched_formatted, parse_mode="HTML")
+        except exceptions.TelegramBadRequest:
+            logging.error(f"Failed to send matching message to {admin}.")
     return
 
 
