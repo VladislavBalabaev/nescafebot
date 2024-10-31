@@ -64,10 +64,6 @@ async def cmd_start(message: types.Message, state: FSMContext):
     exist = exist["info"]["email"]
 
     if not exist:
-        if message.from_user.username is None:
-            await message.answer("Данным ботом могут пользоваться только зарегестрированные в телеграм пользователи.\nЗарегестрируйся в телеграм, чтобы у тебя появился свой @tg и приходи, будем ждать)")
-            return
-
         await send_msg_user(message.from_user.id, 
                             "Привет!\nДобро пожаловать в бот Random Coffee для действующих студентов РЭШ, созданный студентами MAE'25 @vbalab и @Madfyre.\n\nВсё очень просто: раз в две недели, с учётом твоего чёрного списка, мы случайным образом подбираем тебе двух других студентов для встречи за кофе.\n\nДавай начнём с регистрации, это займёт минуту!")
 

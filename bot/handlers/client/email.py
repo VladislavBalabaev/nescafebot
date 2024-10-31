@@ -76,6 +76,8 @@ async def test_emails():
     """
     global emails
     
+    logging.info("### Checking emails ... ###")
+
     failed_emails = []
 
     for email_sender in emails:

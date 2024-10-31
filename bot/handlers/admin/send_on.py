@@ -4,6 +4,18 @@ from aiogram import types, exceptions
 from create_bot import bot
 from configs.logs import logs_path
 from configs.selected_ids import ADMINS
+from db.operations.messages import send_msg_user
+
+
+async def send_to_admins(text: str, doc=None):
+    for admin in ADMINS:
+        try:
+            if doc:
+                await bot.send_document(admin, document=doc, caption=text)
+            else:
+                await send_msg_user(admin, text)
+        except exceptions.TelegramBadRequest:
+            logging.error(f"Failed to send message to {admin}: {text}")
 
 
 async def send_startup():
@@ -12,11 +24,7 @@ async def send_startup():
     """
     logging.info("### Bot has started working! ###")
 
-    for admin in ADMINS:
-        try:
-            await bot.send_message(admin, "Bot has started working!")
-        except exceptions.TelegramBadRequest as e:
-            logging.error(f"Failed to send startup message to {admin}")
+    await send_to_admins("Bot has started working!")
 
 
 async def send_shutdown():
@@ -25,8 +33,4 @@ async def send_shutdown():
     """
     logging.info("### Bot has finished working! ###")
 
-    for admin in ADMINS:
-        try:
-            await bot.send_document(admin, document=types.FSInputFile(logs_path), caption="Bot has finished working!")
-        except exceptions.TelegramBadRequest as e:
-            logging.error(f"Failed to send startup message to {admin}")
+    send_to_admins("Bot has finished working!", doc=types.FSInputFile(logs_path))
