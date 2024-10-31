@@ -4,8 +4,9 @@ from datetime import datetime
 
 from create_bot import bot
 from db.connect import get_mongo_messages
+from db.operations.user_profile import new_user
 from db.operations.utils.conversion import user_conversion
-from db.operations.user_profile import new_user, MongoDBUserNotFound
+from db.operations.utils.mongo_errors import MongoDBUserNotFound
 
 
 async def find_messages(user_id: int):

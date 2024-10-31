@@ -3,7 +3,7 @@ import asyncio
 
 from db.connect import get_mongo_users
 from configs.selected_ids import ADMINS
-
+from db.operations.utils.mongo_errors import MongoDBUserNotFound
 
 username_id = {}
 dict_lock = asyncio.Lock()
@@ -26,7 +26,11 @@ class UserConversion:
         mongo_users = get_mongo_users()
 
         username = await mongo_users.find_one({"_id": _id}, {"info.username": 1})
-        username = username["info"]["username"]
+
+        try:
+            username = username["info"]["username"]
+        except TypeError:
+            raise MongoDBUserNotFound(f"User with id {_id} is not found in MongoDB.")
 
         if _id in ADMINS:
             username += " \033[92m[admin]\033[0m"

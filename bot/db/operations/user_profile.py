@@ -6,6 +6,7 @@ from datetime import datetime
 from create_bot import bot
 from db.operations.utils.conversion import user_conversion
 from db.operations.users import update_user, find_all_users
+from db.operations.utils.mongo_errors import MongoDBUserNotFound
 from db.connect import get_mongo_users, get_mongo_messages, get_mongo_matches
 
 
@@ -54,15 +55,6 @@ async def create_user(message: types.Message):
     logging.info(f"_id={user_id:<10} {username} <> was added to DB")
 
     return
-
-
-class MongoDBUserNotFound(Exception):
-    """
-    Exception raised when a user is not found in MongoDB.
-    """
-    def __init__(self, message):
-        self.message = message
-        super().__init__(self.message)
 
 
 def new_user(f):

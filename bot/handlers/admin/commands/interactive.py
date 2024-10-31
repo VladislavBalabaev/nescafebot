@@ -13,7 +13,7 @@ from handlers.admin.admin_filter import AdminFilter
 from handlers.admin.matching.assignment import match
 from handlers.admin.matching.save import save_matching
 from db.operations.user_profile import actualize_all_users
-from db.operations.users import find_id_by_username, find_all_users
+from db.operations.users import find_id_by_username, find_all_users, delete_user
 
 
 router = Router()
@@ -26,11 +26,25 @@ class SendMessageStates(StatesGroup):
     MESSAGE = State()
 
 
+class SendMessageToGroupStates(StatesGroup):
+    """
+    State management for sending a message to group of users.
+    """
+    MESSAGE = State()
+
+
 class SendMessageToAllStates(StatesGroup):
     """
     State management for sending a message to all users.
     """
     MESSAGE = State()
+
+
+class DeleteUserStates(StatesGroup):
+    """
+    State management for deleting user.
+    """
+    CONFIRMED = State()
 
 
 @router.message(StateFilter(None), Command("match"), AdminFilter())
@@ -90,6 +104,10 @@ async def cmd_send_message(message: types.Message, command: CommandObject, state
     username = command.args.replace('@', '').replace(' ', '')
 
     user_id = await find_id_by_username(username)
+    if not user_id:
+        await send_msg_user(message.from_user.id, "Этот пользователь не пользуется ботом. Abort")
+        return
+
     await state.update_data(user_id=user_id)
 
     await send_msg_user(message.from_user.id, "Введи сообщение")
@@ -109,6 +127,52 @@ async def send_message_message(message: types.Message, state: FSMContext):
     user_id = user_data['user_id']
 
     await send_msg_user(user_id, message.text)
+
+    await state.clear()
+
+    return
+
+
+@router.message(StateFilter(None), Command("send_message_to_group"), AdminFilter())
+@checker
+async def cmd_send_message_to_group(message: types.Message, command: CommandObject, state: FSMContext):
+    """
+    Initiates the process to send a message to a specific group of users, prompting the admin for the message content.
+    """
+    if not command.args or len(command.args.split(',')) <= 1:
+        await send_msg_user(message.from_user.id, "Введи пользователей через запятую:\n/send_message_to_group @vbalab, @MadFyre")
+        return
+
+    usernames = command.args.replace('@', '').replace(' ', '').split(',')
+
+    user_ids = []
+    for username in usernames:
+        user_id = await find_id_by_username(username)
+        if not user_id:
+            await send_msg_user(message.from_user.id, f"Пользователь {username} не пользуется ботом. Abort")
+            return
+        user_ids.append(user_id)
+
+    await state.update_data(user_ids=user_ids)
+
+    await send_msg_user(message.from_user.id, "Введи сообщение")
+
+    await state.set_state(SendMessageToGroupStates.MESSAGE)
+
+    return
+
+
+@router.message(StateFilter(SendMessageToGroupStates.MESSAGE), AdminFilter())
+@checker
+async def send_message_to_group_message(message: types.Message, state: FSMContext):
+    """
+    Sends the admin's message to the specified group of users user and clears the state.
+    """
+    user_data = await state.get_data()
+    user_ids = user_data['user_ids']
+
+    for user_id in user_ids:
+        await send_msg_user(user_id, message.text)
 
     await state.clear()
 
@@ -139,6 +203,61 @@ async def send_message_to_all_message(message: types.Message, state: FSMContext)
     for user in users:
         if user["blocked_bot"] == "no" and user["active_matching"] == "yes":
             await send_msg_user(user["_id"], message.text)
+
+    await state.clear()
+
+    return
+
+
+@router.message(StateFilter(None), Command("delete_user"), AdminFilter())
+@checker
+async def cmd_delete_user(message: types.Message, command: CommandObject, state: FSMContext):
+    """
+    Initiates the process to delete user, prompting the admin for confirm.
+    """
+    if not command.args or len(command.args.split()) != 1:
+        await send_msg_user(message.from_user.id, "Введи пользователя:\n/delete_user @vbalab")
+        return
+
+    await send_msg_user(message.from_user.id, "Напиши то, что нужно, чтобы удалить этого пользователя")
+
+    username = command.args.replace('@', '').replace(' ', '')
+
+    user_id = await find_id_by_username(username)
+    if not user_id:
+        await send_msg_user(message.from_user.id, "Этот пользователь не пользуется ботом. Abort")
+        return
+
+    await state.update_data(user_id=user_id)
+
+    await state.set_state(DeleteUserStates.CONFIRMED)
+
+    return
+
+
+@router.message(StateFilter(DeleteUserStates.CONFIRMED), AdminFilter())
+@checker
+async def delete_user_sure(message: types.Message, state: FSMContext):
+    """
+    Confirmes code and deletes user.
+    """
+    if message.text != "9182hdalsdj102":
+        await send_msg_user(message.from_user.id, "Не верно. Обратитесь к другим админам за кодом")
+
+        await state.clear()
+
+        return
+
+    user_data = await state.get_data()
+    
+    user_id = user_data['user_id']
+
+    await delete_user(user_id);
+
+    logging.info(f"process='delete_user' !! Data of user {user_id} was deleted.")
+
+    if (message.from_user.id != user_id):
+        await send_msg_user(message.from_user.id, f"Пользователь был удален.")
 
     await state.clear()
 

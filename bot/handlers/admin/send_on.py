@@ -6,6 +6,7 @@ from configs.logs import logs_path
 from configs.selected_ids import ADMINS
 from db.operations.messages import send_msg_user
 from db.operations.utils.conversion import user_conversion
+from db.operations.utils.mongo_errors import MongoDBUserNotFound
 
 
 async def send_to_admins(text: str, doc=None):
@@ -15,10 +16,13 @@ async def send_to_admins(text: str, doc=None):
                 await bot.send_document(admin_id, document=doc, caption=text)
             else:
                 await send_msg_user(admin_id, text)
-        except exceptions.TelegramBadRequest:
-            admin = await user_conversion.get(admin_id)
 
-            logging.error(f"Failed to send message to {admin}: {text}")
+        except exceptions.TelegramBadRequest:
+                admin = await user_conversion.get(admin_id)
+                logging.error(f"Failed to send message to {admin}: {text}")
+
+        except MongoDBUserNotFound:
+                logging.error(f"Failed to send message to {admin_id}: {text}")
 
 
 async def send_startup():
