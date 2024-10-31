@@ -39,7 +39,7 @@ class RemoveColorCodesFilter(logging.Filter):
 
 colored_console_format = ColoredFormatter(
     "%(log_color)s%(levelname)-8s%(reset)s :: %(asctime)s.%(msecs)03d :: %(message)s",
-    datefmt='%H:%M:%S',
+    datefmt='%Y-%m-%d %H:%M:%S',
     reset=True,
     log_colors={
         'DEBUG': 'cyan',
