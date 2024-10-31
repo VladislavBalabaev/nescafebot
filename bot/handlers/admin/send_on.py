@@ -5,16 +5,19 @@ from create_bot import bot
 from configs.logs import logs_path
 from configs.selected_ids import ADMINS
 from db.operations.messages import send_msg_user
+from db.operations.utils.conversion import user_conversion
 
 
 async def send_to_admins(text: str, doc=None):
-    for admin in ADMINS:
+    for admin_id in ADMINS:
         try:
             if doc:
-                await bot.send_document(admin, document=doc, caption=text)
+                await bot.send_document(admin_id, document=doc, caption=text)
             else:
-                await send_msg_user(admin, text)
+                await send_msg_user(admin_id, text)
         except exceptions.TelegramBadRequest:
+            admin = await user_conversion.get(admin_id)
+
             logging.error(f"Failed to send message to {admin}: {text}")
 
 
