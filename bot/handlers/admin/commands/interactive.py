@@ -13,8 +13,7 @@ from handlers.admin.admin_filter import AdminFilter
 from handlers.admin.matching.assignment import match
 from handlers.admin.matching.save import save_matching
 from db.operations.user_profile import actualize_all_users
-from db.operations.users import find_id_by_username, find_all_users, delete_user
-
+from db.operations.users import find_id_by_username, find_all_users, delete_user, update_user
 
 router = Router()
 
@@ -260,5 +259,32 @@ async def delete_user_sure(message: types.Message, state: FSMContext):
         await send_msg_user(message.from_user.id, f"Пользователь был удален.")
 
     await state.clear()
+
+    return
+
+@router.message(StateFilter(None), Command("create_user"), AdminFilter())
+@checker
+async def cmd_delete_user(message: types.Message, command: CommandObject, state: FSMContext):
+    """
+    Initiates the process to delete user, prompting the admin for confirm.
+    """
+    if not command.args or len(command.args.split()) != 1:
+        await send_msg_user(message.from_user.id, "Введи пользователя:\n/create_user @vbalab")
+        return
+
+    await send_msg_user(message.from_user.id, "Напиши то, что нужно, чтобы удалить этого пользователя")
+
+    username = command.args.replace('@', '').replace(' ', '')
+
+    user_id = await find_id_by_username(username)
+    if not user_id:
+        await send_msg_user(message.from_user.id, "Этот пользователь не пользуется ботом. Abort")
+        return
+    
+    await update_user(message.from_user.id, 
+                    {"info.email": "fake@nes.ru", "cache": {}})
+
+    await send_msg_user(user_id, 
+                        "Твой аккаунт был зарегистрирован админами!\nНажми /start для заполнения информации о себе")
 
     return
