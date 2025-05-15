@@ -200,8 +200,11 @@ async def send_message_to_all_message(message: types.Message, state: FSMContext)
     users = await find_all_users(["_id", "info.username", "blocked_bot", "active_matching"])
 
     for user in users:
-        if user["blocked_bot"] == "no" and user["active_matching"] == "yes":
-            await send_msg_user(user["_id"], message.text)
+        try:
+            if user["blocked_bot"] == "no" and user["active_matching"] == "yes":
+                await send_msg_user(user["_id"], message.text)
+        except Exception:
+            continue
 
     await state.clear()
 
@@ -271,8 +274,6 @@ async def cmd_delete_user(message: types.Message, command: CommandObject, state:
     if not command.args or len(command.args.split()) != 1:
         await send_msg_user(message.from_user.id, "Введи пользователя:\n/create_user @vbalab")
         return
-
-    await send_msg_user(message.from_user.id, "Напиши то, что нужно, чтобы удалить этого пользователя")
 
     username = command.args.replace('@', '').replace(' ', '')
 
