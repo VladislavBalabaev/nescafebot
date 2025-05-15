@@ -38,7 +38,7 @@ async def cmd_admin(message: types.Message):
     Sends a list of available admin commands to the user.
     """
     await send_msg_user(message.from_user.id, 
-                        """/logs - текущие логи;\n/all_users - данные всех пользователей;\n/messages @tg 15 - последние N сообщений пользователя;\n/user @tg - данные пользователя;\n\n/send_message @tg - отправить сообщение пользователю;\n\n/send_message_to_all - отправить сообщение всем пользователям;\n\n/block_matching - заблокировать мэтчинг для пользователя.\n\n/pseudo_match - сделать мэтчинг;\n\n/match - сделать мэтчинг;""")
+                        """/logs - текущие логи;\n\n/all_users - данные всех пользователей;\n\n/messages @tg 15 - последние N сообщений пользователя;\n\n/user @tg - данные пользователя;\n\n/send_message @tg - отправить сообщение пользователю;\n\n/send_message_to_group @tg1 @tg2 - отправить сообщение выбранным пользоватлеям;\n\n/send_message_to_all - отправить сообщение всем пользователям;\n\n/block_matching - заблокировать мэтчинг для пользователя;\n\n/delete_user @tg - удалить пользователя;\n\n/create_user @tg - создать пользователя;\n\n/pseudo_match - сделать мэтчинг;\n\n\n/match - сделать мэтчинг;""")
 
     return
 

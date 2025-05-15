@@ -57,7 +57,7 @@ curl -I https://api.telegram.org
 ping api.telegram.org  
 ```
 
-## 1.3.1 Screen commands
+## 1.3.1 Tmux commands
 
 To detach from the screen session (without stopping the bot), press the following key combination:
 

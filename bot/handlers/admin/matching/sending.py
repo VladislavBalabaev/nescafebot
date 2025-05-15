@@ -1,5 +1,7 @@
 import json
+import logging
 import pandas as pd
+from aiogram import exceptions
 
 from create_bot import bot
 from configs.selected_ids import ADMINS
@@ -17,11 +19,14 @@ async def send_matching_admin(matched: pd.DataFrame):
     matched_formatted = f"<pre>{matched_formatted}</pre>"
 
     for admin in ADMINS:
-        if len(matched_formatted) > 4000:
-            await send_temporary_file(admin, matched_formatted)
-        else:
-            await bot.send_message(admin, matched_formatted, parse_mode="HTML")
-
+        try:
+                
+            if len(matched_formatted) > 4000:
+                await send_temporary_file(admin, matched_formatted)
+            else:
+                await bot.send_message(admin, matched_formatted, parse_mode="HTML")
+        except exceptions.TelegramBadRequest:
+            logging.error(f"Failed to send matching message to {admin}.")
     return
 
 
@@ -38,12 +43,12 @@ async def send_matching_client(matched: pd.DataFrame):
 
         row = matched.loc[matched["username"] == username].iloc[0]
 
-        return f"{row['info']['written_name']} (@{row['username']}) с {row['info']['program']['name']}'{row['info']['program']['year']}.\nСмайл пользователя - {row['emoji']}\nО себе: {row['info']['about']}"
+        return f"{row['info']['written_name']} (@{row['username']}) с {row['info']['program']['name']}'{row['info']['program']['year']}.\nСмайл пользователя - {row['emoji']}\n\nО себе: {row['info']['about']}"
 
 
     for user_id in matched.index:
         await send_msg_user(user_id, 
-                            f"Привет!\nПришли с результатами случайного кофе)\n\nТвой смайл - {matched.loc[user_id, 'emoji']}")
+                            f"Привет! Пришли с результатами\n\nТвой смайл - {matched.loc[user_id, 'emoji']}")
 
         assignments = matched.loc[user_id, 'assignments']
         n = len(assignments)
@@ -59,11 +64,8 @@ async def send_matching_client(matched: pd.DataFrame):
                                 info_by_username(assignments[0]))
 
             await send_msg_user(user_id, 
-                                "Ты можешь написать ему его смайл, он сразу поймет, что выпал тебе на кофе)")
+                                "Ты можешь написать ему его смайл. Он сразу поймет, что выпал тебе на кофе)")
         elif n == 2:
-            await send_msg_user(user_id,
-                                f"В этот раз тебе выпали двое человек, которым ты можешь написать:")
-
             await send_msg_user(user_id,
                                 info_by_username(assignments[0]))
 
@@ -71,12 +73,11 @@ async def send_matching_client(matched: pd.DataFrame):
                                 info_by_username(assignments[1]))
 
             await send_msg_user(user_id,
-                                f"Ты можешь написать им их смайл, они сразу поймут, что выпали тебе на кофе)")
+                                f"Ты можешь написать им их смайл. Они сразу поймут, что выпали тебе на кофе)")
         else:
             raise ValueError(f"_id='{user_id}' has more than 2 assignments.")
 
-        # TEMPORARY
         await send_msg_user(user_id,
-                            f"Хотим уточнить, что распределение участников асимметричное.\nТо есть, те люди, которые тебе выпадут, скорее всего не получат тебя")
+                            f"Напомним, что распределение участников асимметричное.\nТо есть, те люди, которые выпали тебе, скорее всего не получили тебя")
 
     return

@@ -1,6 +1,6 @@
 import logging
 
-from db.connect import get_mongo_users
+from db.connect import get_mongo_users, get_mongo_messages
 from db.operations.utils.conversion import user_conversion
 
 
@@ -63,8 +63,10 @@ async def delete_user(user_id: int):
     Deletes a user from the MongoDB 'users' collection based on user ID.
     """
     mongo_users = get_mongo_users()
+    mongo_messages = get_mongo_messages()
     
     await mongo_users.delete_one({"_id": user_id})
+    await mongo_messages.delete_one({"_id": user_id})
 
     return
 
@@ -78,7 +80,10 @@ async def find_id_by_username(username: str):
     user = await mongo_users.find_one({"info.username": username}, 
                                       {"_id": 1, "info.username": 1})
 
-    return user["_id"]
+    try:
+        return user["_id"]
+    except:
+        return None
 
 
 async def blacklist_add(user_id: int, username):

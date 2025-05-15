@@ -6,7 +6,7 @@ from aiosmtplib.errors import SMTPAuthenticationError
 
 from create_bot import bot
 from configs.env_reader import config
-from configs.selected_ids import ADMINS
+from handlers.admin.send_on import send_to_admins
 
 
 emails = [
@@ -61,8 +61,7 @@ async def send_email(email_to, text):
     except SMTPAuthenticationError:
         logging.warning(f"process='email send'                      !! Email \"{email_sender['email']}\" is not working. Was trying to send email to {email_to}.")
 
-        for admin in ADMINS:
-            await bot.send_message(admin, f"WARNING: Email \"{email_sender['email']}\" is not working")
+        await send_to_admins(f"WARNING: Email \"{email_sender['email']}\" is not working")
 
         await send_email(email_to, text)
 
@@ -76,6 +75,8 @@ async def test_emails():
     """
     global emails
     
+    logging.info("### Checking emails ... ###")
+
     failed_emails = []
 
     for email_sender in emails:
@@ -97,10 +98,9 @@ async def test_emails():
             )
 
         except SMTPAuthenticationError:
-            logging.warning(f"process='email test'                      !! Email \"{email_sender['email']}\" is not working.")
+            logging.warning(f"process='email test' !! Email \"{email_sender['email']}\" is not working.")
 
-            for admin in ADMINS:
-                await bot.send_message(admin, f"WARNING: Email \"{email_sender['email']}\" is not working")
+            await send_to_admins(f"WARNING: Email \"{email_sender['email']}\" is not working")
 
             failed_emails.append(email_sender)
 
